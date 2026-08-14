@@ -23,6 +23,18 @@
   --grad-4:linear-gradient(135deg,#AAC638 0%,#AAC638 49%,#AAC638 100%);
   --grad-5:linear-gradient(135deg,#5E647E 0%,#232A60 56%,#1A214D 100%);
   --font:'Ubuntu',system-ui,sans-serif;
+
+  /* ---- shared system (used by every section, part 1 and part 2 alike) ---- */
+  --green-dk:#93AE2B;                 /* pressed / gradient end for green fills   */
+  --grad-green:linear-gradient(135deg,#B6D046 0%,#AAC638 52%,#93AE2B 100%);
+  --grad-ink:linear-gradient(135deg,#2C3474 0%,#232A60 46%,#161C45 100%);
+  --section-y:clamp(84px,8.6vw,132px); /* one vertical rhythm for all sections     */
+  --r-sm:12px; --r-md:18px; --r-lg:24px; --r-xl:30px;
+  --sh-sm:0 2px 8px rgba(26,33,77,.05),0 10px 24px rgba(26,33,77,.06);
+  --sh-md:0 4px 14px rgba(26,33,77,.06),0 18px 44px rgba(26,33,77,.10);
+  --sh-lg:0 10px 26px rgba(26,33,77,.10),0 34px 76px rgba(26,33,77,.16);
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --hair:rgba(35,42,96,.10);          /* hairline rules and card borders          */
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -71,8 +83,13 @@ ul{list-style:none}
       rgba(12, 16, 42, 0.92)  44%,  /* darker blue-black · 92%  */
       rgba(169, 198, 57, 0.2) 100%  /* #A9C639 · 20%  */
     ),
-    /* ③ Photo underneath */
-    url('public/assets/Images/Hero-Background.png') center / cover no-repeat}
+    /* ③ flat ground.
+       Hero-Background.png used to sit here, but that export already has a dotted
+       globe painted into it — a big blurred limb sweeping across the lower half.
+       With the live WebGL globe rendering on top, it read as a soft duplicate of
+       the real one. The gradients, the aurora and the starfield carry this area
+       on their own, so the photo layer is gone. */
+    #070A1C}
 
 /* ============ GLOBE BACKGROUND HERO ============ */
 .hero__globe{
@@ -107,61 +124,40 @@ ul{list-style:none}
   to{transform:translate3d(3%,2%,0) scale(1.09)}
 }
 .hero__globe canvas#gl{position:absolute;inset:0;display:block;z-index:1;pointer-events:none}
-.hero__globe #globeContainer{position:absolute;inset:0;width:100%;height:100%;z-index:2;cursor:grab}
+/* the globe sits 20% of the hero width to the right, off the headline column.
+   It spans ~28% of the view at this camera distance, so the shift moves it from
+   36–64% across to 56–84% — still clear of the container's right edge. */
+.hero__globe #globeContainer{position:absolute;inset:0;width:100%;height:100%;z-index:2;cursor:grab;
+  transform:translateX(20%)}
 .hero__globe #globeContainer.is-grabbing{cursor:grabbing}
 .hero__globe .grain{position:absolute;inset:0;z-index:4;pointer-events:none;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 /* scrim lives OUTSIDE the screen-blended layer, so it can actually darken for text legibility */
 .hero__scrim{
   position:absolute;top:0;left:0;right:0;height:100vh;min-height:560px;z-index:1;pointer-events:none;
   background:
-    /* ① copy column — heaviest on the left, fully clear before the globe's right half,
-       so the headline gets contrast without flattening the animation */
+    /* ① copy column — still heaviest on the left, but it no longer falls all the
+       way to zero: the globe half keeps a floor of tint instead of running bare */
     linear-gradient(96deg,
-      rgba(5,8,24,.90) 0%,
-      rgba(5,8,24,.74) 24%,
-      rgba(5,8,24,.40) 45%,
-      rgba(5,8,24,.10) 63%,
-      rgba(5,8,24,0)   76%),
+      rgba(5,8,24,.89) 0%,
+      rgba(5,8,24,.79) 24%,
+      rgba(5,8,24,.51) 45%,
+      rgba(5,8,24,.25) 63%,
+      rgba(5,8,24,.11) 76%,
+      rgba(5,8,24,.07) 100%),
     /* ② settles the nav strip */
-    linear-gradient(180deg, rgba(5,8,24,.70) 0%, rgba(5,8,24,.22) 18%, rgba(5,8,24,0) 34%),
-    /* ③ the original vignette, kept so the globe still sits in a pool of light */
-    radial-gradient(76% 60% at 50% 40%, transparent 42%, rgba(6,9,26,.60) 100%);
-  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 78%,transparent 100%);
-  mask-image:linear-gradient(180deg,#000 0%,#000 78%,transparent 100%);
+    linear-gradient(180deg, rgba(5,8,24,.77) 0%, rgba(5,8,24,.29) 18%, rgba(5,8,24,.01) 34%),
+    /* ③ the vignette — the globe still sits in a pool of light, just a dimmer one */
+    radial-gradient(76% 60% at 50% 40%, rgba(6,9,26,.05) 42%, rgba(6,9,26,.67) 100%),
+    /* ④ flat wash across the whole animation, so the globe and the ocean sit back
+       evenly rather than only being knocked down at the edges */
+    linear-gradient(180deg, rgba(5,8,24,.17) 0%, rgba(5,8,24,.23) 100%);
+  /* held further down the hero than before so the water is covered too */
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 88%,transparent 100%);
+  mask-image:linear-gradient(180deg,#000 0%,#000 88%,transparent 100%);
 }
-
-/* city labels & detail cards */
-.city-label{position:absolute;display:inline-flex;align-items:center;gap:8px;
-  appearance:none;-webkit-appearance:none;
-  background:rgba(12,17,45,.72);border:1px solid rgba(207,222,93,.22);border-radius:999px;
-  padding:6px 12px 6px 9px;font-size:12.5px;letter-spacing:.03em;color:var(--bg);
-  font-family:var(--font);line-height:1;
-  pointer-events:auto;cursor:pointer;user-select:none;white-space:nowrap;
-  backdrop-filter:blur(4px);transform:translate(-50%,-50%);
-  box-shadow:0 6px 18px rgba(4,7,22,.45);
-  transition:opacity .25s ease,border-color .2s ease,box-shadow .2s ease}
-.city-label:hover,.city-label:focus-visible,.city-label.is-hot{
-  border-color:rgba(207,222,93,.60);outline:none;
-  box-shadow:0 0 0 1px rgba(207,222,93,.18),0 10px 26px rgba(4,7,22,.55)}
-.city-label .dot{width:6px;height:6px;border-radius:50%;background:var(--lemon);flex:none;
-  box-shadow:0 0 6px 2px rgba(207,222,93,.6);animation:cityPulse 2.4s ease-in-out infinite}
-@keyframes cityPulse{
-  0%,100%{box-shadow:0 0 5px 1px rgba(207,222,93,.5)}
-  50%{box-shadow:0 0 10px 3px rgba(207,222,93,.85)}
-}
-.city-label--hq .dot{background:#fff;box-shadow:0 0 8px 3px rgba(255,255,255,.7)}
-.city-label .status{font-size:9px;color:var(--lemon);opacity:.75;letter-spacing:.08em;margin-left:2px}
-.city-card{position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%);width:250px;
-  background:rgba(12,17,45,.94);border:1px solid rgba(207,222,93,0.25);border-radius:12px;padding:12px 14px;
-  font-size:11.5px;line-height:1.5;color:var(--outline);box-shadow:0 12px 30px rgba(0,0,0,0.55);
-  display:none;text-align:left;font-family:var(--font);white-space:normal}
-.city-card.open{display:block}
-.city-card .coord{color:var(--lemon);font-size:10px;letter-spacing:.04em;margin-bottom:6px;opacity:.85}
-.city-card .desc{color:var(--outline)}
 
 @media (prefers-reduced-motion: reduce){
   .hero__aurora{animation:none}
-  .city-label .dot{animation:none}
 }
 
 /* the header is absolutely positioned and 103px tall, so this padding is the ONLY
@@ -192,60 +188,84 @@ ul{list-style:none}
 .hero__right{position:relative;min-height:528px}
 .tpill{position:absolute;padding:8px 20px;border:1px solid rgba(170,198,56,.65);border-radius:999px;
   background:rgba(35,42,96,.30);backdrop-filter:blur(4px);font-size:13.5px;color:#fff;
-  transform:rotate(var(--r,-4deg));white-space:nowrap}
-.tpill--1{top:0;left:0;--r:-5deg}                /* Technology Partner — top left */
-.tpill--2{top:0;right:0;--r:-4deg}               /* Security & Reliability — top right */
-.tpill--3{top:466px;left:0;--r:-5deg}            /* All Sector Ready — below the caption */
-.tpill--4{top:466px;right:0;--r:-3deg}           /* Support & Partnership — below the caption */
+  transform:translateX(var(--tx,0)) rotate(var(--r,-4deg));white-space:nowrap}
+/* Anchored off the map's centre line rather than the column edges, and sized to
+   the silhouette itself: the SVG is 201x150 contained in a 330x300 box, so the
+   artwork is 330x246 and Ethiopia's outline leaves the four corners empty. Each
+   pill tucks into one of those voids — close enough to read as labels on the
+   map, offset enough not to cover it. */
+/* pinned to the column's left edge and lifted above the artwork's apex: anchored
+   off the centre line it tracked the map inward as the column narrowed and ended
+   up sitting on the silhouette */
+.tpill--1{top:44px;left:0;--r:-5deg}                             /* Technology Partner   — above the NW shoulder */
+.tpill--2{top:96px;left:calc(50% + 51px);--r:-4deg}              /* Security & Reliability — NE void */
+.tpill--3{top:322px;left:calc(50% - 93px);--tx:-100%;--r:-5deg}  /* All Sector Ready     — SW void */
+.tpill--4{top:322px;left:calc(50% + 61px);--r:-3deg}             /* Support & Partnership — SE void */
 
 /* centred in the column rather than jammed against its right edge, so the four
    pills frame it symmetrically instead of landing on the caption */
 .map-block{position:absolute;top:72px;left:50%;transform:translateX(-50%);width:330px}
 .map-shape{position:relative;width:330px;height:300px}
 .map-img{width:330px;height:300px;object-fit:contain}
-.map-text{margin-top:16px;text-align:center;font-size:13.5px;color:#E7EAF6}
-.map-text strong{display:block;font-size:20px;font-weight:500;color:#fff}
 
 /* ============ THREE SERVICE CARDS ============ */
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;align-items:end;margin-top:80px;position:relative;z-index:2}
+/* One recipe for all three. The photo is the only thing that differs — same
+   height, same left-aligned rhythm (icon+numeral / title / tags / footer link),
+   so the row reads as one set of three peers instead of a hero and two
+   afterthoughts. */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:stretch;
+  margin-top:80px;position:relative;z-index:2}
 .card{
   /* shared bottom-weighted scrim: guarantees the title and tags hold contrast
      no matter how bright the photo underneath gets */
-  --card-readability:linear-gradient(180deg,rgba(6,9,26,0) 26%,rgba(6,9,26,.50) 68%,rgba(6,9,26,.90) 100%);
-  position:relative;border-radius:24px;overflow:hidden;min-height:372px;padding:28px;color:#fff;
+  --card-readability:linear-gradient(180deg,rgba(6,9,26,.12) 0%,rgba(6,9,26,.34) 30%,rgba(6,9,26,.70) 66%,rgba(6,9,26,.95) 100%);
+  position:relative;border-radius:24px;overflow:hidden;min-height:400px;padding:26px;color:#fff;
   display:flex;flex-direction:column;box-shadow:0 34px 70px rgba(26,33,77,.28);
-  border:1px solid rgba(170,198,56,.75);
+  border:1px solid rgba(255,255,255,.15);
   transition:transform .45s cubic-bezier(.22,.61,.36,1),box-shadow .45s ease,border-color .45s ease}
 .card:hover,.card:focus-within{transform:translateY(-10px);
-  box-shadow:0 46px 92px rgba(10,14,40,.42);border-color:rgba(207,222,93,.95)}
-.card--center{min-height:486px;border-color:rgba(255,255,255,.14)}
-.card--center:hover,.card--center:focus-within{border-color:rgba(255,255,255,.45)}
+  box-shadow:0 46px 92px rgba(10,14,40,.42);border-color:rgba(207,222,93,.85)}
+/* Photos 1 and 3 ship with a 1px #AAC639 border baked into the file on all four
+   edges (photo 2 has none). object-fit:cover crops the sides on those two but
+   not the top, so the top edge showed as a stray green hairline. The resting
+   scale trims a few pixels off every edge and takes the baked border with it. */
 .card__img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  transform:scale(1.03);
   transition:transform .8s cubic-bezier(.22,.61,.36,1), filter .8s ease}
 .card:hover .card__img,.card:focus-within .card__img{transform:scale(1.10);filter:brightness(1.05)}
-.card__overlay{position:absolute;inset:0}
-.card--left  .card__overlay{background:linear-gradient(200deg,rgba(26,33,77,.42) 0%,rgba(38,33,56,.72) 100%),var(--card-readability)}
-.card--center .card__overlay{background:linear-gradient(180deg,rgba(35,42,96,.52),rgba(35,42,96,.80)),var(--card-readability)}
-.card--right .card__overlay{background:linear-gradient(135deg,rgba(94,100,126,.62) 0%,rgba(35,42,96,.72) 56%,rgba(26,33,77,.80) 100%),var(--card-readability)}
+/* a single overlay recipe — the three photos are graded to the same blue-black */
+.card__overlay{position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(35,42,96,.50) 0%,rgba(26,33,77,.78) 100%),var(--card-readability)}
 /* thin sheen down the top-left edge so the cards read as glass rather than flat photos */
 .card::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
   background:linear-gradient(158deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,0) 44%)}
 .card__inner{position:relative;z-index:2;display:flex;flex-direction:column;height:100%}
-.card__icon{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;flex:none}
-.card--left .card__icon{background:var(--grad-4);color:var(--blueblack-dk)}
-.card--right .card__icon{background:#fff;color:var(--blueblack)}
-.card--center .card__icon{margin:6px auto 0;background:transparent;border:1px solid rgba(255,255,255,.7);color:#fff}
-.card__title{font-size:26px;font-weight:400;line-height:1.25;margin-top:auto;padding-top:40px;max-width:280px;
+/* icon and numeral share one row, so the numeral is part of the layout rather
+   than floating loose in the corner */
+.card__top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.card__icon{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;flex:none;
+  background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.28);color:#fff;
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.card__title{font-size:24px;font-weight:400;line-height:1.25;margin-top:auto;padding-top:36px;max-width:15ch;
   text-shadow:0 2px 14px rgba(4,7,22,.45)}
-.card__tags{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
-.card__tags li{padding:6px 16px;border:1px solid rgba(255,255,255,.30);background:rgba(255,255,255,.10);
+.card__tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.card__tags li{padding:6px 14px;border:1px solid rgba(255,255,255,.30);background:rgba(255,255,255,.10);
   -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
   border-radius:999px;font-size:12.5px;color:#F0F2FA}
-.card--center .ring-btn{margin:26px auto 0;padding:12px 26px;font-size:14.5px}
+/* every card ends the same way, so the call to action is no longer trapped in
+   the middle one */
+.card__link{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,.16);
+  font-size:14px;color:#F0F2FA;transition:color .35s ease}
+.card__link svg{flex:none;transition:transform .35s cubic-bezier(.22,.61,.36,1)}
+.card:hover .card__link,.card__link:focus-visible{color:var(--lemon)}
+.card:hover .card__link svg{transform:translate(3px,-3px)}
 @media (prefers-reduced-motion: reduce){
-  .card,.card__img{transition:none}
+  .card,.card__img,.card__link svg{transition:none}
   .card:hover,.card:focus-within,
-  .card:hover .card__img,.card:focus-within .card__img{transform:none}
+  .card:hover .card__link svg{transform:none}
+  /* the resting scale is a crop, not motion — it has to survive here */
+  .card:hover .card__img,.card:focus-within .card__img{transform:scale(1.03)}
 }
 
 /* ============ PROBLEMS WE SOLVE ============ */
@@ -281,6 +301,8 @@ ul{list-style:none}
 @media (max-width:1080px){
   .hero__top{grid-template-columns:1fr}
   .hero__right{min-height:0;display:none}
+  /* single column here, so there is no headline column to clear */
+  .hero__globe #globeContainer{transform:none}
   /* the globe now sits behind the full width of the copy, so the scrim goes
      top-weighted and uniform instead of left-weighted */
   .hero__scrim{
@@ -298,8 +320,9 @@ ul{list-style:none}
 }
 @media (max-width:900px){
   .nav__links{display:none}
-  .cards{grid-template-columns:1fr;align-items:stretch}
-  .card--center{min-height:440px}
+  .cards{grid-template-columns:1fr}
+  .card{min-height:340px}
+  .card__title{max-width:none}
   .prow{grid-template-columns:28px 1fr;gap:10px 18px}
   .prow p{grid-column:2}
   .prow h3{max-width:none}
@@ -310,13 +333,16 @@ ul{list-style:none}
 <!-- ============ PART 2 STYLES (merged from index part 2.html) ============ -->
 <style>
 /* ================= DESIGN TOKENS ================= */
+/* Part 2 was authored against its own near-duplicate palette (#F0F0F8 / #262B4A /
+   #A2C03C), which read as a faint colour seam wherever a part-1 section met a
+   part-2 one. The aliases now resolve to the single brand set above. */
 :root{
-  --bt-bg:#F0F0F8;
-  --bt-ink:#262B4A;
-  --bt-muted:#565D72;
-  --bt-green:#A2C03C;
-  --bt-green-line:#C6D78D;
-  --bt-card:#F8F8FC;
+  --bt-bg:var(--bg);
+  --bt-ink:var(--blueblack);
+  --bt-muted:#5E647E;
+  --bt-green:var(--green);
+  --bt-green-line:#CBDB93;
+  --bt-card:#FFFFFF;
 }
 .bt-services,.bt-cta,.bt-why{background:var(--bt-bg);color:var(--bt-ink);font-family:'Source Sans 3',sans-serif;}
 .bt-container{max-width:1360px;margin:0 auto;padding:0 24px;}
@@ -469,7 +495,10 @@ ul{list-style:none}
 /* the pill sits in the notch — flush with the panel's left edge, floating above its bottom */
 .bt-learn-wrap{position:absolute;left:0;bottom:var(--pill-drop);z-index:2;line-height:0;}
 .bt-learn-wrap .bt-btn{padding:14px 38px;gap:12px;}
-.bt-why-cards{display:grid;grid-template-columns:1fr 1fr minmax(190px,200px);gap:26px;margin-top:18px;}
+/* minmax(0,1fr), not 1fr: a bare 1fr floors at min-content, so the longer
+   no-wrap heading was inflating its own column and the two cards came out
+   different widths — which wrapped their equal-length copy differently */
+.bt-why-cards{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(190px,200px);gap:26px;margin-top:18px;}
 /* right padding reserves the gutter the absolutely-positioned photo sits in, so the
    text column reflows instead of sliding under the photo when the card narrows */
 .bt-why-card{position:relative;border:1px solid var(--bt-green);border-radius:18px;min-height:238px;padding:24px 171px 24px 24px;display:flex;align-items:center;transition:transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;}
@@ -479,7 +508,11 @@ ul{list-style:none}
 /* body is wide enough for the description; the heading is kept narrower on its own
    so it still breaks onto two lines the way the comp does */
 .bt-why-body{margin-left:88px;max-width:245px;min-width:0;}
-.bt-why-body h3{font-family:'Roboto Slab',serif;font-weight:600;font-size:20px;line-height:1.3;white-space:nowrap;margin:0 0 12px;}
+/* the headings wrap now — forcing nowrap made the longer one overrun its column
+   into the side image. min-height reserves two lines either way, so the body
+   copy in both cards starts on the same line. */
+.bt-why-body h3{font-family:'Roboto Slab',serif;font-weight:600;font-size:20px;line-height:1.3;
+  min-height:2.6em;margin:0 0 12px;}
 .bt-why-body p{margin:0;font-size:15px;line-height:1.6;color:var(--bt-muted,#565D72);text-align:justify;}
 /* card photo: taller, and centred on the card's vertical axis rather than pinned to the corner */
 .bt-why-card>.bt-side-img{position:absolute;top:50%;bottom:auto;right:36px;transform:translateY(-50%);width:110px;height:135px;border-radius:14px;object-fit:cover;transition:transform .8s cubic-bezier(.22,.61,.36,1), filter .8s ease, box-shadow .8s ease;}
@@ -608,9 +641,19 @@ ul{list-style:none}
 .gt-info li>div span{color:var(--bt-muted,#565D72);font-size:15px;}
 .gt-form{background:#FCFCFE;border:1px solid #ECEDF3;border-radius:14px;padding:40px;display:flex;flex-direction:column;gap:18px;}
 .gt-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
-.gt-form input,.gt-form textarea{width:100%;background:#F2F3F6;border:1px solid #E3E5EC;border-radius:6px;
+/* label above its control; min-width:0 so a field in a grid column can shrink */
+.gt-field{display:flex;flex-direction:column;gap:7px;min-width:0;}
+.gt-field label{font-size:13px;font-weight:600;letter-spacing:.01em;color:var(--bt-ink,#262B4A);}
+.gt-form input,.gt-form select,.gt-form textarea{width:100%;background:#F2F3F6;border:1px solid #E3E5EC;border-radius:6px;
   padding:13px 16px;font:inherit;font-size:14px;color:var(--bt-ink,#262B4A);outline:none;transition:.2s;}
-.gt-form input:focus,.gt-form textarea:focus{border-color:var(--bt-green,#A2C03C);background:#fff;}
+.gt-form input:focus,.gt-form select:focus,.gt-form textarea:focus{border-color:var(--bt-green,#A2C03C);background:#fff;}
+/* native arrow swapped for one that matches the rest of the form */
+.gt-form select{appearance:none;-webkit-appearance:none;-moz-appearance:none;cursor:pointer;padding-right:44px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5 6 6.5l5-5' stroke='%23565D72' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 16px center;}
+/* the placeholder option should read as placeholder text, not as a chosen value */
+.gt-form select:has(option[value=""]:checked){color:#9AA0B4;}
+.gt-form select option{color:var(--bt-ink,#262B4A);}
 .gt-form textarea{resize:vertical;}
 .gt-send{align-self:flex-start;background:var(--bt-green,#A2C03C);color:#fff;border:none;border-radius:999px;
   padding:16px 42px;font:inherit;font-weight:700;font-size:15px;cursor:pointer;transition:.25s;}
@@ -625,21 +668,339 @@ ul{list-style:none}
   .gt-row{grid-template-columns:1fr;}
 }
 </style>
+
+<!-- ============================================================================
+     SECTION DESIGN REFINEMENT
+     A single pass over every section: one type system, one vertical rhythm, one
+     set of surfaces/shadows/motion. Loaded last so the section stylesheets above
+     stay readable as the original layout work.
+     ============================================================================ -->
+<style>
+/* ---------- 1. TYPE: one display face for the whole page --------------------
+   Parts 1 and 2 shipped two families each (Ubuntu vs Roboto Slab + Source Sans),
+   so headings changed typeface halfway down the page. Everything now uses the
+   brand font. Delete this block to restore the Roboto Slab headings. */
+.bt-services,.bt-cta,.bt-why,.gt-section,.ft-footer{font-family:var(--font);}
+.bt-h2,.bt-card-intro h3,.bt-point-title,.bt-why-body h3,.bt-green-text h3,
+.gt-title,.gt-form-title,.bt-srv-badge,.ft-logo span{
+  font-family:var(--font);font-weight:500;letter-spacing:-.01em;}
+.bt-srv-badge,.ft-logo span{font-weight:700;letter-spacing:0;}
+.bt-h2{margin-top:16px;}
+h1,h2,h3{text-wrap:balance;}
+p{text-wrap:pretty;}
+
+/* ---------- 2. GLOBAL: rhythm, focus, anchors ------------------------------ */
+/* the three sections' shells were 1220 / 1360 / 1264 wide, so the page's left and
+   right margins stepped in and out as you scrolled. One measure for all of them. */
+.bt-container,.gt-wrap,.ft-container{max-width:none;width:min(1220px,92%);margin-inline:auto;padding:0;}
+
+.problems{padding:var(--section-y) 0;}
+.bt-services{padding-top:var(--section-y);}
+.bt-cta{padding:var(--section-y) 0;}
+.bt-why{padding-bottom:var(--section-y);}
+section[id],footer[id]{scroll-margin-top:104px;}
+
+/* the nav is fixed now, so every in-page jump needs the same offset */
+:focus-visible{outline:2px solid var(--green);outline-offset:3px;border-radius:4px;}
+.hero :focus-visible,.ft-footer :focus-visible{outline-color:var(--lemon);}
+::selection{background:rgba(170,198,56,.32);color:var(--blueblack-dk);}
+
+/* shared eyebrow treatment — a short rule sets the label off from the heading */
+.eyebrow,.bt-eyebrow,.gt-eyebrow{display:inline-flex;align-items:center;gap:10px;
+  font-size:13px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--green);}
+.eyebrow::before,.bt-eyebrow::before,.gt-eyebrow::before{content:"";width:26px;height:2px;
+  border-radius:2px;background:var(--grad-green);flex:none;}
+
+/* one button language for both .ring-btn and .bt-btn */
+.ring-btn--green,.bt-btn-green,.gt-send,.ft-form .ft-join{
+  background:var(--grad-green);box-shadow:0 8px 20px rgba(148,175,44,.28);}
+.bt-btn,.gt-send,.ft-join{transition:transform .3s var(--ease),box-shadow .3s var(--ease),filter .3s var(--ease);}
+.bt-btn-green:hover,.gt-send:hover,.ft-form .ft-join:hover,.ring-btn--green:hover{
+  transform:translateY(-2px);box-shadow:0 14px 30px rgba(148,175,44,.36);}
+.bt-btn-green:active,.gt-send:active,.ring-btn--green:active{transform:translateY(0);}
+.bt-btn-ghost{border-color:var(--hair);color:var(--blueblack);background:rgba(255,255,255,.6);}
+.bt-btn-ghost:hover{background:#fff;border-color:var(--green);color:var(--green);transform:translateY(-2px);}
+.bt-btn svg,.ring-btn svg{transition:transform .3s var(--ease);}
+.bt-btn:hover svg,.ring-btn:hover svg{transform:translate(3px,-3px);}
+.bt-next-pill:hover svg,.bt-cta-actions .bt-btn:hover svg{transform:translateX(4px);}
+
+/* ---------- 3. SCROLL REVEAL ----------------------------------------------- */
+[data-reveal]{opacity:0;transform:translateY(20px);
+  transition:opacity .75s var(--ease),transform .75s var(--ease);transition-delay:var(--d,0ms);}
+[data-reveal].is-in{opacity:1;transform:none;}
+
+/* ---------- 4. NAV: fixed, condenses on scroll, real mobile menu ----------- */
+.nav{position:fixed;padding:22px 0;transition:padding .35s var(--ease),background .35s var(--ease),
+  box-shadow .35s var(--ease),backdrop-filter .35s var(--ease);}
+.nav.is-stuck{padding:12px 0;background:rgba(12,16,40,.82);
+  -webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);
+  box-shadow:0 1px 0 rgba(255,255,255,.07),0 14px 34px rgba(6,9,26,.34);}
+.nav__lead{display:flex;align-items:center;gap:18px;}
+.nav__links a{font-weight:500;letter-spacing:.01em;}
+.nav__links a::after{content:"";position:absolute;left:0;bottom:-8px;width:0;height:2px;
+  background:var(--green);border-radius:2px;transition:width .3s var(--ease);}
+.nav__links a:hover::after{width:100%;}
+.nav__links a.active::after{width:22px;}
+.nav__links a.active:hover::after{width:100%;}
+.nav__logo img{transition:transform .35s var(--ease);}
+.nav__logo:hover img{transform:scale(1.04);}
+.nav.is-stuck .nav__logo img{height:26px;}
+.nav .ring-btn{padding:12px 24px;font-size:14.5px;}
+
+/* burger + slide-down panel, both hidden until the links collapse */
+.nav__burger{display:none;width:42px;height:42px;border-radius:12px;cursor:pointer;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);
+  padding:0;place-items:center;gap:5px;flex-direction:column;transition:background .25s;}
+.nav__burger:hover{background:rgba(255,255,255,.16);}
+.nav__burger i{display:block;width:18px;height:2px;border-radius:2px;background:#E7EAF6;
+  transition:transform .3s var(--ease),opacity .2s ease;}
+.nav__burger[aria-expanded="true"] i:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.nav__burger[aria-expanded="true"] i:nth-child(2){opacity:0;}
+.nav__burger[aria-expanded="true"] i:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.nav__panel{display:none;overflow:hidden;max-height:0;transition:max-height .45s var(--ease);}
+.nav__panel-inner{margin:16px 0 4px;padding:10px 8px;border-radius:var(--r-md);
+  background:rgba(12,16,40,.94);border:1px solid rgba(255,255,255,.12);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:var(--sh-lg);}
+.nav__panel a{display:block;padding:13px 16px;color:#E7EAF6;font-size:15.5px;border-radius:10px;
+  transition:background .2s,color .2s;}
+.nav__panel a:hover,.nav__panel a:focus-visible{background:rgba(170,198,56,.14);color:var(--lemon);}
+.nav__panel .ring-btn{display:flex;justify-content:center;margin:10px 8px 8px;}
+
+/* ---------- 5. HERO --------------------------------------------------------- */
+.hero__eyebrow{color:var(--lemon);margin-bottom:20px;
+  text-shadow:0 1px 10px rgba(4,7,22,.5);}
+.hero__h1 .accent{color:var(--lemon);}
+.hero__cta-row{margin-top:48px;gap:26px;}
+.play-btn{position:relative;}
+.play-btn::after{content:"";position:absolute;inset:-7px;border-radius:50%;
+  border:1px solid rgba(207,222,93,.28);animation:playPulse 2.8s ease-out infinite;}
+@keyframes playPulse{0%{transform:scale(.9);opacity:.9}70%{transform:scale(1.25);opacity:0}100%{opacity:0}}
+.hero__stats{gap:24px;padding:12px 22px;border-radius:999px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);}
+/* each stat is only as wide as its label, so the numeral has to be centred
+   against it — left-aligned, "25+" hung off the left edge of "Projects" */
+.stat{text-align:center;}
+.stat b{font-size:24px;line-height:1.1;}
+.stat span{display:block;font-size:13px;line-height:1.35;letter-spacing:.02em;opacity:.9;}
+.stat-divider{height:38px;background:rgba(255,255,255,.22);}
+.tpill{transition:transform .4s var(--ease),border-color .4s var(--ease),background .4s var(--ease);}
+/* --tx has to be restated or the left-hand pills, which are anchored by their
+   right edge, would jump a full pill-width to the right on hover */
+.tpill:hover{transform:translateX(var(--tx,0)) translateY(-3px) rotate(0deg);
+  border-color:var(--lemon);background:rgba(35,42,96,.5);}
+.map-block{filter:drop-shadow(0 18px 40px rgba(4,7,22,.45));}
+.map-img{animation:mapFloat 9s ease-in-out infinite;}
+@keyframes mapFloat{0%,100%{transform:translateY(-6px)}50%{transform:translateY(6px)}}
+/* sits in flow under the CTA row rather than absolutely, so it can never land on
+   top of the map column at an awkward viewport height */
+.hero__cue{display:inline-flex;flex-direction:column;align-items:flex-start;gap:8px;margin-top:54px;
+  font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:rgba(231,234,246,.6);pointer-events:none;}
+.hero__cue i{display:block;width:1px;height:42px;border-radius:1px;
+  background:linear-gradient(180deg,rgba(207,222,93,.9),transparent);animation:cueDrop 2.2s ease-in-out infinite;}
+@keyframes cueDrop{0%,100%{opacity:.25;transform:scaleY(.55);transform-origin:top}50%{opacity:1;transform:scaleY(1)}}
+
+/* ---------- 6. THREE SERVICE CARDS ----------------------------------------- */
+.cards{margin-top:92px;}
+.card{border-radius:var(--r-lg);}
+/* the lift is restated here so it outranks the reveal transform above, which
+   resets transform on the same element */
+.card:hover,.card:focus-within{border-color:rgba(207,222,93,.85);transform:translateY(-10px);}
+/* index numeral, so the three read as a set rather than three loose photos */
+.card__num{font-size:13px;font-weight:700;letter-spacing:.1em;
+  color:rgba(255,255,255,.55);transition:color .4s var(--ease);}
+.card:hover .card__num{color:var(--lemon);}
+.card__icon{transition:transform .45s var(--ease),background .45s var(--ease),
+  border-color .45s var(--ease),color .45s var(--ease);}
+.card:hover .card__icon{transform:translateY(-3px) rotate(-6deg);
+  background:var(--grad-4);border-color:transparent;color:var(--blueblack-dk);}
+.card__title{letter-spacing:-.01em;}
+.card__tags li{transition:background .3s,border-color .3s,transform .3s var(--ease);}
+.card:hover .card__tags li{border-color:rgba(207,222,93,.5);background:rgba(207,222,93,.14);}
+/* the green rule now draws itself along the footer divider, tying the card's
+   call to action to the palette */
+.card__link::before{content:"";position:absolute;left:0;top:-1px;height:2px;width:0;border-radius:2px;
+  background:var(--grad-green);transition:width .55s var(--ease);}
+.card:hover .card__link::before,.card:focus-within .card__link::before{width:72px;}
+
+/* ---------- 7. PROBLEMS WE SOLVE -------------------------------------------- */
+.problems h2{letter-spacing:-.015em;}
+.intro-card{box-shadow:var(--sh-md);border:1px solid var(--hair);position:relative;overflow:hidden;}
+.intro-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--grad-green);}
+.intro-card p{font-size:16px;line-height:1.7;}
+.problems__media{border-radius:var(--r-md);box-shadow:var(--sh-md);}
+.problems__media::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(180deg,rgba(26,33,77,0) 46%,rgba(20,26,64,.62) 100%);}
+.problems__rows{gap:14px;margin-top:0;}
+/* each problem is now a surface that lifts on hover instead of loose text */
+.prow{align-items:center;padding:22px 24px;border-radius:var(--r-md);background:transparent;
+  border:1px solid transparent;gap:0 20px;
+  transition:background .4s var(--ease),border-color .4s var(--ease),
+             box-shadow .4s var(--ease),transform .4s var(--ease);}
+.prow:hover{background:#fff;border-color:var(--hair);box-shadow:var(--sh-sm);transform:translateX(4px);}
+.prow__ico{transition:background .4s var(--ease),color .4s var(--ease),
+           border-color .4s var(--ease),transform .4s var(--ease);}
+.prow:hover .prow__ico{background:var(--grad-green);border-color:transparent;color:#fff;transform:translateX(3px);}
+.prow h3{font-size:20px;}
+.prow p{font-size:15px;line-height:1.65;color:var(--bt-muted);}
+
+/* ---------- 8. OUR SERVICES ------------------------------------------------- */
+.bt-services-head{align-items:flex-end;}
+.bt-head-right p{font-size:17.5px;line-height:1.5;color:var(--bt-muted);}
+.bt-play{background:var(--grad-green);color:#fff;box-shadow:0 0 0 9px rgba(170,198,56,.14);
+  transition:box-shadow .35s var(--ease),transform .35s var(--ease);}
+.bt-play:hover{transform:scale(1.06);box-shadow:0 0 0 13px rgba(170,198,56,.2);}
+.bt-carousel{margin-top:64px;}
+.bt-card{box-shadow:var(--sh-sm);border:1px solid var(--hair);overflow:hidden;
+  transition:box-shadow .45s var(--ease),transform .45s var(--ease);}
+.bt-card-intro:hover,.bt-card-media:hover{box-shadow:var(--sh-md);transform:translateY(-6px);}
+.bt-srv-slider{border:1px solid var(--hair);box-shadow:var(--sh-sm);}
+.bt-srv-badge{background:var(--grad-green);}
+.bt-srv-icon{background:var(--grad-green);}
+.bt-card-tag{letter-spacing:.02em;}
+.bt-card-intro h3{font-size:25px;}
+.bt-point-icon{border-color:var(--hair);color:var(--blueblack);transition:.35s var(--ease);}
+.bt-point:hover .bt-point-icon{background:var(--grad-green);border-color:transparent;color:#fff;}
+.bt-point p{transition:color .3s;}
+.bt-point:hover p{color:var(--blueblack);}
+.bt-nav-btn{transition:background .3s var(--ease),color .3s var(--ease),
+            border-color .3s var(--ease),transform .3s var(--ease);}
+.bt-nav-btn:not(.is-disabled):hover{background:var(--grad-green);border-color:transparent;color:#fff;transform:translateY(-2px);}
+.bt-next-pill{box-shadow:var(--sh-sm);transition:transform .3s var(--ease),box-shadow .3s var(--ease);}
+.bt-next-pill:hover{transform:translateY(-3px);box-shadow:var(--sh-md);}
+.bt-carousel-nav{align-items:center;gap:12px;flex-wrap:wrap;}
+
+/* ---------- 9. CTA BANNER --------------------------------------------------- */
+/* was three loose columns on the page background; it now reads as one panel */
+.bt-cta-grid{position:relative;isolation:isolate;overflow:hidden;
+  background:var(--grad-ink);border-radius:var(--r-xl);box-shadow:var(--sh-lg);
+  padding:clamp(38px,4.6vw,64px) clamp(28px,4.2vw,62px);
+  gap:clamp(30px,4vw,64px);align-items:center;}
+.bt-cta-grid::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(58% 120% at 88% 12%,rgba(170,198,56,.30),transparent 62%),
+             radial-gradient(46% 100% at 6% 100%,rgba(74,104,224,.28),transparent 66%);}
+.bt-cta-grid::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+  background-image:radial-gradient(rgba(255,255,255,.16) 1px,transparent 1.4px);background-size:9px 9px;
+  -webkit-mask-image:radial-gradient(75% 100% at 50% 50%,#000 20%,transparent 76%);
+  mask-image:radial-gradient(75% 100% at 50% 50%,#000 20%,transparent 76%);}
+.bt-cta-mid .bt-h2{color:#fff;margin-bottom:28px;}
+.bt-cta-right p{color:rgba(233,237,250,.8);}
+.bt-cta .bt-btn-ghost{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.28);color:#fff;}
+.bt-cta .bt-btn-ghost:hover{background:rgba(255,255,255,.14);border-color:var(--lemon);color:var(--lemon);}
+.bt-cta-logo{gap:14px 18px;}
+.bt-sq{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.2);
+  animation:sqFloat 7s ease-in-out infinite;}
+.bt-sq-1,.bt-sq-4{background:var(--grad-green);border-color:transparent;
+  box-shadow:0 10px 26px rgba(148,175,44,.35);}
+.bt-sq-2{animation-delay:-1.6s;} .bt-sq-3{animation-delay:-3.2s;} .bt-sq-4{animation-delay:-4.8s;}
+@keyframes sqFloat{0%,100%{transform:translateY(-5px)}50%{transform:translateY(5px)}}
+
+/* ---------- 10. WHY BAHIR TECH ---------------------------------------------- */
+.bt-why-head{align-items:center;}
+.bt-why-media{filter:drop-shadow(0 26px 56px rgba(26,33,77,.22));}
+.bt-why-cards{margin-top:44px;gap:24px;}
+.bt-why-card{background:#fff;border-color:var(--hair);box-shadow:var(--sh-sm);border-radius:var(--r-md);}
+.bt-why-card:hover{transform:translateY(-6px);border-color:var(--green);box-shadow:var(--sh-md);}
+.bt-arrow-circle{border-color:var(--hair);transition:background .35s var(--ease),color .35s var(--ease),
+                 border-color .35s var(--ease),transform .35s var(--ease);}
+.bt-why-card:hover .bt-arrow-circle{background:var(--grad-green);border-color:transparent;color:#fff;transform:rotate(45deg);}
+.bt-why-card:hover .bt-arrow-light{background:#fff;color:var(--green);}
+.bt-why-body h3{font-size:21px;}
+.bt-why-body p{text-align:left;color:var(--bt-muted);}
+.bt-why-card-green{background:var(--grad-green);}
+.bt-why-card-green:hover{border-color:transparent;}
+.bt-green-text h3{font-size:24px;}
+.bt-green-text span{opacity:.9;letter-spacing:.02em;}
+.bt-why-foot{margin-top:34px;padding-top:28px;border-top:1px solid var(--hair);}
+.bt-tags span{border:1px solid var(--hair);color:var(--bt-muted);font-size:14.5px;padding:12px 22px;
+  transition:color .3s,border-color .3s,transform .3s var(--ease),background .3s;}
+.bt-tags span:hover{color:var(--green);border-color:var(--green);transform:translateY(-2px);}
+.bt-chevrons{color:var(--green);}
+
+/* ---------- 11. BOOK A FREE CONSULTATION ------------------------------------ */
+.gt-section{padding-top:var(--section-y);}
+.gt-card{background:#fff;border:1px solid var(--hair);border-radius:var(--r-xl);box-shadow:var(--sh-lg);}
+.gt-title{margin-top:14px;}
+.gt-text{font-size:16px;line-height:1.65;}
+.gt-info li{padding:12px 14px;margin-bottom:10px;border-radius:14px;border:1px solid transparent;
+  transition:background .35s var(--ease),border-color .35s var(--ease);}
+.gt-info li:hover{background:#FAFBFE;border-color:var(--hair);}
+.gt-ico{background:var(--grad-green);box-shadow:0 8px 18px rgba(148,175,44,.28);}
+.gt-form{background:#FBFCFE;border-color:var(--hair);border-radius:var(--r-md);box-shadow:var(--sh-sm);}
+.gt-form input,.gt-form select,.gt-form textarea{background:#fff;border-color:#E3E6EF;border-radius:10px;padding:14px 16px;font-size:14.5px;}
+.gt-form select{padding-right:44px;}
+.gt-form input:focus,.gt-form select:focus,.gt-form textarea:focus{box-shadow:0 0 0 3px rgba(170,198,56,.18);}
+.gt-form input::placeholder,.gt-form textarea::placeholder{color:#9AA0B4;}
+.gt-field label{color:var(--blueblack);}
+.gt-send{border-radius:999px;}
+.gt-form.is-sent .gt-send{background:var(--blueblack);box-shadow:none;}
+
+/* ---------- 12. FOOTER ------------------------------------------------------ */
+.ft-footer::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;z-index:2;
+  background:linear-gradient(90deg,transparent,rgba(170,198,56,.55),transparent);}
+.ft-col h4{font-size:15px;letter-spacing:.08em;}
+.ft-col h4::after{background:var(--grad-green);}
+.ft-tagline,.ft-news p{font-size:15.5px;}
+.ft-social a{border:1px solid rgba(255,255,255,.14);}
+.ft-links a{position:relative;width:fit-content;}
+.ft-links a:hover{transform:translateX(5px);}
+.ft-form input:focus{border-color:var(--green);background:rgba(255,255,255,.18);
+  box-shadow:0 0 0 3px rgba(170,198,56,.18);}
+.ft-form .ft-join{background:var(--grad-green);color:#12162E;}
+.ft-form.is-sent .ft-join{background:#fff;}
+.ft-bottom{border-top-color:rgba(255,255,255,.12);}
+
+/* ---------- 13. RESPONSIVE -------------------------------------------------- */
+@media (max-width:1080px){
+  .bt-why-head{align-items:flex-start;}
+}
+@media (max-width:900px){
+  .nav__burger{display:flex;}
+  .nav__panel{display:block;}
+  .nav__cta-wrap .ring-btn{padding:11px 18px;font-size:14px;}
+  .cards{margin-top:64px;}
+  .prow{padding:18px 16px;}
+  .bt-cta-grid{text-align:left;}
+  .bt-cta-logo{transform:scale(.8);transform-origin:left center;}
+}
+@media (max-width:620px){
+  .hero__cta-row{gap:18px;}
+  .hero__stats{width:100%;justify-content:center;}
+  .gt-card{padding:36px 22px;}
+  .gt-form{padding:26px 20px;}
+  .bt-tags span{padding:10px 16px;font-size:13.5px;}
+}
+
+/* ---------- 14. REDUCED MOTION ---------------------------------------------- */
+@media (prefers-reduced-motion:reduce){
+  [data-reveal]{opacity:1;transform:none;transition:none;}
+  .map-img,.bt-sq,.play-btn::after,.hero__cue i{animation:none;}
+  .prow:hover,.bt-why-card:hover,.bt-card-intro:hover,.bt-card-media:hover,
+  .bt-next-pill:hover{transform:none;}
+  .tpill:hover{transform:translateX(var(--tx,0)) rotate(var(--r,-4deg));}
+}
+</style>
 </head>
 <body>
 
 <!-- ================= NAV ================= -->
 <header class="nav">
   <div class="container nav__inner">
-    <nav class="nav__links" aria-label="Primary">
-      <a href="#" class="active">Home</a>
-      <a href="#services">Service</a>
-      <a href="#">Industry</a>
-      <span class="nav-ico" aria-hidden="true">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 10l-5 5 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 4v7a4 4 0 0 1-4 4H4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </span>
-      <a href="#">Careers</a>
-    </nav>
+    <div class="nav__lead">
+      <button class="nav__burger" id="navBurger" aria-label="Open menu"
+              aria-expanded="false" aria-controls="navPanel">
+        <i></i><i></i><i></i>
+      </button>
+      <nav class="nav__links" aria-label="Primary">
+        <a href="#" class="active">Home</a>
+        <a href="#services">Service</a>
+        <a href="#problems">Industry</a>
+        <span class="nav-ico" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 10l-5 5 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 4v7a4 4 0 0 1-4 4H4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <a href="#">Careers</a>
+      </nav>
+    </div>
 
     <a href="#" class="nav__logo" aria-label="Bahir Tech home">
       <!-- Linked brand logo -->
@@ -653,6 +1014,18 @@ ul{list-style:none}
         Contact US
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M21 12a8 8 0 0 1-8 8H4l2-3a8 8 0 1 1 15-5Z" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><path d="M9 11h6M9 14h4" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
       </a>
+    </div>
+  </div>
+
+  <!-- collapsed navigation for narrow viewports -->
+  <div class="container nav__panel" id="navPanel">
+    <div class="nav__panel-inner">
+      <a href="#">Home</a>
+      <a href="#services">Service</a>
+      <a href="#problems">Industry</a>
+      <a href="#services-section">Our Services</a>
+      <a href="#">Careers</a>
+      <a href="#contact" class="ring-btn ring-btn--green">Contact US</a>
     </div>
   </div>
 </header>
@@ -673,7 +1046,8 @@ ul{list-style:none}
   <div class="container hero__top">
     <!-- Left copy -->
     <div>
-      <h1 class="hero__h1">Connecting Ethiopia to the World, Again</h1>
+      <span class="eyebrow hero__eyebrow">Bahir Tech</span>
+      <h1 class="hero__h1">Connecting Ethiopia to the World, <span class="accent">Again</span></h1>
 
       <div class="hero__cta-row">
         <a href="#contact" class="ring-btn ring-btn--green">
@@ -691,6 +1065,8 @@ ul{list-style:none}
           <div class="stat"><b>13+</b><span>Happy Client</span></div>
         </div>
       </div>
+
+      <span class="hero__cue" aria-hidden="true">Scroll<i></i></span>
     </div>
 
     <!-- Right visual -->
@@ -702,7 +1078,6 @@ ul{list-style:none}
         <div class="map-shape">
           <img class="map-img" src="public/assets/Images/Ethiopian Map.svg" alt="Ethiopian Map">
         </div>
-        <p class="map-text">Local Insight, <strong>Global Standards</strong></p>
       </div>
 
       <span class="tpill tpill--3">All Sector Ready</span>
@@ -718,30 +1093,40 @@ ul{list-style:none}
       <img class="card__img" src="public/assets/Images/Enterprises & Corporations.jpg" alt="Enterprises & Corporations">
       <div class="card__overlay"></div>
       <div class="card__inner">
-        <span class="card__icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 21h18M5 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16M9 7h2M9 11h2M9 15h2M15 9h4a2 2 0 0 1 2 2v10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </span>
+        <div class="card__top">
+          <span class="card__icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 21h18M5 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16M9 7h2M9 11h2M9 15h2M15 9h4a2 2 0 0 1 2 2v10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="card__num" aria-hidden="true">01</span>
+        </div>
         <h3 class="card__title">Enterprises &amp; Corporations</h3>
         <ul class="card__tags">
           <li>Security</li><li>Scalability</li><li>Mission-critical systems</li>
         </ul>
+        <a class="card__link" href="#contact" aria-label="Discuss your needs — enterprises and corporations">
+          Discuss your needs
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7m0 0H9m8 0v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
       </div>
     </article>
 
-    <!-- 02 Public Institutions (tall center) -->
+    <!-- 02 Public Institutions -->
     <article class="card card--center">
       <img class="card__img" src="public/assets/Images/Public Institutions.jpg" alt="Public Institutions">
       <div class="card__overlay"></div>
       <div class="card__inner">
-        <span class="card__icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7m0 0H9m8 0v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </span>
-        <h3 class="card__title" style="margin-left:auto;margin-right:auto;text-align:center;max-width:none">Public Institutions</h3>
-        <ul class="card__tags" style="justify-content:center">
+        <div class="card__top">
+          <span class="card__icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 21h18M4 21V10M9 21V10M15 21V10M20 21V10M2.5 10h19L12 3.5 2.5 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="card__num" aria-hidden="true">02</span>
+        </div>
+        <h3 class="card__title">Public Institutions</h3>
+        <ul class="card__tags">
           <li>Reliable</li><li>Compliant</li><li>Sustainable technology</li>
         </ul>
-        <a href="#contact" class="ring-btn ring-btn--white">
-          Discuss Your Needs
+        <a class="card__link" href="#contact" aria-label="Discuss your needs — public institutions">
+          Discuss your needs
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7m0 0H9m8 0v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
       </div>
@@ -752,13 +1137,20 @@ ul{list-style:none}
       <img class="card__img" src="public/assets/Images/SMEs & Growing Businesses.jpg" alt="SMEs & Growing Businesses">
       <div class="card__overlay"></div>
       <div class="card__inner">
-        <span class="card__icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M3 12h18M12 3c2.7 3 2.7 15 0 18M12 3c-2.7 3-2.7 15 0 18" stroke="currentColor" stroke-width="2"/></svg>
-        </span>
+        <div class="card__top">
+          <span class="card__icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 17.5 9 11l4 4 8-8M15 3h6v6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="card__num" aria-hidden="true">03</span>
+        </div>
         <h3 class="card__title">SMEs &amp; Growing Businesses</h3>
         <ul class="card__tags">
-          <li>Smart digital solutions</li><li>That grow with you</li>
+          <li>Smart digital solutions</li><li>Grows with you</li>
         </ul>
+        <a class="card__link" href="#contact" aria-label="Discuss your needs — SMEs and growing businesses">
+          Discuss your needs
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7m0 0H9m8 0v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
       </div>
     </article>
   </div>
@@ -993,7 +1385,7 @@ ul{list-style:none}
         <span class="bt-arrow-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></span>
         <div class="bt-why-body">
           <h3>Wisdom-Driven Strategy</h3>
-          <p>We combine deep understanding of Ethiopian business culture with global technology standards to build solutions that work in your context.</p>
+          <p>We combine deep understanding of Ethiopian business culture with global standards to build solutions that fit your context.</p>
         </div>
         <img class="bt-side-img" src="public/assets/Images/Ape.jpg" alt="">
       </article>
@@ -1002,7 +1394,7 @@ ul{list-style:none}
         <span class="bt-arrow-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></span>
         <div class="bt-why-body">
           <h3>Trusted Execution</h3>
-          <p>We don't just plan we deliver. Our track record of successful implementations across sectors proves our commitment to excellence.</p>
+          <p>We don't just plan, we deliver &mdash; a proven record of successful projects across sectors shows our commitment to excellence.</p>
         </div>
         <img class="bt-side-img" src="public/assets/Images/Dog.jpg" alt="">
       </article>
@@ -1058,15 +1450,43 @@ ul{list-style:none}
       <form class="gt-form" id="gtForm">
         <h3 class="gt-form-title">Send Us a Message</h3>
         <div class="gt-row">
-          <input type="text" placeholder="First Name" required>
-          <input type="text" placeholder="Last Name">
+          <div class="gt-field">
+            <label for="gtFirst">First Name</label>
+            <input id="gtFirst" name="firstName" type="text" autocomplete="given-name" placeholder="Your first name" required>
+          </div>
+          <div class="gt-field">
+            <label for="gtLast">Last Name</label>
+            <input id="gtLast" name="lastName" type="text" autocomplete="family-name" placeholder="Your last name">
+          </div>
         </div>
         <div class="gt-row">
-          <input type="email" placeholder="E-Mail" required>
-          <input type="tel" placeholder="Phone">
+          <div class="gt-field">
+            <label for="gtEmail">Email Address</label>
+            <input id="gtEmail" name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+          </div>
+          <div class="gt-field">
+            <label for="gtPhone">Phone Number</label>
+            <input id="gtPhone" name="phone" type="tel" autocomplete="tel" placeholder="+251 XXX XXX XXX">
+          </div>
         </div>
-        <input type="url" placeholder="Website Url">
-        <textarea rows="4" placeholder="Comments . . ."></textarea>
+        <div class="gt-field">
+          <label for="gtCompany">Company/Organization</label>
+          <input id="gtCompany" name="company" type="text" autocomplete="organization" placeholder="Your company name">
+        </div>
+        <div class="gt-field">
+          <label for="gtService">Service Interest</label>
+          <select id="gtService" name="service">
+            <option value="" selected>Select a service</option>
+            <option>IT Infrastructure &amp; Networking</option>
+            <option>Software Development</option>
+            <option>Cybersecurity Operations</option>
+            <option>Something else</option>
+          </select>
+        </div>
+        <div class="gt-field">
+          <label for="gtMessage">Message</label>
+          <textarea id="gtMessage" name="message" rows="4" placeholder="Tell us about your project"></textarea>
+        </div>
         <button type="submit" class="gt-send">Send Message</button>
       </form>
 
@@ -1536,10 +1956,6 @@ window.HeroFX = (function(){
   renderer.setClearColor(0x000000, 0);
   container.appendChild(renderer.domElement);
 
-  var labelLayer = document.createElement('div');
-  labelLayer.style.cssText = 'position:absolute;inset:0;pointer-events:none;overflow:hidden;';
-  container.appendChild(labelLayer);
-
   var rad = 5;
   var pivot = new THREE.Group();        // pointer tilt + scroll transform
   var globeGroup = new THREE.Group();   // drag / auto rotation
@@ -1664,134 +2080,7 @@ window.HeroFX = (function(){
   orbitRing.rotation.y = 0.4;
   pivot.add(orbitRing);
 
-  /* ---------------- cities ---------------- */
-  var cities = [
-    { name:"ADDIS ABABA", lat:9.0300,  lon:38.7400,  desc:"Home base. Engineering, delivery and client partnerships across Ethiopia.", status:"Headquarters", hq:true },
-    { name:"KYIV",      lat:50.4501, lon:30.5234,  desc:"Engineering, mission control, and advanced analytics for ongoing projects.", status:"Active" },
-    { name:"ATHENS",    lat:37.9838, lon:23.7275,  desc:"Field testing, regional operations, and deployment strategy in Southern Europe.", status:"Active" },
-    { name:"NEW YORK",  lat:40.7128, lon:-74.0060, desc:"HQ for North America business & R&D.", status:"Headquarters" },
-    { name:"PARIS",     lat:48.8566, lon:2.3522,   desc:"European headquarters coordinating executive management and R&D across the region.", status:"Headquarters" },
-    { name:"ABU DHABI", lat:24.4539, lon:54.3773,  desc:"Regional operations and strategic partnerships.", status:"Active" },
-    { name:"MUNICH",    lat:48.1372, lon:11.5761,  desc:"New engineering site for the region.", status:"Opening soon" },
-    { name:"LONDON",    lat:51.5072, lon:-0.1276,  desc:"New commercial and operations base.", status:"Opening soon" },
-    { name:"TOULOUSE",  lat:43.6047, lon:1.4442,   desc:"Aerospace engineering, flight systems development, and European operations.", status:"Active" }
-  ];
-
-  /* Must match the sampling above exactly: points are generated with
-     setFromSphericalCoords(rad, phi, theta) and read back as
-     u = (theta + PI) / 2PI, which makes theta the longitude in radians
-     (lon 0 faces +Z / the camera). Using any other convention here slides
-     every marker sideways relative to the coastlines. */
-  function latLonToVector3(lat, lon, radius){
-    return new THREE.Vector3().setFromSphericalCoords(
-      radius, (90 - lat)*(Math.PI/180), lon*(Math.PI/180)
-    );
-  }
-  var cityPos = cities.map(function(c){ return latLonToVector3(c.lat, c.lon, rad + 0.06); });
-
-  function greatCircleArc(a, b, segments){
-    var arc = [], axis = new THREE.Vector3().crossVectors(a,b).normalize(), angle = a.angleTo(b);
-    for (var i = 0; i <= segments; i++){
-      var t = i/segments;
-      var q = new THREE.Quaternion().setFromAxisAngle(axis, angle*t);
-      arc.push(a.clone().applyQuaternion(q).multiplyScalar(1 + 0.12*Math.sin(Math.PI*t)));
-    }
-    return arc;
-  }
-
-  /* arcs radiate from the home base out to every other city */
-  var arcGroup = new THREE.Group(), arcPaths = [];
-  var home = cityPos[0].clone().normalize().multiplyScalar(rad);
-  for (var a = 1; a < cityPos.length; a++){
-    var pts3 = greatCircleArc(home, cityPos[a].clone().normalize().multiplyScalar(rad), 64);
-    arcPaths.push(pts3);
-    arcGroup.add(new THREE.Line(
-      new THREE.BufferGeometry().setFromPoints(pts3),
-      new THREE.LineBasicMaterial({color:0xCFDE5D, transparent:true, opacity:0.20})
-    ));
-  }
-  globeGroup.add(arcGroup);
-
-  /* a light pulse travelling along each arc */
-  function makeDotTex(){
-    var c = document.createElement('canvas'); c.width = c.height = 64;
-    var ctx = c.getContext('2d');
-    var g = ctx.createRadialGradient(32,32,0,32,32,32);
-    g.addColorStop(0,'rgba(255,255,235,1)'); g.addColorStop(0.25,'rgba(207,222,93,0.9)'); g.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle = g; ctx.fillRect(0,0,64,64);
-    return new THREE.CanvasTexture(c);
-  }
-  var pulseArr = new Float32Array(arcPaths.length*3);
-  var pulseGeo = new THREE.BufferGeometry();
-  pulseGeo.setAttribute('position', new THREE.BufferAttribute(pulseArr,3));
-  var pulses = new THREE.Points(pulseGeo, new THREE.PointsMaterial({
-    size:0.30, map:makeDotTex(), transparent:true, opacity:0.95,
-    depthWrite:false, blending:THREE.AdditiveBlending
-  }));
-  globeGroup.add(pulses);
-
-  var markerMeshes = [];
-  var markerGroup = new THREE.Group();
-  cityPos.forEach(function(p, idx){
-    var dot = new THREE.Mesh(
-      new THREE.SphereGeometry(cities[idx].hq ? 0.085 : 0.06, 14, 14),
-      new THREE.MeshBasicMaterial({color: cities[idx].hq ? 0xFFFFFF : 0xCFDE5D})
-    );
-    dot.position.copy(p);
-    markerGroup.add(dot);
-    markerMeshes.push(dot);
-  });
-  globeGroup.add(markerGroup);
-
-  /* ---------------- labels ---------------- */
-  var openIndex = null, hoverIndex = null, autoRotate = true;
-
-  var labels = cities.map(function(city, idx){
-    var el = document.createElement('button');
-    el.type = 'button';
-    el.className = 'city-label' + (city.hq ? ' city-label--hq' : '');
-    el.setAttribute('aria-expanded','false');
-    el.innerHTML = '<span class="dot"></span><span>' + city.name +
-                   '</span><span class="status">' + city.status + '</span>';
-
-    var card = document.createElement('span');
-    card.className = 'city-card';
-    card.innerHTML = '<span class="coord">' + Math.abs(city.lat).toFixed(2) + '&deg; ' + (city.lat >= 0 ? 'N' : 'S') +
-                     ', ' + Math.abs(city.lon).toFixed(2) + '&deg; ' + (city.lon >= 0 ? 'E' : 'W') +
-                     '</span><span class="desc">' + city.desc + '</span>';
-    el.appendChild(card);
-
-    el.addEventListener('click', function(e){
-      e.stopPropagation();
-      openIndex = (openIndex === idx) ? null : idx;
-      refreshCards();
-      if (openIndex !== null) autoRotate = false;
-    });
-    el.addEventListener('pointerenter', function(){ hoverIndex = idx; autoRotate = false; });
-    el.addEventListener('pointerleave', function(){
-      if (hoverIndex === idx) hoverIndex = null;
-      if (openIndex === null) autoRotate = true;
-    });
-    el.addEventListener('focus', function(){ hoverIndex = idx; });
-    el.addEventListener('blur',  function(){ if (hoverIndex === idx) hoverIndex = null; });
-
-    labelLayer.appendChild(el);
-    return {el:el, card:card};
-  });
-
-  function refreshCards(){
-    labels.forEach(function(l, i){
-      var open = i === openIndex;
-      l.card.classList.toggle('open', open);
-      l.el.setAttribute('aria-expanded', open ? 'true' : 'false');
-    });
-  }
-  container.addEventListener('pointerdown', function(){
-    if (openIndex !== null){ openIndex = null; refreshCards(); }
-  });
-  document.addEventListener('keydown', function(e){
-    if (e.key === 'Escape' && openIndex !== null){ openIndex = null; refreshCards(); }
-  });
+  var autoRotate = true;
 
   /* ---------------- drag to spin, with inertia ---------------- */
   var dragging = false, prevX = 0, prevY = 0, velX = 0, velY = 0, activeId = null;
@@ -1818,28 +2107,6 @@ window.HeroFX = (function(){
   }
   window.addEventListener('pointerup', endDrag);
   window.addEventListener('pointercancel', endDrag);
-
-  /* ---------------- labels -> screen ---------------- */
-  var wp = new THREE.Vector3();
-  function updateLabels(){
-    var cw = container.clientWidth, ch = container.clientHeight;
-    labels.forEach(function(l, i){
-      markerMeshes[i].getWorldPosition(wp);
-      var toCam  = wp.clone().sub(camera.position).normalize();
-      var normal = wp.clone().sub(pivot.position).normalize();
-      var facing = normal.dot(toCam.clone().negate());
-
-      var proj = wp.clone().project(camera);
-      l.el.style.left = ((proj.x*0.5 + 0.5) * cw) + 'px';
-      l.el.style.top  = ((1 - (proj.y*0.5 + 0.5)) * ch) + 'px';
-
-      var behind = facing < 0.05;
-      l.el.style.opacity = behind ? 0 : 1;
-      l.el.style.zIndex = Math.round(1000 + proj.z * -1000);
-      l.el.style.pointerEvents = behind ? 'none' : 'auto';
-      l.el.classList.toggle('is-hot', hoverIndex === i);
-    });
-  }
 
   function resize(){
     var w = container.clientWidth, h = container.clientHeight;
@@ -1885,31 +2152,14 @@ window.HeroFX = (function(){
         globeGroup.rotation.y += velX;
         globeGroup.rotation.x += velY;
         velX *= 0.94; velY *= 0.94;
-        if (Math.abs(velX) < 0.00005 && Math.abs(velY) < 0.00005 && openIndex === null && hoverIndex === null){
+        if (Math.abs(velX) < 0.00005 && Math.abs(velY) < 0.00005){
           autoRotate = true;
         }
       }
       orbitRing.rotation.z += 0.0009;
       ico.rotation.y -= 0.0004;
-
-      // pulses travel home -> out
-      for (var k = 0; k < arcPaths.length; k++){
-        var path = arcPaths[k];
-        var f = (t * 0.17 + k * 0.13) % 1;
-        var p = path[Math.min(path.length - 1, Math.floor(f * path.length))];
-        pulseArr[k*3] = p.x; pulseArr[k*3+1] = p.y; pulseArr[k*3+2] = p.z;
-      }
-      pulseGeo.attributes.position.needsUpdate = true;
     }
 
-    // grow the hovered marker
-    markerMeshes.forEach(function(mk, i){
-      var target = (i === hoverIndex) ? 1.9 : 1;
-      mk.scale.x += (target - mk.scale.x) * 0.15;
-      mk.scale.y = mk.scale.z = mk.scale.x;
-    });
-
-    updateLabels();
     renderer.render(scene, camera);
   })();
 })();
@@ -1931,7 +2181,7 @@ window.HeroFX = (function(){
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>'];
   const cards=track.children, n=cards.length;
   if(n<2)return;
-  let idx=0, timer;
+  let idx=0, timer, paused=false;
 
   function render(){
     track.style.transform='translateX('+(-idx*100)+'%)';
@@ -1942,19 +2192,130 @@ window.HeroFX = (function(){
     if(icon&&icons[idx])icon.innerHTML=icons[idx];
   }
   function goto(i){ idx=(i+n)%n; render(); schedule(); }
-  function schedule(){ clearInterval(timer); timer=setInterval(function(){ goto(idx+1); },3500); }
+  function schedule(){
+    clearInterval(timer);
+    if(paused)return;
+    timer=setInterval(function(){ goto(idx+1); },3500);
+  }
 
   if(prev)prev.addEventListener('click',function(){ goto(idx-1); });
   if(next)next.addEventListener('click',function(){ goto(idx+1); });
+
+  // hold the slide while it is being read or interacted with
+  const showcase=slider.closest('.bt-srv-showcase')||slider;
+  ['mouseenter','focusin'].forEach(function(ev){
+    showcase.addEventListener(ev,function(){ paused=true; clearInterval(timer); });
+  });
+  ['mouseleave','focusout'].forEach(function(ev){
+    showcase.addEventListener(ev,function(){ paused=false; schedule(); });
+  });
+  document.addEventListener('visibilitychange',function(){
+    if(document.hidden){ clearInterval(timer); } else { schedule(); }
+  });
+
+  render();
   schedule();
 })();
 </script>
 
+<!-- ============ SECTION UI: nav state, mobile menu, scroll reveal ============ -->
 <script>
-document.getElementById("ftNewsForm").addEventListener("submit", function(e){ e.preventDefault(); this.reset(); });
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- nav condenses once the hero starts scrolling past ---- */
+  var nav = document.querySelector('.nav');
+  if(nav){
+    var onScroll = function(){ nav.classList.toggle('is-stuck', window.scrollY > 40); };
+    onScroll();
+    window.addEventListener('scroll', onScroll, {passive:true});
+  }
+
+  /* ---- collapsed menu ---- */
+  var burger = document.getElementById('navBurger'),
+      panel  = document.getElementById('navPanel');
+  if(burger && panel){
+    var setOpen = function(open){
+      burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      panel.style.maxHeight = open ? (panel.scrollHeight + 'px') : '0px';
+    };
+    setOpen(false);
+    burger.addEventListener('click', function(){
+      setOpen(burger.getAttribute('aria-expanded') !== 'true');
+    });
+    panel.addEventListener('click', function(e){ if(e.target.closest('a')) setOpen(false); });
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape') setOpen(false); });
+    window.addEventListener('resize', function(){
+      if(window.innerWidth > 900) setOpen(false);
+      else if(burger.getAttribute('aria-expanded') === 'true') panel.style.maxHeight = panel.scrollHeight + 'px';
+    });
+  }
+
+  /* ---- scroll reveal: tagged here rather than in the markup so the sections
+          stay clean and the whole effect can be removed from one place ---- */
+  var groups = [
+    ['.problems__head > div', 1], ['.intro-card', 1],
+    ['.problems__media', 1], ['.prow', 1],
+    ['.bt-services-head > div', 1], ['.bt-srv-showcase > *', 1],
+    ['.bt-cta-grid', 1], ['.bt-why-head > div', 1],
+    ['.bt-why-card', 1], ['.bt-why-foot', 1],
+    ['.gt-left', 1], ['.gt-form', 1],
+    ['.ft-col', 1], ['.cards > .card', 1]
+  ];
+  var targets = [];
+  groups.forEach(function(g){
+    var found = document.querySelectorAll(g[0]);
+    Array.prototype.forEach.call(found, function(el, i){
+      el.setAttribute('data-reveal','');
+      el.style.setProperty('--d', Math.min(i,4) * 90 + 'ms');
+      targets.push(el);
+    });
+  });
+
+  if(reduce || !('IntersectionObserver' in window)){
+    targets.forEach(function(el){ el.classList.add('is-in'); });
+  } else {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){ en.target.classList.add('is-in'); io.unobserve(en.target); }
+      });
+    }, {rootMargin:'0px 0px -12% 0px', threshold:0.08});
+    targets.forEach(function(el){ io.observe(el); });
+
+    /* the reveal hides real copy, so never let a stalled observer leave a section
+       blank — anything still hidden after 3s is shown regardless */
+    setTimeout(function(){
+      targets.forEach(function(el){
+        if(!el.classList.contains('is-in') && el.getBoundingClientRect().top < window.innerHeight){
+          el.classList.add('is-in');
+        }
+      });
+    }, 3000);
+  }
+})();
 </script>
+
 <script>
-document.getElementById("gtForm").addEventListener("submit", function(e){ e.preventDefault(); this.reset(); });
+/* both forms are front-end only for now — confirm in place instead of silently
+   clearing, which read as if nothing had happened */
+(function(){
+  function wire(id, btnSel, doneText){
+    var form = document.getElementById(id);
+    if(!form) return;
+    var btn = form.querySelector(btnSel), original = btn ? btn.textContent : '';
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      this.reset();
+      if(!btn) return;
+      form.classList.add('is-sent');
+      btn.textContent = doneText;
+      setTimeout(function(){ btn.textContent = original; form.classList.remove('is-sent'); }, 2600);
+    });
+  }
+  wire('ftNewsForm', '.ft-join', 'Joined');
+  wire('gtForm', '.gt-send', 'Message Sent');
+})();
 </script>
 </body>
 </html>
