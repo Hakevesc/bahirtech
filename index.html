@@ -221,8 +221,8 @@ ul{list-style:none}
 .card--center{min-height:486px;border-color:rgba(255,255,255,.14)}
 .card--center:hover,.card--center:focus-within{border-color:rgba(255,255,255,.45)}
 .card__img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  transition:transform .9s cubic-bezier(.22,.61,.36,1)}
-.card:hover .card__img,.card:focus-within .card__img{transform:scale(1.08)}
+  transition:transform .8s cubic-bezier(.22,.61,.36,1), filter .8s ease}
+.card:hover .card__img,.card:focus-within .card__img{transform:scale(1.10);filter:brightness(1.05)}
 .card__overlay{position:absolute;inset:0}
 .card--left  .card__overlay{background:linear-gradient(200deg,rgba(26,33,77,.42) 0%,rgba(38,33,56,.72) 100%),var(--card-readability)}
 .card--center .card__overlay{background:linear-gradient(180deg,rgba(35,42,96,.52),rgba(35,42,96,.80)),var(--card-readability)}
@@ -342,7 +342,7 @@ ul{list-style:none}
 .bt-play{width:48px;height:48px;border-radius:50%;border:none;background:#D8E5AA;box-shadow:0 0 0 10px #EAF2CE;display:grid;place-items:center;color:#F8FBEF;cursor:pointer;}
 .bt-play svg{width:15px;height:15px;margin-left:2px;}
 
-.bt-carousel{position:relative;margin-top:84px;padding-left:220px;}
+.bt-carousel{position:relative;margin-top:84px;padding-left:160px;}
 .bt-carousel-nav{position:absolute;left:0;bottom:36px;display:flex;gap:12px;}
 .bt-nav-btn{width:46px;height:46px;border-radius:50%;background:transparent;border:1px solid var(--bt-ink);color:var(--bt-ink);display:grid;place-items:center;cursor:pointer;}
 .bt-nav-btn svg{width:16px;height:16px;}
@@ -369,8 +369,9 @@ ul{list-style:none}
 .bt-srv-icon{width:40px;height:40px;border-radius:50%;background:var(--bt-green,#A2C03C);color:#fff;
   display:grid;place-items:center;flex:none;align-self:flex-start;margin:auto 4px 0;box-shadow:0 6px 14px rgba(162,192,60,.35);}
 .bt-srv-icon svg{width:18px;height:18px;}
-.bt-card-img{border-radius:14px;overflow:hidden;height:193px;flex:0 0 193px;}
-.bt-card-img img{width:100%;height:100%;object-fit:cover;display:block;}
+.bt-card-img{border-radius:14px;overflow:hidden;height:280px;flex:0 0 280px;}
+.bt-card-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .8s cubic-bezier(.22,.61,.36,1), filter .8s ease;}
+.bt-card-intro:hover .bt-card-img img, .bt-card-img:hover img{transform:scale(1.10);filter:brightness(1.05);}
 .bt-card-tag{display:block;color:var(--bt-green);font-weight:600;font-size:14px;margin:14px 4px 0;}
 .bt-card-intro h3{font-family:'Roboto Slab',serif;font-weight:600;font-size:26px;line-height:1.3;margin:10px 4px 17px;}
 .bt-card-points{padding:34px 32px;display:flex;flex-direction:column;justify-content:flex-start;gap:16px;min-height:415px;}
@@ -384,8 +385,9 @@ ul{list-style:none}
 .bt-point-list li{position:relative;padding:2px 0 2px 32px;font-size:15.5px;line-height:1.5;color:var(--bt-muted);}
 .bt-point-list li::before{content:"";position:absolute;left:0;top:7px;width:18px;height:18px;border-radius:50%;border:1.5px solid var(--bt-green);}
 .bt-point-list li::after{content:"";position:absolute;left:5px;top:12px;width:8px;height:8px;border-radius:50%;background:var(--bt-green);}
-.bt-card-media{position:relative;overflow:hidden;width:320px;}
-.bt-card-media>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.bt-card-media{position:relative;overflow:hidden;width:320px;border-radius:22px;}
+.bt-card-media>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .8s cubic-bezier(.22,.61,.36,1), filter .8s ease;}
+.bt-card-media:hover>img{transform:scale(1.10);filter:brightness(1.05);}
 .bt-next-pill{position:absolute;right:19px;bottom:28px;background:#fff;color:var(--bt-ink);border-radius:999px;padding:14px 27px;display:inline-flex;align-items:center;gap:10px;font-weight:600;font-size:15px;text-decoration:none;}
 .bt-next-pill svg{width:15px;height:15px;}
 
@@ -470,18 +472,21 @@ ul{list-style:none}
 .bt-why-cards{display:grid;grid-template-columns:1fr 1fr minmax(190px,200px);gap:26px;margin-top:18px;}
 /* right padding reserves the gutter the absolutely-positioned photo sits in, so the
    text column reflows instead of sliding under the photo when the card narrows */
-.bt-why-card{position:relative;border:1px solid var(--bt-green);border-radius:18px;min-height:238px;padding:24px 171px 24px 24px;display:flex;align-items:center;}
+.bt-why-card{position:relative;border:1px solid var(--bt-green);border-radius:18px;min-height:238px;padding:24px 171px 24px 24px;display:flex;align-items:center;transition:transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;}
+.bt-why-card:hover{box-shadow:0 12px 30px rgba(35,42,96,0.08);}
 .bt-arrow-circle{position:absolute;top:22px;left:22px;width:42px;height:42px;border:1px solid var(--bt-ink);border-radius:50%;display:grid;place-items:center;color:var(--bt-ink);}
 .bt-arrow-circle svg{width:14px;height:14px;}
 /* body is wide enough for the description; the heading is kept narrower on its own
    so it still breaks onto two lines the way the comp does */
 .bt-why-body{margin-left:88px;max-width:245px;min-width:0;}
 .bt-why-body h3{font-family:'Roboto Slab',serif;font-weight:600;font-size:20px;line-height:1.3;white-space:nowrap;margin:0 0 12px;}
-.bt-why-body p{margin:0;font-size:15px;line-height:1.6;color:var(--bt-muted,#565D72);}
+.bt-why-body p{margin:0;font-size:15px;line-height:1.6;color:var(--bt-muted,#565D72);text-align:justify;}
 /* card photo: taller, and centred on the card's vertical axis rather than pinned to the corner */
-.bt-why-card>.bt-side-img{position:absolute;top:50%;bottom:auto;right:36px;transform:translateY(-50%);width:110px;height:135px;border-radius:14px;object-fit:cover;}
+.bt-why-card>.bt-side-img{position:absolute;top:50%;bottom:auto;right:36px;transform:translateY(-50%);width:110px;height:135px;border-radius:14px;object-fit:cover;transition:transform .8s cubic-bezier(.22,.61,.36,1), filter .8s ease, box-shadow .8s ease;}
+.bt-why-card:hover>.bt-side-img{transform:translateY(-50%) scale(1.10);box-shadow:0 10px 24px rgba(0,0,0,0.15);filter:brightness(1.05);}
 .bt-why-card-green{border:none;background:var(--bt-green);overflow:hidden;align-items:flex-end;padding:22px;}
-.bt-why-card-green .bt-lion{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:0;transform:none;mix-blend-mode:multiply;filter:grayscale(1) contrast(1.15);opacity:.5;}
+.bt-why-card-green .bt-lion{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:0;transform:none;mix-blend-mode:multiply;filter:grayscale(1) contrast(1.15);opacity:.5;transition:transform .8s cubic-bezier(.22,.61,.36,1), opacity .5s ease, filter .5s ease;}
+.bt-why-card-green:hover .bt-lion{transform:scale(1.10);opacity:.75;filter:grayscale(0.6) contrast(1.2);}
 .bt-green-text{position:relative;color:#fff;}
 .bt-green-text span{display:block;font-size:13px;margin-bottom:8px;}
 .bt-green-text h3{margin:0;max-width:none;color:#fff;}
@@ -581,10 +586,10 @@ ul{list-style:none}
 </style>
 <style>
 /* ============ GET IN TOUCH / BOOK A FREE CONSULTATION (from Book A Free Consultation.html) ============ */
-.gt-section{background:var(--bt-bg,#F0F0F8);padding:110px 0 0;font-family:'Source Sans 3',sans-serif;color:var(--bt-ink,#262B4A);}
+.gt-section{background:var(--bt-bg,#F0F0F8);padding:30px 0 0;font-family:'Source Sans 3',sans-serif;color:var(--bt-ink,#262B4A);}
 .gt-wrap{max-width:1264px;margin:0 auto;padding:0 24px;}
 .gt-card{position:relative;z-index:2;overflow:hidden;background:#F5F6FA;border-radius:24px;
-  padding:72px 78px;display:grid;grid-template-columns:1fr 570px;gap:64px;align-items:start;
+  padding:50px 78px;display:grid;grid-template-columns:1fr 570px;gap:64px;align-items:start;
   margin-bottom:-124px;box-shadow:0 30px 70px rgba(15,18,60,.16);}
 /* dotted "world-map" texture */
 .gt-card::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
@@ -593,7 +598,7 @@ ul{list-style:none}
   mask-image:radial-gradient(70% 95% at 52% 45%,#000 35%,transparent 78%);}
 .gt-left,.gt-form{position:relative;}
 .gt-eyebrow{color:var(--bt-green,#A2C03C);font-weight:700;font-size:14px;letter-spacing:.04em;}
-.gt-title{margin:12px 0 18px;font-family:'Roboto Slab',serif;font-weight:600;font-size:clamp(30px,3vw,40px);color:var(--bt-ink,#262B4A);}
+.gt-title{margin:12px 0 18px;font-family:'Roboto Slab',serif;font-weight:600;font-size:clamp(30px,3vw,40px);line-height:1.15;color:var(--bt-ink,#262B4A);}
 .gt-text{margin:0 0 40px;max-width:440px;color:var(--bt-muted,#565D72);font-size:15.5px;line-height:1.4;}
 .gt-info{list-style:none;margin:0;padding:0;}
 .gt-info li{display:flex;align-items:flex-start;gap:20px;margin-bottom:28px;}
@@ -988,7 +993,7 @@ ul{list-style:none}
         <span class="bt-arrow-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></span>
         <div class="bt-why-body">
           <h3>Wisdom-Driven Strategy</h3>
-          <p>Our approach combines deep understanding of Ethiopian business culture with global technology standards to create solutions that truly work in your context.</p>
+          <p>We combine deep understanding of Ethiopian business culture with global technology standards to build solutions that work in your context.</p>
         </div>
         <img class="bt-side-img" src="public/assets/Images/Ape.jpg" alt="">
       </article>
