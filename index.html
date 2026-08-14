@@ -906,7 +906,7 @@ section[id],footer[id]{scroll-margin-top:104px;}
 .bt-why-card:hover .bt-arrow-circle{background:var(--grad-green);border-color:transparent;color:#fff;transform:rotate(45deg);}
 .bt-why-card:hover .bt-arrow-light{background:#fff;color:var(--green);}
 .bt-why-body h3{font-size:21px;}
-.bt-why-body p{text-align:left;color:var(--bt-muted);}
+.bt-why-body p{text-align:justify;color:var(--bt-muted);}
 .bt-why-card-green{background:var(--grad-green);}
 .bt-why-card-green:hover{border-color:transparent;}
 .bt-green-text h3{font-size:24px;}
@@ -936,8 +936,10 @@ section[id],footer[id]{scroll-margin-top:104px;}
 .gt-form.is-sent .gt-send{background:var(--blueblack);box-shadow:none;}
 
 /* ---------- 12. FOOTER ------------------------------------------------------ */
-.ft-footer::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;z-index:2;
-  background:linear-gradient(90deg,transparent,rgba(170,198,56,.55),transparent);}
+/* The footer used to carry a full-width green hairline on its top edge. The
+   consultation card is pulled down over the footer by margin-bottom:-124px,
+   which put that line 4px off the centre of the Send Message button — it read
+   as a green stroke slicing across the button and the whole page. Removed. */
 .ft-col h4{font-size:15px;letter-spacing:.08em;}
 .ft-col h4::after{background:var(--grad-green);}
 .ft-tagline,.ft-news p{font-size:15.5px;}
@@ -1384,7 +1386,7 @@ section[id],footer[id]{scroll-margin-top:104px;}
       <article class="bt-why-card">
         <span class="bt-arrow-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></span>
         <div class="bt-why-body">
-          <h3>Wisdom-Driven Strategy</h3>
+          <h3>Wisdom-Driven<br>Strategy</h3>
           <p>We combine deep understanding of Ethiopian business culture with global standards to build solutions that fit your context.</p>
         </div>
         <img class="bt-side-img" src="public/assets/Images/Ape.jpg" alt="">
@@ -1393,7 +1395,7 @@ section[id],footer[id]{scroll-margin-top:104px;}
       <article class="bt-why-card">
         <span class="bt-arrow-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></span>
         <div class="bt-why-body">
-          <h3>Trusted Execution</h3>
+          <h3>Trusted<br>Execution</h3>
           <p>We don't just plan, we deliver &mdash; a proven record of successful projects across sectors shows our commitment to excellence.</p>
         </div>
         <img class="bt-side-img" src="public/assets/Images/Dog.jpg" alt="">
