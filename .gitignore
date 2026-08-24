@@ -1,0 +1,29 @@
+# Next.js build output
+/.next/
+/out/
+/build/
+
+# dependencies
+/node_modules/
+
+# env — real values are never committed
+.env*
+!.env.example
+
+# uploaded / generated files (server filesystem stores, Phase 4-5)
+/storage/uploads/*
+/storage/resumes/*
+!/storage/uploads/.gitkeep
+!/storage/resumes/.gitkeep
+# runtime-uploaded media (served from /uploads/...)
+/public/uploads/*
+!/public/uploads/.gitkeep
+
+# misc
+.DS_Store
+*.log
+npm-debug.log*
+
+# typecheck scratch
+next-env.d.ts
+tsconfig.tsbuildinfo

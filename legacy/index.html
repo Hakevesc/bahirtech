@@ -1,0 +1,3457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bahir Tech — Connecting Ethiopia to the World, Again</title>
+<meta name="description" content="Bahir Tech builds reliable, secure and scalable digital systems for Ethiopian enterprises, public institutions and growing businesses." />
+
+<!-- One typeface for the whole page. -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+<!-- Header and footer: markup inline in this page, styling in public/assets/css/site-chrome.css. -->
+<link rel="stylesheet" href="public/assets/css/site-chrome.css" />
+
+<!-- ===========================================================================
+     PHOTO SLOTS — replace each placeholder with a real photograph.
+     To fill a slot, put an <img class="shot__img"> as the FIRST child of the
+     .shot element; the placeholder note underneath is covered automatically.
+
+     The hero has no photo slot — the interactive globe sits there instead.
+
+       data-shot="problems"   560 x 780   portrait  — an engineer at a screen,
+                                          server room, or a client meeting.
+       data-shot="service"    640 x 520   landscape — changes with the selected
+                                          service; one photo is fine to start.
+       data-shot="why"       1080 x 660   landscape — the team, the office, or a
+                                          delivered project.
+
+     Keep photographs real and unstyled: people, offices, hardware, screens.
+     No 3D renders, no neon, no stock "AI/robot" imagery.
+     =========================================================================== -->
+
+<style>
+/* ============================================================================
+   TOKENS
+   Brand green stays, but it is now an ACCENT: buttons, small marks, hover
+   states, one panel. Everything structural is white, navy and hairline grey.
+   No gradients anywhere on the page.
+   ============================================================================ */
+:root{
+  --ink:#232A60;          /* headings, brand navy                      */
+  --ink-dk:#1B2144;       /* dark surfaces (CTA panel, footer)         */
+  --body:#5A6076;         /* body copy                                 */
+  --muted:#676D82;        /* captions, meta — 4.8:1 on both surfaces   */
+  --line:#E4E6EE;         /* hairlines and card borders                */
+  --line-2:#EFF1F6;       /* faint dividers                            */
+  --bg:#FFFFFF;
+  --bg-alt:#F7F8FA;       /* alternating section band                  */
+  --night:#0E1436;        /* hero + floating chrome — the globe's core colour */
+  --lemon:#CFDE5D;        /* light lemon — Ethiopia, routes, accents on dark */
+
+  --green:#AAC638;        /* brand green — fills only                  */
+  --green-ink:#AAC638;    /* brand green — TEXT on white (was darkened #5F7616) */
+  --green-soft:#F1F5DF;   /* faint green wash                          */
+
+  --font:'Ubuntu',system-ui,-apple-system,Segoe UI,sans-serif;
+  --section-y:clamp(72px,7.4vw,116px);
+  --r-sm:8px; --r-md:12px; --r-lg:16px;
+  --curve:clamp(28px,4.6vw,66px); /* the light page's rounded lip over the hero */
+  --dock-h:60px;                  /* floating dock height, reserved at page bottom */
+  --dock-gap:18px;                /* its inset from the viewport edges            */
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--body);
+  font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+a{text-decoration:none;color:inherit}
+ul{list-style:none}
+/* Widened from min(1180px,92%): at a 1900px viewport that capped content at 1180 and
+   left ~360px of dead margin each side. 1580 puts the page edge at ~160px instead —
+   the measure marked on the review screenshot. Applies to every section. */
+.container{width:min(1580px,90%);margin-inline:auto}
+section[id]{scroll-margin-top:88px}
+
+h1,h2,h3,h4{color:var(--ink);font-weight:500;line-height:1.18;letter-spacing:-.018em;text-wrap:balance}
+h1{font-size:clamp(38px,4.4vw,58px);line-height:1.1}
+h2{font-size:clamp(28px,3.1vw,42px)}
+h3{font-size:20px;letter-spacing:-.01em}
+p{text-wrap:pretty}
+
+:focus-visible{outline:2px solid var(--green-ink);outline-offset:3px;border-radius:4px}
+/* the dark surfaces need the brighter green, not the darkened text one */
+.hero :focus-visible,.dock:focus-visible,.dock :focus-visible,.support:focus-visible,
+.cta__panel :focus-visible,.ft :focus-visible{outline-color:var(--green)}
+::selection{background:rgba(170,198,56,.3);color:var(--ink)}
+
+/* ---------- shared bits ---------------------------------------------------- */
+/* A forced break that only applies once there is room for it. Below 1250px the CTA's
+   middle column is narrower than the 503px that line needs, so the break would land on
+   an already-wrapped line and add a stray fourth one — off by default, on when it helps. */
+.br-wide{display:none}
+@media (min-width:1250px){.br-wide{display:inline}}
+
+.eyebrow{display:inline-flex;align-items:center;gap:10px;margin-bottom:16px;
+  font-size:12.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--green-ink)}
+.eyebrow::before{content:"";width:22px;height:2px;background:var(--green);flex:none}
+
+.lede{font-size:17px;line-height:1.65;color:var(--body);max-width:56ch}
+
+.btn{display:inline-flex;align-items:center;gap:9px;border:1px solid transparent;cursor:pointer;
+  font:inherit;font-size:15px;font-weight:500;line-height:1;padding:14px 26px;border-radius:var(--r-sm);
+  transition:background .25s var(--ease),border-color .25s var(--ease),color .25s var(--ease)}
+.btn svg{width:15px;height:15px;flex:none}
+/* navy text on brand green — 7.8:1, so the brand colour can carry a real button */
+/* White fill wipes across on hover, text goes blue-black, arrow turns green.
+   Done with a background-image layer rather than a pseudo-element: the label is a bare
+   text node, so a ::before overlay would need the text wrapped to stay on top of it —
+   a background always paints behind content. */
+.btn--primary{background-color:var(--green);color:#1B2350;font-weight:700;
+  background-image:linear-gradient(#fff,#fff);background-repeat:no-repeat;
+  background-position:left center;background-size:0% 100%;
+  transition:background-size .4s var(--ease),color .28s var(--ease)}
+.btn--primary svg{transition:stroke .28s var(--ease)}
+.btn--primary:hover,.btn--primary:focus-visible{background-size:100% 100%;color:var(--ink-dk)}
+.btn--primary:hover svg,.btn--primary:focus-visible svg{stroke:var(--green-ink)}
+.btn--outline{background:#fff;border-color:var(--line);color:var(--ink)}
+.btn--outline:hover{border-color:var(--ink);background:#fff}
+.btn--onDark{background-color:var(--green);color:#1B2350;font-weight:700;
+  background-image:linear-gradient(#fff,#fff);background-repeat:no-repeat;
+  background-position:left center;background-size:0% 100%;
+  transition:background-size .4s var(--ease),color .28s var(--ease)}
+.btn--onDark:hover,.btn--onDark:focus-visible{background-size:100% 100%;color:var(--ink-dk)}
+.btn--ghostDark{background:transparent;border-color:rgba(255,255,255,.3);color:#fff}
+.btn--ghostDark:hover{border-color:#fff;background:rgba(255,255,255,.08)}
+
+/* text link with a small arrow */
+.tlink{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:500;color:var(--ink);
+  transition:color .25s var(--ease)}
+.tlink svg{width:14px;height:14px;transition:transform .25s var(--ease)}
+.tlink:hover{color:var(--green-ink)}
+.tlink:hover svg{transform:translateX(3px)}
+
+/* ---------- photo slots ---------------------------------------------------- */
+.shot{position:relative;overflow:hidden;border-radius:var(--r-lg);background:var(--bg-alt);
+  border:1px solid var(--line);display:grid;place-items:center}
+.shot__img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2}
+.shot__note{display:flex;flex-direction:column;align-items:center;gap:10px;padding:24px;text-align:center;
+  font-size:13px;line-height:1.5;color:var(--muted)}
+.shot__note svg{width:26px;height:26px;color:#C3C8D6}
+.shot__note b{display:block;font-weight:500;color:#767C90}
+
+/* ============================================================================
+   NAV — white, sticky, hairline. Nothing floats over a dark photo any more.
+   ============================================================================ */
+/* ============================================================================
+   PAGE CHROME — there is no top bar any more. The hero fills the viewport and
+   carries the logo and Contact at its top; navigation lives in a floating dock
+   at the bottom of the screen, with Support beside it. Dock and Support are
+   fixed, so they survive past the hero — otherwise scrolling would leave the
+   page with no navigation at all.
+   ============================================================================ */
+.hero__top{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.hero__logo img{height:32px;width:auto;display:block}
+.hero__logo-fallback{font-weight:700;font-size:20px;color:#fff;letter-spacing:.01em}
+.hero__logo-fallback span{color:var(--green)}
+
+/* Header and footer styling now lives in public/assets/css/site-chrome.css. */
+
+/* Now a 3D headset icon rather than a labelled pill. The surface is the globe's navy,
+   not the frosted white it used to be: the headset renders in shell-white and brand
+   green, both of which vanish against a white disc. Same night colour as the globe's
+   core, so the two read as a pair. */
+.support{position:fixed;bottom:var(--dock-gap);right:var(--dock-gap);z-index:60;
+  width:88px;height:88px;padding:0;display:grid;place-items:center;
+  background:none;border:none;box-shadow:none;cursor:pointer;font:inherit;
+  transition:transform .3s var(--ease)}
+.support:hover{transform:translateY(-3px) scale(1.04)}
+.support canvas{display:block;width:100%;height:100%}
+/* ---- support panel ---- sits directly above the icon, same dark glass as the page
+   chrome so it reads as part of it rather than as a browser dialog */
+.spop{position:fixed;z-index:61;right:var(--dock-gap);bottom:calc(var(--dock-gap) + 88px + 10px);
+  width:min(320px,calc(100vw - 32px));padding:18px;border-radius:18px;
+  background:rgba(255,255,255,.96);border:1px solid var(--line);
+  -webkit-backdrop-filter:blur(18px) saturate(1.2);backdrop-filter:blur(18px) saturate(1.2);
+  box-shadow:0 22px 60px rgba(20,26,64,.22);color:var(--ink);
+  transform-origin:100% 100%;
+  transition:opacity .22s var(--ease),transform .22s var(--ease)}
+.spop[hidden]{display:none}
+.spop.is-closed{opacity:0;transform:translateY(10px) scale(.97);pointer-events:none}
+.spop__head{display:flex;align-items:flex-start;gap:11px;margin-bottom:16px}
+.spop__dot{width:9px;height:9px;border-radius:50%;background:var(--green);flex:none;margin-top:6px;
+  box-shadow:0 0 0 4px rgba(170,198,56,.22)}
+.spop__head>div{flex:1;min-width:0}
+.spop__head b{display:block;font-size:15px;font-weight:600;line-height:1.3;color:var(--ink)}
+.spop__head span{font-size:12.5px;color:var(--muted)}
+.spop__x{width:28px;height:28px;flex:none;border-radius:8px;border:none;cursor:pointer;padding:0;
+  background:var(--bg-alt);color:var(--muted);display:grid;place-items:center;
+  transition:background .2s var(--ease),color .2s var(--ease)}
+.spop__x:hover{background:var(--line);color:var(--ink)}
+.spop__x svg{width:14px;height:14px}
+.spop__label{display:block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:8px}
+.spop__msg{width:100%;resize:vertical;font:inherit;font-size:14px;line-height:1.5;color:var(--ink);
+  padding:11px 13px;border-radius:11px;background:var(--bg-alt);
+  border:1px solid var(--line);outline:none;
+  transition:border-color .2s var(--ease),background .2s var(--ease)}
+.spop__msg::placeholder{color:#9AA0B4}
+.spop__msg:focus{border-color:var(--green);background:#fff;
+  box-shadow:0 0 0 3px rgba(170,198,56,.18)}
+.spop__send{width:100%;justify-content:center;margin-top:12px}
+.spop__rows{margin-top:16px;padding-top:14px;border-top:1px solid var(--line-2);
+  display:grid;gap:4px}
+.spop__row{display:flex;align-items:flex-start;gap:11px;padding:9px 8px;border-radius:11px;
+  transition:background .2s var(--ease)}
+.spop__row:not(.spop__row--static):hover{background:var(--bg-alt)}
+/* Same treatment as .cinfo__ico in the contact section, which carries these very same
+   pin/phone glyphs: the green is the FILL and the glyph is navy on top of it. Putting
+   the green on the glyph instead only works on a dark panel — on this white one it
+   measured 1.7:1 and read as an empty disc. */
+.spop__ico{width:30px;height:30px;flex:none;border-radius:50%;display:grid;place-items:center;
+  background:var(--green);color:#1B2350}
+.spop__ico svg{width:14px;height:14px}
+.spop__row>span:last-child{font-size:13px;line-height:1.5;color:var(--body)}
+.spop__row b{display:block;font-size:13.5px;font-weight:600;color:var(--ink)}
+@media (max-width:760px){
+  .spop{bottom:calc(var(--dock-gap) + 70px + 10px)}
+}
+
+/* the button keeps an accessible name without showing a caption next to the icon */
+.support__label{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
+  clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ============================================================================
+   HERO — light, two columns, one photograph. The WebGL globe, the aurora, the
+   floating pills and the dark scrim are all gone.
+   ============================================================================ */
+/* The globe and ocean run full-bleed behind the hero, so the hero is the one dark
+   band on the page. It shares the nav's blue-black, and #0E1436 is also the globe's
+   own core colour — the sphere seats into the background instead of reading as a
+   disc pasted on top of it. */
+/* Pinned. The hero never scrolls away — it stays at the top of the viewport and the
+   rest of the page rides up over it, which is the parallax cover effect. */
+.hero{position:sticky;top:0;z-index:0;overflow:hidden;background:var(--night);color:#fff;
+  isolation:isolate}
+/* Every following section has to be BOTH positioned and opaque. A static block paints
+   its background below any positioned element, so without `position:relative` the
+   pinned hero shows straight through them; and .problems/.cta/.contact were relying on
+   the body's white, which is now behind the hero rather than in front of it. */
+.serve,.problems,.services,.cta,.why,.contact{position:relative;z-index:2}
+.problems,.cta,.contact{background:var(--bg)}
+.hero__bg{position:absolute;inset:0;z-index:0}
+.hero__bg canvas{display:block}
+.hero__bg #gl{position:absolute;inset:0;width:100%;height:100%}
+/* pushed off the headline column so the copy never sits on the brightest part */
+.hero__bg #globeContainer{position:absolute;inset:0;cursor:grab;transform:translateX(20%);
+  touch-action:pan-y}
+.hero__bg #globeContainer.is-grabbing{cursor:grabbing}
+
+/* Legibility layer. Heaviest over the copy column, clearing to almost nothing on the
+   globe side. It no longer fades out at the bottom — the section below now rides up
+   over the hero on a rounded lip, so the blue is meant to stay full strength and be
+   cut by that curve rather than dissolve into it. */
+.hero__scrim{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:
+    /* blue-black bottom band — tallest on the left (under the title), easing back a
+       few percent on the right, so the copy sits on solid ground over the ocean */
+    linear-gradient(6deg,rgba(14,20,54,.98) 0%,rgba(14,20,54,.92) 12%,
+      rgba(14,20,54,.84) 25%,rgba(14,20,54,.72) 38%,
+      rgba(14,20,54,.55) 48%,rgba(14,20,54,.28) 56%,rgba(14,20,54,0) 64%),
+    /* thin top gradient only to separate the nav from the globe */
+    linear-gradient(180deg,rgba(14,20,54,.45) 0%,rgba(14,20,54,.10) 24%,rgba(14,20,54,0) 46%)}
+
+/* Full viewport, three rows: logo/Contact at the top, copy pinned to the bottom of
+   the free space, scroll cue beneath it. svh not vh so mobile browser chrome does not
+   push the bottom row off screen. The layer is full width, so it must not swallow
+   drags meant for the globe. */
+/* The hero runs a full viewport PLUS the curve. The next section pulls itself up by
+   exactly that curve, so its white lip lands on the fold line rather than inside the
+   first screen — previously it cut across the bottom of the hero. The same extra
+   height carries the copy and the aside further down the screen. */
+.hero__inner{position:relative;z-index:2;pointer-events:none;
+  min-height:calc(100svh + var(--curve));
+  display:grid;grid-template-rows:1fr;
+  padding:96px 0 calc(44px + var(--dock-gap) + var(--curve) + 12px)}
+.hero__inner a,.hero__inner button{pointer-events:auto}
+/* Title alone on the left so it genuinely sits at the bottom; the supporting line,
+   buttons and stats move to a right-hand column on the same baseline. Keeping them
+   under the title pushed it up into the middle of the screen. */
+.hero__mid{align-self:end;display:grid;grid-template-columns:minmax(0,1fr) auto;
+  gap:clamp(28px,4vw,64px);align-items:end}
+/* the description and the single CTA now live under the title in the left column;
+   only the stats remain on the right */
+/* Scrubbed against scroll via --hp (0 at the top of the hero, 1 one hero-height down).
+   The copy lifts, shrinks slightly and fades as the next section rides up over the
+   pinned hero — the Craft Silicon effect, where the content moves and the page does
+   not. transform lives here on the wrapper; the reveal system animates .hero__copy > *
+   (the children), so the two never touch the same property on the same element. */
+.hero__copy{max-width:min(880px,100%);
+  transform-origin:0 100%;
+  transform:translate3d(0,calc(var(--hp,0) * -64px),0) scale(calc(1 - var(--hp,0) * 0.055));
+  /* 1.15 lands the fade at ~87% of the runway — just before the next section covers
+     the hero at ~93%. A steeper curve emptied the hero for its last quarter. */
+  opacity:calc(1 - var(--hp,0) * 1.15);
+  will-change:transform,opacity}
+@media (prefers-reduced-motion:reduce){
+  .hero__copy{transform:none;opacity:1}
+}
+.hero__aside{justify-self:end;align-self:end}
+.hero__aside .hero__stats{margin-top:0;border-top:none;padding-top:0}
+.hero__cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:28px}
+
+/* far bigger than the page's default h1 — this is the whole screen now */
+.hero h1{font-size:clamp(36px,5.3vw,70px);line-height:1.06;letter-spacing:-.028em}
+.hero .lede{max-width:560px}
+/* the global `h1{color:var(--ink)}` outranks .hero's inherited white, so it is
+   restated here — without this the headline is navy on navy */
+.hero h1{color:#fff}
+.hero .eyebrow{color:var(--green)}
+.hero .eyebrow::before{background:var(--green)}
+.hero h1 .accent{color:var(--green)}
+.hero .lede{margin-top:24px;color:rgba(233,236,246,.82)}
+.hero__stats{display:flex;align-items:center;gap:24px;margin-top:44px;padding-top:28px;
+  border-top:1px solid rgba(255,255,255,.18);flex-wrap:wrap}
+.stat{display:inline-flex;flex-direction:column;align-items:center;gap:6px;
+  padding:14px 20px;border-radius:16px;
+  border:1px solid rgba(255,255,255,.06);
+  background:rgba(255,255,255,.02);
+  transition:border-color .25s var(--ease),background-color .25s var(--ease)}
+.stat b{font-size:32px;font-weight:700;color:var(--green);line-height:1;letter-spacing:-.02em}
+.stat span{font-size:13px;color:rgba(233,236,246,.7)}
+
+/* ============================================================================
+   WHO WE SERVE — plain bordered cards. The three neon photographs are removed;
+   these read better as text anyway, and it is three fewer photos to source.
+   ============================================================================ */
+/* The light page starts here and rides up over the hero on a rounded lip, so the blue
+   is cut by a curve instead of fading out. It is a sibling of .hero painted later, so
+   position+z-index is all that is needed to bring it over the top. */
+.serve{position:relative;z-index:3;
+  margin-top:calc(var(--curve) * -1);
+  border-radius:var(--curve) var(--curve) 0 0;
+  padding:calc(var(--section-y) + var(--curve) * .5) 0 var(--section-y);
+  background:var(--bg-alt)}
+.serve__head{max-width:640px;margin-bottom:44px}
+.serve__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.scard{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:32px 30px 28px;
+  display:flex;flex-direction:column;transition:border-color .3s var(--ease)}
+.scard:hover{border-color:#CBD1E0}
+/* the outcome line under each audience heading */
+.scard>p{font-size:14.5px;line-height:1.6;color:var(--body);margin:10px 0 4px}
+.scard__top{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px}
+.scard__icon{width:42px;height:42px;border-radius:var(--r-sm);background:var(--green);
+  color:#1B2350;display:grid;place-items:center;flex:none}
+.scard__icon svg{width:20px;height:20px}
+/* decorative index (aria-hidden), so it stays quiet — but not invisible */
+.scard__num{font-size:12.5px;font-weight:700;letter-spacing:.12em;color:#9AA0B4}
+.scard h3{margin-bottom:14px}
+.scard__tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:26px}
+.scard__tags li{font-size:13px;color:var(--body);background:var(--bg-alt);border:1px solid var(--line);
+  border-radius:999px;padding:5px 13px}
+.scard .tlink{margin-top:auto;padding-top:20px;border-top:1px solid var(--line-2)}
+
+/* ============================================================================
+   PROBLEMS WE SOLVE
+   ============================================================================ */
+.problems{padding:var(--section-y) 0}
+/* the three proof numbers, moved out of the hero to sit with the 13+ years claim */
+.problems__stats{margin-top:30px;padding-top:26px;border-top:1px solid var(--line)}
+.problems__stats .stat b{color:var(--ink)}
+.problems__stats .stat span{color:var(--muted)}
+.problems__head{max-width:720px;margin-bottom:52px}
+.problems__head h2 .green{color:var(--green-ink)}
+.problems__head .lede{margin-top:20px}
+.problems__body{display:grid;grid-template-columns:340px 1fr;gap:clamp(40px,5vw,72px);align-items:start}
+.problems .shot{aspect-ratio:5/7}
+.prows{display:grid;gap:16px}
+/* Each card carries its own scroll offset in --py, written by the parallax script.
+   Keeping the drift in a custom property means the hover states below can animate
+   other properties without ever fighting the transform. */
+.pcard{position:relative;overflow:hidden;display:grid;grid-template-columns:auto 1fr auto;
+  gap:22px;align-items:start;padding:24px 26px;
+  background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);
+  transform:translate3d(0,var(--py,0px),0);
+  transition:border-color .3s var(--ease),box-shadow .3s var(--ease)}
+.pcard:hover{border-color:#CBD1E0;box-shadow:0 14px 34px rgba(20,26,64,.09)}
+/* accent rail wipes down the left edge on hover */
+.pcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--green);
+  transform:scaleY(0);transform-origin:top;transition:transform .35s var(--ease)}
+.pcard:hover::before,.pcard:focus-visible::before{transform:scaleY(1)}
+.pcard__ico{width:50px;height:50px;flex:none;border-radius:14px;display:grid;place-items:center;
+  background:var(--green-soft);color:var(--ink);
+  transition:background .3s var(--ease),color .3s var(--ease),transform .3s var(--ease)}
+.pcard__ico svg{width:23px;height:23px}
+.pcard:hover .pcard__ico{background:var(--green);color:#1B2350;transform:translateY(-3px)}
+.pcard__body h3{font-size:19px;margin-bottom:8px}
+.pcard__body p{font-size:15px;color:var(--body)}
+.pcard__go{width:32px;height:32px;flex:none;border-radius:50%;display:grid;place-items:center;
+  color:var(--muted);opacity:0;transform:translateX(-6px);
+  transition:opacity .3s var(--ease),transform .3s var(--ease),color .3s var(--ease)}
+.pcard__go svg{width:15px;height:15px}
+.pcard:hover .pcard__go,.pcard:focus-visible .pcard__go{opacity:1;transform:none;color:var(--ink)}
+@media (max-width:620px){
+  .pcard{grid-template-columns:auto 1fr;gap:16px;padding:20px}
+  .pcard__go{display:none}
+}
+/* the drift is decoration — hold every card still when motion is not wanted */
+@media (prefers-reduced-motion:reduce){
+  .pcard{transform:none}
+}
+
+/* ============================================================================
+   OUR SERVICES — two levels of tabs. The left rail picks the practice; a pill bar
+   inside the panel picks one item of that practice's work, and each item has its own
+   description and photograph. Nothing is driven by scroll position any more: the
+   pinned-runway machinery it replaces made the section 280vh tall and put the reader
+   on a conveyor belt.
+   ============================================================================ */
+.services{padding:var(--section-y) 0;background:var(--bg-alt);border-block:1px solid var(--line-2)}
+.services__head{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;flex-wrap:wrap;
+  margin-bottom:40px}
+.services__head p{max-width:38ch;font-size:16.5px}
+
+/* minmax(0,…) on both tracks: a bare `1fr` floors at min-content, which let this grid
+   push past the container between 1081px and ~1250px (where the narrow-screen overrides
+   have not kicked in yet) and put a horizontal scrollbar on the page. */
+.services__body{display:grid;grid-template-columns:minmax(0,288px) minmax(0,1fr);
+  gap:clamp(36px,5vw,76px);align-items:start;margin-top:44px}
+
+/* the icon and the practice rail share the left column and stick together, so both stay
+   in view while a tall panel scrolls past */
+.srv-side{position:sticky;top:118px;display:grid;gap:18px}
+.srv-icon{width:100%;aspect-ratio:1;max-width:288px;display:grid;place-items:center}
+.srv-icon canvas{display:block;width:100%;height:100%}
+
+/* the practice rail: three boxes, not a list of links */
+.srv-cats{display:grid;gap:10px}
+.srv-cat{position:relative;overflow:hidden;display:grid;grid-template-columns:auto 1fr;gap:14px;
+  align-items:baseline;text-align:left;width:100%;cursor:pointer;
+  padding:16px 18px 16px 20px;border:1px solid var(--line);border-radius:var(--r-md);
+  background:#fff;font-family:inherit;font-size:15.5px;line-height:1.35;color:var(--body);
+  /* Weight is set here and never changed by state. Going bolder on the active tab made
+     the longest label wrap onto a third line, which grew the rail by 21px and shifted the
+     whole left column every time the practice changed. Active is signalled by the green
+     edge bar, the ink colour and the shadow instead — none of which affect layout. */
+  font-weight:500;
+  transition:color .3s var(--ease),border-color .3s var(--ease),box-shadow .3s var(--ease)}
+/* the marker: a bar down the leading edge that fills green on the active practice */
+.srv-cat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:transparent;transition:background .3s var(--ease)}
+.srv-cat i{font-style:normal;font-size:12.5px;font-weight:700;letter-spacing:.08em;
+  color:var(--muted);transition:color .3s var(--ease)}
+.srv-cat:hover{color:var(--ink);border-color:#D3D7E4}
+.srv-cat.is-active{color:var(--ink);border-color:transparent;
+  box-shadow:0 10px 30px -18px rgba(35,42,96,.45)}
+.srv-cat.is-active::before{background:var(--green)}
+.srv-cat.is-active i{color:var(--ink)}
+
+/* ---- the panel: one soft card holding the pill bar and the active item ---- */
+.srv-panel{background:#EBEFFA;border-radius:var(--r-lg);
+  padding:clamp(22px,2.4vw,34px) clamp(20px,2.6vw,38px) clamp(28px,3vw,42px)}
+
+/* the pill bar. It scrolls sideways rather than wrapping: a wrapped bar changes height
+   between practices, which shifts the card body up and down on every switch. */
+.srv-tabs{display:flex;gap:4px;margin:0 auto clamp(26px,3vw,40px);width:fit-content;max-width:100%;
+  padding:5px;background:#fff;border:1px solid #DDE2F0;border-radius:999px;
+  overflow-x:auto;scrollbar-width:none}
+.srv-tabs::-webkit-scrollbar{display:none}
+.srv-tab{flex:none;cursor:pointer;white-space:nowrap;border:0;border-radius:999px;
+  padding:10px 20px;background:transparent;font-family:inherit;font-size:14.5px;
+  line-height:1.2;color:var(--body);
+  transition:background .28s var(--ease),color .28s var(--ease)}
+.srv-tab:hover{color:var(--ink);background:#F2F4FB}
+.srv-tab.is-active{background:var(--green);color:#1B2350;font-weight:700}
+
+/* ---- the item itself: copy on the left, photograph on the right ---- */
+.srv-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,44%);
+  gap:clamp(28px,3.6vw,56px);align-items:center}
+/* The UA rule for [hidden] is `display:none`, which ANY author `display` beats — so the
+   two rules above would keep every panel and card on screen at once. These restore it.
+   The <noscript> block at the end of the section overrides them again, and wins on
+   document order, so a scripting-off reader still sees everything. */
+.srv-panel[hidden],.srv-card[hidden]{display:none}
+.srv-card.is-active{animation:srvCardIn .42s var(--ease) both}
+@keyframes srvCardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.srv-card__copy h3{font-size:clamp(22px,2.1vw,30px);line-height:1.22;margin-bottom:16px}
+.srv-card__copy p{font-size:16px;max-width:46ch;margin-bottom:28px}
+.srv-card .shot{aspect-ratio:4/3.2}
+
+/* ---- the action row on the cyber items ----
+   The coverage lists, commitment rows and the block "under attack" strip that used to sit
+   here now live on cybersecurity.html, which has room for them. Two copies of that content
+   made this panel twice the height of the other two, so selecting Cybersecurity visibly
+   burst the section. What stays is the incident path, as one line rather than a panel:
+   someone mid-incident should not have to go and find a phone number. */
+.srv-act{display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px}
+.srv-urgent{position:relative;font-size:14.6px;font-weight:500;color:#B4342F;
+  padding-left:20px;border-bottom:1px solid transparent;transition:border-color .25s var(--ease)}
+/* a dot rather than an icon: at this size an SVG siren reads as noise */
+.srv-urgent::before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);
+  width:9px;height:9px;border-radius:50%;background:#C8403A;
+  box-shadow:0 0 0 3px rgba(200,64,58,.18)}
+.srv-urgent:hover{border-bottom-color:#B4342F}
+
+/* Every panel gets the same floor, so moving between practices — including the 15-second
+   auto-walk — never resizes the section under the reader. The value is the tallest item's
+   natural height at this breakpoint; below 901px the layout is one column and stacks
+   freely, so it is deliberately not applied there. */
+@media (min-width:901px){
+  .srv-panel{min-height:460px}
+}
+
+/* ============================================================================
+   CTA — solid navy panel, with the floating square cluster restored from the original
+   build and a dot texture that is masked to the right-hand side only.
+   ============================================================================ */
+.cta{padding:var(--section-y) 0}
+.cta__panel{position:relative;overflow:hidden;background:var(--ink-dk);border-radius:var(--r-lg);
+  padding:clamp(40px,4.8vw,68px) clamp(28px,4.4vw,64px);
+  display:grid;grid-template-columns:auto 1fr auto;gap:clamp(28px,4vw,56px);align-items:center}
+/* the dots: low contrast, and wiped out toward the left so only the right reads */
+.cta__panel::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:radial-gradient(rgba(255,255,255,.13) 1px,transparent 1.4px);
+  background-size:9px 9px;
+  -webkit-mask-image:linear-gradient(90deg,transparent 30%,rgba(0,0,0,.45) 62%,#000 100%);
+  mask-image:linear-gradient(90deg,transparent 30%,rgba(0,0,0,.45) 62%,#000 100%)}
+.cta__panel>*{position:relative;z-index:1}
+.cta__panel h2{color:#fff}
+/* no max-width: the 46ch cap held this to 415px inside a 650px column, so the first
+   line wrapped before reaching the forced break and the paragraph ran to four lines.
+   It now fills the column and lines up with the heading above it. */
+.cta__panel p{color:rgba(233,236,246,.72);margin-top:16px;font-size:16px}
+/* stacked, not side by side — primary on top, secondary beneath, matched widths */
+.cta__actions{display:flex;flex-direction:column;align-items:stretch;gap:12px}
+.cta__actions .btn{justify-content:center}
+
+/* animated B logo — replaces the old four static squares */
+.cta__logo-anim{flex:none;width:clamp(180px,22vw,280px);height:clamp(180px,22vw,280px);
+  border:none;border-radius:var(--r-lg);overflow:hidden;pointer-events:none}
+
+/* ============================================================================
+   WHY BAHIR TECH — the notch-masked photo shape and the three animal photos
+   are gone; plain panel, plain cards.
+   ============================================================================ */
+.why{padding:var(--section-y) 0;background:var(--bg-alt);border-top:1px solid var(--line-2)}
+.why__head{display:grid;grid-template-columns:1fr 1.05fr;gap:clamp(36px,5vw,72px);align-items:center;
+  margin-bottom:52px}
+.why__head .lede{margin-top:20px}
+.why__head .btn{margin-top:28px}
+.why .shot{aspect-ratio:16/10}
+.why__cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.wcard{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:30px 28px;
+  display:flex;flex-direction:column;transition:border-color .3s var(--ease)}
+.wcard:hover{border-color:#CBD1E0}
+.wcard__ico{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);color:var(--ink);
+  display:grid;place-items:center;margin-bottom:24px;transition:.3s var(--ease)}
+.wcard__ico svg{width:13px;height:13px;display:block}
+.wcard:hover .wcard__ico{background:var(--green);border-color:var(--green);color:#1B2350}
+.wcard h3{margin-bottom:12px}
+.wcard p{font-size:15px}
+/* the single filled panel on the page — the one place the brand green leads */
+.wcard--accent{background:var(--green);border-color:var(--green);justify-content:flex-end}
+/* margin-bottom:auto keeps the icon at the top while the copy sits at the bottom.
+   It used to also carry align-self:center, which centred it horizontally while the
+   other two cards' icons sat on the left text edge — that was the odd one out. */
+.wcard--accent .wcard__ico{border-color:rgba(27,35,80,.3);color:#1B2350;margin-bottom:auto}
+.wcard--accent:hover{border-color:var(--green)}
+.wcard--accent:hover .wcard__ico{background:#1B2350;border-color:#1B2350;color:var(--green)}
+/* :not(.wcard__ico) matters — the icon is a <span> too, so a bare `span` selector
+   handed it this caption's 28px top margin and knocked it out of line with the icons
+   on the other two cards. */
+.wcard--accent span:not(.wcard__ico){display:block;font-size:14px;
+  color:rgba(27,35,80,.75);margin-top:28px}
+.wcard--accent h3{color:#1B2350;font-size:23px;margin:4px 0 0}
+.why__foot{display:flex;gap:12px;flex-wrap:wrap;margin-top:34px;padding-top:28px;border-top:1px solid var(--line)}
+.why__foot span{font-size:14px;color:var(--muted)}
+
+/* ============================================================================
+   BLOG / INSIGHTS — dark-panel carousel, inspired by editorial storytelling.
+   ============================================================================ */
+.blog{background:var(--ink);padding:clamp(60px,7vw,100px) 0;overflow:hidden}
+.blog__inner{position:relative}
+.blog__top{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:40px;flex-wrap:wrap}
+.blog__heading{font-size:clamp(26px,3.2vw,42px);font-weight:500;color:#fff;line-height:1.15;letter-spacing:-.018em;max-width:18ch}
+.blog__heading span{color:var(--lemon)}
+.blog__controls{display:flex;flex-direction:column;align-items:flex-end;gap:20px}
+.blog__tabs{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.blog__tab{border:none;cursor:pointer;font:inherit;font-size:14.5px;font-weight:500;padding:9px 20px;border-radius:999px;transition:background .25s,color .25s}
+.blog__tab--active{background:rgba(255,255,255,.18);color:#fff}
+.blog__tab--inactive{background:transparent;color:rgba(255,255,255,.55)}
+.blog__tab--inactive:hover{color:#fff;background:rgba(255,255,255,.1)}
+.blog__arrows{display:flex;gap:10px}
+.blog__arrow{width:48px;height:48px;border-radius:50%;border:1.5px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);
+  color:#fff;display:grid;place-items:center;cursor:pointer;transition:background .25s,border-color .25s}
+.blog__arrow:hover{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.5)}
+.blog__arrow svg{width:18px;height:18px}
+.blog__track-wrap{overflow:hidden}
+.blog__track{display:flex;gap:22px;transition:transform .5s cubic-bezier(.22,.61,.36,1)}
+.bcard{flex:0 0 300px;cursor:pointer}
+.bcard__img-wrap{position:relative;border-radius:var(--r-lg);overflow:hidden;aspect-ratio:4/3;margin-bottom:16px}
+.bcard__img-wrap img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s var(--ease)}
+.bcard:hover .bcard__img-wrap img{transform:scale(1.04)}
+.bcard__overlay{position:absolute;inset:0;background:rgba(14,20,54,.55);transition:background .3s}
+.bcard:hover .bcard__overlay{background:rgba(14,20,54,.3)}
+.bcard--featured .bcard__overlay{background:rgba(14,20,54,.30)}
+.bcard__badge{position:absolute;top:14px;left:14px;display:flex;align-items:center;gap:8px}
+.bcard__badge-logo{background:rgba(255,255,255,.12);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.22);
+  border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;color:#fff;letter-spacing:.04em}
+.bcard__badge-tag{background:rgba(207,222,93,.18);border:1px solid var(--lemon);border-radius:6px;
+  padding:4px 10px;font-size:11px;font-weight:600;color:var(--lemon);letter-spacing:.06em;text-transform:uppercase}
+.bcard__featured-copy{position:absolute;bottom:0;left:0;right:0;padding:20px 18px 18px;
+  background:linear-gradient(0deg,rgba(14,20,54,.9) 0%,transparent 100%)}
+.bcard__featured-copy h3{color:#fff;font-size:17px;font-weight:600;line-height:1.35;margin:0}
+.bcard__meta{display:flex;flex-direction:column;gap:4px}
+.bcard__author{font-size:13.5px;font-weight:600;color:rgba(255,255,255,.7)}
+.bcard__title{font-size:15px;font-weight:600;color:#fff;line-height:1.4;margin:0}
+
+@media(max-width:900px){
+  .blog__top{flex-direction:column;align-items:flex-start}
+  .blog__controls{align-items:flex-start}
+  .bcard{flex:0 0 260px}
+}
+@media(max-width:620px){
+  .bcard{flex:0 0 230px}
+  .blog__arrows{display:none}
+  .blog__track-wrap{overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+  .blog__track{transition:none;scroll-snap-align:start}
+  .bcard{scroll-snap-align:start}
+}
+
+/* ============================================================================
+   CONTACT — flat card, hairline border, no overlap into the footer.
+   ============================================================================ */
+.contact{padding:var(--section-y) 0}
+.contact__grid{display:grid;grid-template-columns:1fr 1.1fr;gap:clamp(40px,5vw,76px);align-items:start}
+.contact__head .lede{margin-top:18px;margin-bottom:38px}
+.cinfo li{display:flex;gap:16px;padding:18px 0;border-top:1px solid var(--line-2)}
+.cinfo li:last-child{border-bottom:1px solid var(--line-2)}
+.cinfo__ico{width:38px;height:38px;border-radius:var(--r-sm);background:var(--green);color:#1B2350;
+  display:grid;place-items:center;flex:none}
+.cinfo__ico svg{width:17px;height:17px}
+.cinfo b{display:block;font-size:15px;font-weight:500;color:var(--ink)}
+/* :not(.cinfo__ico) — the icon is a <span> too, and a bare `span` selector was
+   repainting its glyph muted grey (3.2:1 on the green fill), overriding the navy
+   the icon rule above asks for. */
+.cinfo span:not(.cinfo__ico){font-size:14.5px;color:var(--body);line-height:1.6}
+
+.cform{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:clamp(28px,3.4vw,40px);
+  display:flex;flex-direction:column;gap:18px}
+.cform h3{font-size:21px;margin-bottom:2px}
+.cform__row{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.cfield{display:flex;flex-direction:column;gap:7px;min-width:0}
+.cfield label{font-size:13px;font-weight:500;color:var(--ink)}
+.cform input,.cform select,.cform textarea{width:100%;background:#fff;border:1px solid var(--line);
+  border-radius:var(--r-sm);padding:13px 15px;font:inherit;font-size:14.5px;color:var(--ink);outline:none;
+  transition:border-color .2s,box-shadow .2s}
+.cform input::placeholder,.cform textarea::placeholder{color:#A8AEC0}
+.cform input:focus,.cform select:focus,.cform textarea:focus{border-color:var(--green);
+  box-shadow:0 0 0 3px rgba(170,198,56,.18)}
+.cform select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:42px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5 6 6.5l5-5' stroke='%235A6076' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 15px center}
+.cform select:has(option[value=""]:checked){color:#A8AEC0}
+.cform select option{color:var(--ink)}
+.cform textarea{resize:vertical}
+.cform .btn{align-self:flex-start;margin-top:4px}
+.cform.is-sent .btn{background:var(--ink);color:#fff}
+
+
+/* ============================================================================
+   SCROLL REVEAL — one short fade. Nothing floats, pulses or drifts.
+   ============================================================================ */
+[data-reveal]{opacity:0;transform:translateY(14px);
+  transition:opacity .6s var(--ease),transform .6s var(--ease);transition-delay:var(--d,0ms)}
+[data-reveal].is-in{opacity:1;transform:none}
+
+/* ============================================================================
+   RESPONSIVE
+   ============================================================================ */
+@media (max-width:1080px){
+  /* the copy now sits over the globe instead of beside it, so the scrim goes
+     top-weighted and even rather than left-weighted */
+  .hero__bg #globeContainer{transform:none}
+  .hero__scrim{background:
+    linear-gradient(6deg,rgba(14,20,54,.98) 0%,rgba(14,20,54,.90) 12%,
+      rgba(14,20,54,.78) 25%,rgba(14,20,54,.60) 38%,
+      rgba(14,20,54,.40) 48%,rgba(14,20,54,0) 62%),
+    linear-gradient(180deg,rgba(14,20,54,.9) 0%,rgba(14,20,54,.76) 42%,
+      rgba(14,20,54,.60) 72%,rgba(14,20,54,.52) 100%)}
+  .problems__body{grid-template-columns:280px 1fr}
+  .services__body{grid-template-columns:250px 1fr}
+  /* the photograph gives way first — the copy is what carries the item */
+  .srv-card{grid-template-columns:minmax(0,1fr) minmax(0,38%)}
+  .why__head{grid-template-columns:1fr;gap:40px}
+  .cta__panel{grid-template-columns:1fr;gap:32px}
+  .contact__grid{grid-template-columns:1fr;gap:44px}
+}
+@media (max-width:900px){
+  /* the aside drops under the title rather than squeezing into a side column */
+  .hero__mid{grid-template-columns:1fr;gap:30px}
+  .hero__aside{justify-self:start;max-width:560px}
+  .serve__grid{grid-template-columns:1fr}
+  .problems__body{grid-template-columns:1fr;gap:36px}
+  .problems .shot{aspect-ratio:16/10}
+  /* the icon drops away and the practice rail becomes a row above the panel, so the
+     panel gets the full width rather than sharing it with a 250px column */
+  .services__body{grid-template-columns:1fr;gap:24px}
+  .srv-icon{display:none}
+  .srv-side{position:static;top:auto}
+  .srv-cats{grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px}
+  .srv-cat{grid-template-columns:1fr;gap:2px;padding:13px 14px 13px 17px;font-size:14.5px}
+  .srv-card{grid-template-columns:1fr;gap:28px}
+  /* the photograph leads on narrow screens: it is the first thing that reads at speed */
+  .srv-card .shot{grid-row:1;aspect-ratio:16/10}
+  .why__cards{grid-template-columns:1fr}
+}
+/* Narrow: the dock takes most of the width, so Support cannot share the bottom line
+   with it — it lifts above the dock and drops its label, like a chat button. */
+@media (max-width:760px){
+  .support{width:70px;height:70px}
+  /* nothing is occupying the bottom line, so Support drops back down to it */
+  body[data-dock-vis="off"] .support,
+  body[data-dock-pos="top"] .support{bottom:var(--dock-gap)}
+  .support__label{display:none}
+  .dock a{padding:10px 14px;font-size:14px}
+  .hero__top .btn{padding:10px 16px;font-size:14px}
+}
+@media (max-width:620px){
+  .hero__stats{gap:18px}
+  .cform__row{grid-template-columns:1fr}
+  /* three practices side by side stop fitting; they stack again */
+  .srv-cats{grid-auto-flow:row;grid-auto-columns:auto}
+  .srv-cat{grid-template-columns:auto 1fr;gap:12px;align-items:baseline}
+  /* the pill bar keeps to one line and scrolls, so it needs a hint that it does */
+  .srv-tabs{width:100%;justify-content:flex-start;
+    -webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);
+    mask-image:linear-gradient(90deg,#000 88%,transparent)}
+  .srv-tab{padding:9px 16px;font-size:14px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  [data-reveal]{opacity:1;transform:none;transition:none}
+  *{transition-duration:.01ms !important}
+  /* the rule above only covers transitions — keyframe animations need their own stop */
+  .srv-card.is-active{animation:none}
+  .cta__logo-anim{display:none}
+}
+
+/* ============================================================================
+   PAGE LOADER — full-screen overlay with animated B logo
+   ============================================================================ */
+.page-loader{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;
+  justify-content:center;background:#0E1436;transition:opacity .6s ease,visibility .6s ease}
+.page-loader.is-hidden{opacity:0;visibility:hidden;pointer-events:none}
+.page-loader iframe{width:min(320px,60vw);height:min(320px,60vw);border:none}
+body.is-loading{overflow:hidden}
+</style>
+</head>
+<body class="is-loading">
+
+<!-- ================= PAGE LOADER =================
+     Shown once per browsing session, not on every page load. It holds the page for a
+     3.2s minimum (see the dismissal script at the end of the body), which is a fine
+     first impression and an obstacle every time after that — coming back from Services
+     or About, or reloading, meant sitting through it again. -->
+<div class="page-loader" id="pageLoader" aria-label="Loading…"></div>
+<script>
+/* Inline and immediately after the overlay, so this runs while the document is still
+   parsing — before the first paint. Deciding later would flash the overlay and then tear
+   it away, which is worse than either behaviour on its own.
+
+   The animation is injected here rather than sitting in the markup: the parser fetches an
+   <iframe> the moment it reads the tag, well before any script below it can run, so a
+   returning visitor would still download a document they are never shown.
+
+   sessionStorage, not localStorage: the animation still greets a genuinely new visit, it
+   just stops repeating within the same session. Storage access throws in some privacy
+   modes, so every call is guarded — a failure falls through to showing the loader rather
+   than leaving the page stuck under the overlay. */
+(function(){
+  var KEY = 'bt:loaderSeen', el = document.getElementById('pageLoader'), seen = false;
+  try { seen = window.sessionStorage.getItem(KEY) === '1'; } catch(e){}
+
+  if (seen){
+    if (el && el.parentNode) el.parentNode.removeChild(el);
+    document.body.classList.remove('is-loading');   // releases the scroll lock
+    return;
+  }
+  try { window.sessionStorage.setItem(KEY, '1'); } catch(e){}
+
+  if (el){
+    var frame = document.createElement('iframe');
+    frame.src = 'B Logo Icon Web-loader.html';
+    frame.title = 'Loading animation';
+    frame.setAttribute('aria-hidden', 'true');
+    el.appendChild(frame);
+  }
+})();
+</script>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <!-- Interactive globe + ocean, full-bleed behind the hero. Decorative: it carries no
+       information the copy does not, and it cannot be operated from the keyboard. -->
+  <div class="hero__bg" id="stage" aria-hidden="true">
+    <canvas id="gl"></canvas>
+    <div id="globeContainer"></div>
+  </div>
+  <div class="hero__scrim" aria-hidden="true"></div>
+
+  <div class="container hero__inner">
+    <div class="hero__mid">
+      <div class="hero__copy">
+        <span class="eyebrow">Bahir Tech</span>
+        <h1>Connecting Ethiopia to the World, <span class="accent">Again</span></h1>
+        <p class="lede">Downtime, security gaps and disconnected systems cost you more than
+          technology ever will. We build and secure the systems your operations run on — and
+          stay accountable for them.</p>
+
+        <div class="hero__cta">
+          <a href="#contact" class="btn btn--primary">
+            Talk to an Expert
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Header markup is inline on every page - identical except for the link marked
+     active and the Industries href. site-chrome.js only adds the scroll phase:
+     transparent over the hero, steps aside at the stats row, then returns frosted
+     once .serve is under it. -->
+<header class="nav" id="navbar" data-header="1"
+        data-hero=".hero" data-hide-until=".serve">
+  <div class="container">
+    <a href="index.html" class="nav__logo" aria-label="Bahir Tech home">
+      <img src="public/assets/logo/Bahir Tech Logo.svg" alt="BAHIR TECH">
+    </a>
+    <nav class="nav__menu" aria-label="Primary">
+      <a href="index.html" class="active" aria-current="page">Home</a>
+      <a href="service.html">Services</a>
+      <a href="#problems">Industries</a>
+      <a href="about.html">About</a>
+      <a href="#">Careers</a>
+    </nav>
+  </div>
+</header>
+
+<!-- The 3D headset icon renders into this button. A <button>, not a link: it opens the
+     panel below rather than navigating anywhere. The canvas on top is decorative. -->
+<button type="button" class="support" id="supportDock" aria-label="Support — get in touch"
+        aria-expanded="false" aria-controls="supportPop">
+  <span class="support__label">Support</span>
+</button>
+
+<!-- Support panel. "Send now" hands the typed message to WhatsApp's compose screen —
+     it is prefilled there, never sent automatically; the sender still presses send. -->
+<div class="spop" id="supportPop" role="dialog" aria-modal="false"
+     aria-labelledby="spopTitle" hidden>
+  <div class="spop__head">
+    <span class="spop__dot" aria-hidden="true"></span>
+    <div>
+      <b id="spopTitle">Bahir Tech Support</b>
+      <span>Typically replies within a few hours</span>
+    </div>
+    <button type="button" class="spop__x" id="spopClose" aria-label="Close support panel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+
+  <label class="spop__label" for="spopMsg">Your message</label>
+  <textarea id="spopMsg" class="spop__msg" rows="3"
+    placeholder="How can we help?">Hello Bahir Tech, I'd like to talk about a project.</textarea>
+
+  <a class="btn btn--primary spop__send" id="spopSend" href="#" target="_blank" rel="noopener noreferrer">
+    Send now
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4Z"/></svg>
+  </a>
+
+  <div class="spop__rows">
+    <a class="spop__row" href="tel:+251915965321">
+      <span class="spop__ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg>
+      </span>
+      <span><b>Call us</b>+251 91 596 5321</span>
+    </a>
+    <div class="spop__row spop__row--static">
+      <span class="spop__ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+      </span>
+      <span><b>Visit us</b>Laphto Mall, Bisrate Gebriel<br>Addis Ababa, Ethiopia</span>
+    </div>
+  </div>
+</div>
+
+<!-- ================= WHO WE SERVE ================= -->
+<section class="serve" id="services">
+  <div class="container">
+    <div class="serve__head">
+      <span class="eyebrow">Who We Serve</span>
+      <h2>Built for organizations that cannot afford to go down.</h2>
+      <p class="lede">If any of these describe your week, we have solved it before.</p>
+    </div>
+
+    <div class="serve__grid">
+      <article class="scard">
+        <div class="scard__top">
+          <span class="scard__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16M9 7h2M9 11h2M9 15h2M15 9h4a2 2 0 0 1 2 2v10"/></svg>
+          </span>
+          <span class="scard__num" aria-hidden="true">01</span>
+        </div>
+        <h3>Enterprises &amp; Corporations</h3>
+        <p>Growth has outrun your systems. We re-architect the core so scale stops breaking
+          things — without a rip-and-replace.</p>
+        <ul class="scard__tags"><li>Security</li><li>Scalability</li><li>Mission-critical systems</li></ul>
+        <a class="tlink" href="#contact" aria-label="Book a systems review — enterprises and corporations">
+          Book a systems review
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg>
+        </a>
+      </article>
+
+      <article class="scard">
+        <div class="scard__top">
+          <span class="scard__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M4 21V10M9 21V10M15 21V10M20 21V10M2.5 10h19L12 3.5 2.5 10Z"/></svg>
+          </span>
+          <span class="scard__num" aria-hidden="true">02</span>
+        </div>
+        <h3>Public Institutions</h3>
+        <p>Service delivery cannot wait on an outage or an audit finding. We build systems that
+          stay up, stay compliant and outlast the project cycle.</p>
+        <ul class="scard__tags"><li>Reliable</li><li>Compliant</li><li>Sustainable technology</li></ul>
+        <a class="tlink" href="#contact" aria-label="Book a systems review — public institutions">
+          Book a systems review
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg>
+        </a>
+      </article>
+
+      <article class="scard">
+        <div class="scard__top">
+          <span class="scard__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17.5 9 11l4 4 8-8M15 3h6v6"/></svg>
+          </span>
+          <span class="scard__num" aria-hidden="true">03</span>
+        </div>
+        <h3>SMEs &amp; Growing Businesses</h3>
+        <p>Spreadsheets and manual handoffs are capping your growth. We replace them with systems
+          you can afford now and still use at ten times the size.</p>
+        <ul class="scard__tags"><li>Smart digital solutions</li><li>Grows with you</li></ul>
+        <a class="tlink" href="#contact" aria-label="Book a systems review — SMEs and growing businesses">
+          Book a systems review
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg>
+        </a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PROBLEMS WE SOLVE ================= -->
+<section class="problems" id="problems">
+  <div class="container">
+    <div class="problems__head">
+      <span class="eyebrow">Problems We Solve</span>
+      <h2><span class="green">13+ years</span> of turning complexity into secure, scalable digital environments</h2>
+      <p class="lede">Most of what we are called in to fix comes down to four problems. Here is what
+        each one costs you — and what changes once it is solved.</p>
+
+      <div class="hero__stats problems__stats">
+        <div class="stat"><b>25+</b><span>Projects delivered</span></div>
+        <div class="stat"><b>13+</b><span>Clients served</span></div>
+        <div class="stat"><b>3</b><span>Core practices</span></div>
+      </div>
+    </div>
+
+    <div class="problems__body">
+      <figure class="shot" data-shot="problems">
+        <!-- Replace this note with: <img class="shot__img" src="public/assets/Images/problems.jpg" alt="..."> -->
+        <figcaption class="shot__note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+          <b>Portrait photograph</b>
+          560 × 780 · an engineer at a screen, a server room, or a client meeting
+        </figcaption>
+      </figure>
+
+      <!-- data-parallax is the drift in px across the viewport pass. The ramp (32 down
+           to 2) makes the stack read as depth rather than as one moving block. -->
+      <div class="prows">
+        <a class="pcard" href="#contact" data-parallax="32">
+          <span class="pcard__ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12.41 6.75 13 2l-2.43 2.92"/><path d="M18.57 12.91 21 10h-5.34"/><path d="M8 8l-5 6h9l-1 8 5-6"/><path d="M1 1l22 22"/></svg>
+          </span>
+          <div class="pcard__body">
+            <h3>Downtime you cannot predict</h3>
+            <p>Every outage costs revenue and trust. We remove the single points of failure so one
+              broken component stops being a company-wide stoppage.</p>
+          </div>
+          <span class="pcard__go" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg>
+          </span>
+        </a>
+
+        <a class="pcard" href="#contact" data-parallax="22">
+          <span class="pcard__ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19.69 14A6.9 6.9 0 0 0 20 12V5l-8-3-3.16 1.18"/><path d="M4.73 4.73 4 5v7c0 6 8 10 8 10a20.3 20.3 0 0 0 5.62-4.38"/><path d="M1 1l22 22"/></svg>
+          </span>
+          <div class="pcard__body">
+            <h3>Exposure you cannot see</h3>
+            <p>You cannot defend what has never been mapped. We find the gaps, close them, and
+              monitor what is left so a breach is caught in minutes, not months.</p>
+          </div>
+          <span class="pcard__go" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg>
+          </span>
+        </a>
+
+        <a class="pcard" href="#contact" data-parallax="12">
+          <span class="pcard__ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18.84 12.25l1.72-1.71a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M5.17 11.75l-1.71 1.71a5 5 0 0 0 7.07 7.07l1.71-1.71"/><path d="M8 2v3M2 8h3M16 22v-3M22 16h-3"/></svg>
+          </span>
+          <div class="pcard__body">
+            <h3>Systems that do not talk</h3>
+            <p>Re-keying data between platforms is slow and quietly wrong. We integrate them so one
+              number means the same thing everywhere.</p>
+          </div>
+          <span class="pcard__go" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg>
+          </span>
+        </a>
+
+        <a class="pcard" href="#contact" data-parallax="2">
+          <span class="pcard__ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36 6.36-2.12z"/></svg>
+          </span>
+          <div class="pcard__body">
+            <h3>No clear plan to invest against</h3>
+            <p>Spending without a roadmap buys tools you do not use. We set the sequence — what to
+              fix now, what can wait, and what it will cost.</p>
+          </div>
+          <span class="pcard__go" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= OUR SERVICES ================= -->
+<section class="services" id="services-section">
+  <div class="container">
+    <div class="services__head">
+      <div>
+        <span class="eyebrow">Our Services</span>
+        <h2>Solutions That We Offer<br>to Our Valued Clients</h2>
+      </div>
+      <p>Three practices, and the specific work inside each. Pick a practice on the left,
+        then the piece of it you came for.</p>
+    </div>
+
+    <!-- Two levels of tabs. The left rail picks one of the three practices; the pill bar
+         inside the panel picks one item of that practice's work, and each item carries its
+         own description and photograph. Nested tablists, so both levels are reachable by
+         keyboard with arrow keys.
+
+         Panels and cards are hidden with the `hidden` attribute rather than a class, which
+         keeps them out of the accessibility tree too. The <noscript> block below unhides
+         everything, so with scripting off this degrades to a plain readable list. -->
+    <div class="services__body">
+      <div class="srv-side">
+        <!-- three.js renders here: one auto-rotating icon per practice, swapped with the
+             active tab. Decorative — the headings carry the meaning. -->
+        <div class="srv-icon" id="srvIcon" aria-hidden="true"></div>
+
+        <div class="srv-cats" role="tablist" aria-label="Our services" aria-orientation="vertical">
+          <button type="button" class="srv-cat is-active" id="srvcat-0" role="tab"
+                  aria-selected="true" aria-controls="srvpanel-0">
+            <i>01</i><span>IT Infrastructure &amp; Networking</span>
+          </button>
+          <button type="button" class="srv-cat" id="srvcat-1" role="tab"
+                  aria-selected="false" aria-controls="srvpanel-1" tabindex="-1">
+            <i>02</i><span>Software Development</span>
+          </button>
+          <button type="button" class="srv-cat" id="srvcat-2" role="tab"
+                  aria-selected="false" aria-controls="srvpanel-2" tabindex="-1">
+            <i>03</i><span>Cybersecurity Operations</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="srv-panels">
+
+        <!-- ============ 01 IT Infrastructure & Networking ============ -->
+        <div class="srv-panel is-active" id="srvpanel-0" role="tabpanel" tabindex="0"
+             aria-labelledby="srvcat-0">
+          <div class="srv-tabs" role="tablist" aria-label="IT Infrastructure &amp; Networking">
+            <button type="button" class="srv-tab is-active" id="srvtab-0-0" role="tab"
+                    aria-selected="true" aria-controls="srvcard-0-0">Cloud Solutions</button>
+            <button type="button" class="srv-tab" id="srvtab-0-1" role="tab" aria-selected="false"
+                    aria-controls="srvcard-0-1" tabindex="-1">Data Center</button>
+            <button type="button" class="srv-tab" id="srvtab-0-2" role="tab" aria-selected="false"
+                    aria-controls="srvcard-0-2" tabindex="-1">Network Design</button>
+            <button type="button" class="srv-tab" id="srvtab-0-3" role="tab" aria-selected="false"
+                    aria-controls="srvcard-0-3" tabindex="-1">Cybersecurity</button>
+            <button type="button" class="srv-tab" id="srvtab-0-4" role="tab" aria-selected="false"
+                    aria-controls="srvcard-0-4" tabindex="-1">Managed IT</button>
+          </div>
+
+          <article class="srv-card is-active" id="srvcard-0-0" role="tabpanel" aria-labelledby="srvtab-0-0">
+            <div class="srv-card__copy">
+              <h3>Cloud solutions, sized to what you actually run.</h3>
+              <p>We move what belongs in the cloud and leave alone what does not. You get a costed
+                migration plan, the work done in staged cutovers outside business hours, and a
+                monthly bill you can read line by line.</p>
+              <a href="service.html#infrastructure" class="btn btn--outline">Learn More</a>
+            </div>
+            <figure class="shot" data-shot="service">
+              <figcaption class="shot__note">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                <b>Service photograph</b>
+                640 × 520 · an engineer at a cloud console
+              </figcaption>
+            </figure>
+          </article>
+
+          <article class="srv-card" id="srvcard-0-1" role="tabpanel" aria-labelledby="srvtab-0-1" hidden>
+            <div class="srv-card__copy">
+              <h3>Data centre setup and management.</h3>
+              <p>Racks, power, cooling and cabling built to a standard you can hand to an auditor.
+                We run the room afterwards, with capacity reviews that reach you before you hit a
+                limit rather than after.</p>
+              <a href="service.html#infrastructure" class="btn btn--outline">Learn More</a>
+            </div>
+            <figure class="shot" data-shot="service">
+              <figcaption class="shot__note">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                <b>Service photograph</b>
+                640 × 520 · a cold aisle, racks and cabling
+              </figcaption>
+            </figure>
+          </article>
+
+          <article class="srv-card" id="srvcard-0-2" role="tabpanel" aria-labelledby="srvtab-0-2" hidden>
+            <div class="srv-card__copy">
+              <h3>Network design and implementation.</h3>
+              <p>Switching, routing and Wi-Fi designed around your floor plan and your traffic, not
+                a vendor's catalogue. Documented, labelled and handed over, so your own team can
+                work on it without calling us first.</p>
+              <a href="service.html#infrastructure" class="btn btn--outline">Learn More</a>
+            </div>
+            <figure class="shot" data-shot="service">
+              <figcaption class="shot__note">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                <b>Service photograph</b>
+                640 × 520 · patch panel or structured cabling work
+              </figcaption>
+            </figure>
+          </article>
+
+          <article class="srv-card" id="srvcard-0-3" role="tabpanel" aria-labelledby="srvtab-0-3" hidden>
+            <div class="srv-card__copy">
+              <h3>Security built into the network itself.</h3>
+              <p>Segmentation, access control and hardened edges, so one compromised laptop does not
+                become a compromised company. Configured on your live estate, then reviewed on a
+                schedule instead of left to drift.</p>
+              <a href="service.html#infrastructure" class="btn btn--outline">Learn More</a>
+            </div>
+            <figure class="shot" data-shot="service">
+              <figcaption class="shot__note">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                <b>Service photograph</b>
+                640 × 520 · firewall / edge equipment being configured
+              </figcaption>
+            </figure>
+          </article>
+
+          <article class="srv-card" id="srvcard-0-4" role="tabpanel" aria-labelledby="srvtab-0-4" hidden>
+            <div class="srv-card__copy">
+              <h3>Managed IT services, on a fixed monthly cost.</h3>
+              <p>Your day-to-day IT run by us: monitoring, patching, backups and a help desk your
+                staff can actually reach. Response times are in the contract, and you see the same
+                report we work from.</p>
+              <a href="service.html#infrastructure" class="btn btn--outline">Learn More</a>
+            </div>
+            <figure class="shot" data-shot="service">
+              <figcaption class="shot__note">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                <b>Service photograph</b>
+                640 × 520 · a support desk mid-call
+              </figcaption>
+            </figure>
+          </article>
+        </div>
+
+        <!-- ============ 02 Software Development ============ -->
+        <div class="srv-panel" id="srvpanel-1" role="tabpanel" tabindex="0" aria-labelledby="srvcat-1" hidden>
+          <div class="srv-tabs" role="tablist" aria-label="Software Development">
+            <button type="button" class="srv-tab is-active" id="srvtab-1-0" role="tab"
+                    aria-selected="true" aria-controls="srvcard-1-0">Custom Software</button>
+            <button type="button" class="srv-tab" id="srvtab-1-1" role="tab" aria-selected="false"
+                    aria-controls="srvcard-1-1" tabindex="-1">APIs</button>
+            <button type="button" class="srv-tab" id="srvtab-1-2" role="tab" aria-selected="false"
+                    aria-controls="srvcard-1-2" tabindex="-1">Integration</button>
+            <button type="button" class="srv-tab" id="srvtab-1-3" role="tab" aria-selected="false"
+                    aria-controls="srvcard-1-3" tabindex="-1">Mobile Apps</button>
+            <button type="button" class="srv-tab" id="srvtab-1-4" role="tab" aria-selected="false"
+                    aria-controls="srvcard-1-4" tabindex="-1">Cloud-Native</button>
+          </div>
+
+          <article class="srv-card is-active" id="srvcard-1-0" role="tabpanel" aria-labelledby="srvtab-1-0">
+            <div class="srv-card__copy">
+              <h3>Custom software, shaped around your operation.</h3>
+              <p>We start with the process rather than the screens, ship in small releases you can
+                use as they land, and hand over the source and the documentation. What we build
+                fits how your team already works.</p>
+              <a href="service.html#software" class="btn btn--outline">Learn More</a>
+            </div>
+            <figure class="shot" data-shot="service">
+              <figcaption class="shot__note">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                <b>Service photograph</b>
+                640 × 520 · developers at work, or a product screen
+              </figcaption>
+            </figure>
+          </article>
+
+          <article class="srv-card" id="srvcard-1-1" role="tabpanel" aria-labelledby="srvtab-1-1" hidden>
+            <div class="srv-card__copy">
+              <h3>API development and integration.</h3>
+              <p>Documented APIs so your systems stop needing a person in the middle. Built to
+                versioned contracts, with monitoring on every endpoint we hand over, so a change on
+                one side does not quietly break the other.</p>
+              <a href="service.html#software" class="btn btn--outline">Learn More</a>
+            </div>
+            <figure class="shot" data-shot="service">
+              <figcaption class="shot__note">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                <b>Service photograph</b>
+                640 × 520 · a whiteboard of systems, or API docs on screen
+              </figcaption>
+            </figure>
+          </article>
+
+          <article class="srv-card" id="srvcard-1-2" role="tabpanel" aria-labelledby="srvtab-1-2" hidden>
+            <div class="srv-card__copy">
+              <h3>Enterprise application integration.</h3>
+              <p>We connect the systems you already own — ERP, HR, finance, the bespoke tool someone
+                built years ago — so data moves once and matches everywhere. Nothing gets replaced
+                that does not need replacing.</p>
+              <a href="service.html#software" class="btn btn--outline">Learn More</a>
+            </div>
+            <figure class="shot" data-shot="service">
+              <figcaption class="shot__note">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                <b>Service photograph</b>
+                640 × 520 · a data flow on a screen, or a working session
+              </figcaption>
+            </figure>
+          </article>
+
+          <article class="srv-card" id="srvcard-1-3" role="tabpanel" aria-labelledby="srvtab-1-3" hidden>
+            <div class="srv-card__copy">
+              <h3>Mobile apps for the people doing the work.</h3>
+              <p>Android and iOS for field staff, drivers and agents. Built to keep working on a bad
+                connection and to survive a full day away from a charger, because that is the
+                condition they will actually be used in.</p>
+              <a href="service.html#software" class="btn btn--outline">Learn More</a>
+            </div>
+            <figure class="shot" data-shot="service">
+              <figcaption class="shot__note">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                <b>Service photograph</b>
+                640 × 520 · the app in use in the field
+              </figcaption>
+            </figure>
+          </article>
+
+          <article class="srv-card" id="srvcard-1-4" role="tabpanel" aria-labelledby="srvtab-1-4" hidden>
+            <div class="srv-card__copy">
+              <h3>Cloud-native development.</h3>
+              <p>Containers, pipelines and infrastructure as code, so a release is routine rather
+                than an event. It scales with load, and it costs less on the quiet days instead of
+                billing for a peak that is not there.</p>
+              <a href="service.html#software" class="btn btn--outline">Learn More</a>
+            </div>
+            <figure class="shot" data-shot="service">
+              <figcaption class="shot__note">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                <b>Service photograph</b>
+                640 × 520 · a deploy pipeline on screen
+              </figcaption>
+            </figure>
+          </article>
+        </div>
+
+        <!-- ============ 03 Cybersecurity Operations ============
+             The deepest of the three panels, and deliberately so: security is the thing
+             people arrive already worried about, so each item carries what it covers, what
+             we commit to, and a real photograph rather than a placeholder.
+
+             Structure borrowed from how the large security vendors lay this out — named
+             capability, outcome-led coverage list, a commitment row, and a permanent
+             "under attack now" path that does not make an anxious visitor hunt for a phone
+             number. The commitments describe the service model; any hard performance
+             figures should be yours before they go on the page. -->
+        <div class="srv-panel" id="srvpanel-2" role="tabpanel" tabindex="0"
+             aria-labelledby="srvcat-2" hidden>
+          <div class="srv-tabs" role="tablist" aria-label="Cybersecurity Operations">
+            <button type="button" class="srv-tab is-active" id="srvtab-2-0" role="tab"
+                    aria-selected="true" aria-controls="srvcard-2-0">Network &amp; Firewall</button>
+            <button type="button" class="srv-tab" id="srvtab-2-1" role="tab" aria-selected="false"
+                    aria-controls="srvcard-2-1" tabindex="-1">Endpoints</button>
+            <button type="button" class="srv-tab" id="srvtab-2-2" role="tab" aria-selected="false"
+                    aria-controls="srvcard-2-2" tabindex="-1">Encryption &amp; Backup</button>
+            <button type="button" class="srv-tab" id="srvtab-2-3" role="tab" aria-selected="false"
+                    aria-controls="srvcard-2-3" tabindex="-1">24/7 Monitoring</button>
+          </div>
+
+          <article class="srv-card is-active" id="srvcard-2-0" role="tabpanel" aria-labelledby="srvtab-2-0">
+            <div class="srv-card__copy">
+              <h3>Close the gaps attackers actually walk through.</h3>
+              <p>Policy written to what your business needs open — nothing more — then enforced at
+                the edge and between segments, so one compromised machine cannot reach the rest of
+                the estate.</p>
+              <div class="srv-act">
+                <a href="cybersecurity.html#network-firewall" class="btn btn--outline">Learn More</a>
+                <a class="srv-urgent" href="tel:+251930573337">Under attack now? Call +251 930 573 337</a>
+              </div>
+            </div>
+            <figure class="shot" data-shot="service">
+              <img class="shot__img" src="public/assets/Images/Cybersecurity.jpg"
+                   alt="A security engineer reviewing traffic on a laptop in a data centre at night"
+                   loading="lazy" decoding="async">
+            </figure>
+          </article>
+
+          <article class="srv-card" id="srvcard-2-1" role="tabpanel" aria-labelledby="srvtab-2-1" hidden>
+            <div class="srv-card__copy">
+              <h3>Know every device, and reach it in seconds.</h3>
+              <p>Every laptop, server and phone accounted for, hardened and watched. When something
+                turns hostile we isolate the device itself rather than waiting for the network to
+                notice.</p>
+              <div class="srv-act">
+                <a href="cybersecurity.html#endpoints" class="btn btn--outline">Learn More</a>
+                <a class="srv-urgent" href="tel:+251930573337">Under attack now? Call +251 930 573 337</a>
+              </div>
+            </div>
+            <figure class="shot" data-shot="service">
+              <img class="shot__img" src="public/assets/Images/Cybersecurity.jpg"
+                   alt="A security engineer reviewing endpoint activity on a laptop at night"
+                   loading="lazy" decoding="async">
+            </figure>
+          </article>
+
+          <article class="srv-card" id="srvcard-2-2" role="tabpanel" aria-labelledby="srvtab-2-2" hidden>
+            <div class="srv-card__copy">
+              <h3>A backup is only real once it has been restored.</h3>
+              <p>Encryption at rest and in transit, and backups we restore-test on a schedule. Your
+                recovery time is measured and agreed in advance, not discovered in the middle of an
+                incident.</p>
+              <div class="srv-act">
+                <a href="cybersecurity.html#encryption-backup" class="btn btn--outline">Learn More</a>
+                <a class="srv-urgent" href="tel:+251930573337">Under attack now? Call +251 930 573 337</a>
+              </div>
+            </div>
+            <figure class="shot" data-shot="service">
+              <img class="shot__img" src="public/assets/Images/Cybersecurity.jpg"
+                   alt="An engineer checking backup and recovery systems on a laptop at night"
+                   loading="lazy" decoding="async">
+            </figure>
+          </article>
+
+          <article class="srv-card" id="srvcard-2-3" role="tabpanel" aria-labelledby="srvtab-2-3" hidden>
+            <div class="srv-card__copy">
+              <h3>Watched at 3am as closely as at 3pm.</h3>
+              <p>Our team monitors your estate around the clock. Alerts are triaged by a person,
+                contained inside the window we agreed, and written up afterwards with what
+                changed.</p>
+              <div class="srv-act">
+                <a href="cybersecurity.html#monitoring" class="btn btn--outline">Learn More</a>
+                <a class="srv-urgent" href="tel:+251930573337">Under attack now? Call +251 930 573 337</a>
+              </div>
+            </div>
+            <figure class="shot" data-shot="service">
+              <img class="shot__img" src="public/assets/Images/Cybersecurity.jpg"
+                   alt="A security analyst monitoring systems on a laptop overnight"
+                   loading="lazy" decoding="async">
+            </figure>
+          </article>
+        </div>
+
+      </div><!-- /.srv-panels -->
+    </div><!-- /.services__body -->
+  </div>
+
+  <!-- scripting off: show every panel and every card, so nothing is locked behind a tab -->
+  <noscript><style>
+    .srv-panel[hidden]{display:block}
+    .srv-card[hidden]{display:grid}
+    .srv-tabs{display:none}
+  </style></noscript>
+</section>
+
+<!-- ================= CTA ================= -->
+<section class="cta">
+  <div class="container">
+    <div class="cta__panel">
+      <iframe class="cta__logo-anim" src="B Logo Icon Web-loader.html"
+              aria-hidden="true" loading="lazy" title="Bahirtech animated logo"></iframe>
+      <div>
+        <!-- A question invited a yes/no answer and nothing else; and "advice" undercuts the
+             services copy, which sells accountability rather than opinions. This asks for the
+             one action the page actually wants, and names what the call is. -->
+        <h2>Book a 30-minute call with an engineer</h2>
+        <!-- the space before <br> matters: when .br-wide is hidden on narrow screens the
+             break is the only thing separating these two words -->
+        <p>Pick a time that suits you. You will get a plain read on what is wrong, what fixing
+          it involves, and how we would <br class="br-wide">position your organization for the
+          long term — whether or not you work with us.</p>
+      </div>
+      <div class="cta__actions">
+        <a href="#contact" class="btn btn--onDark">Schedule a consultation</a>
+        <a href="#services-section" class="btn btn--ghostDark">
+          See our services
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= WHY BAHIR TECH ================= -->
+<section class="why">
+  <div class="container">
+    <div class="why__head">
+      <div>
+        <span class="eyebrow">Why Bahir Tech</span>
+        <h2>Why organizations trust us with systems they cannot lose</h2>
+        <p class="lede">25+ delivered projects across banking, health and the public sector. We
+          work to global engineering standards, in your timezone, with one team accountable from
+          scope to handover.</p>
+        <a href="#contact" class="btn btn--primary">Talk to an Expert</a>
+      </div>
+
+      <figure class="shot" data-shot="why">
+        <figcaption class="shot__note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+          <b>Team photograph</b>
+          1080 × 660 · the team, the office, or a delivered project
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="why__cards">
+      <article class="wcard">
+        <span class="wcard__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg></span>
+        <h3>Wisdom-Driven Strategy</h3>
+        <p>We combine deep understanding of Ethiopian business culture with global standards to build
+          solutions that fit your context.</p>
+      </article>
+
+      <article class="wcard">
+        <span class="wcard__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg></span>
+        <h3>Trusted Execution</h3>
+        <p>We don't just plan, we deliver — a proven record of successful projects across sectors
+          shows our commitment to excellence.</p>
+      </article>
+
+      <article class="wcard wcard--accent">
+        <span class="wcard__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg></span>
+        <span>Local Insight,</span>
+        <h3>Global Standards</h3>
+      </article>
+    </div>
+
+    <div class="why__foot">
+      <span>#BahireHasab</span><span>#ExecutionExcellence</span>
+      <span>#WiseInnovation</span><span>#StrategicIntegrity</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BLOG / INSIGHTS ================= -->
+<section class="blog" id="insights">
+  <div class="container blog__inner">
+    <div class="blog__top">
+      <h2 class="blog__heading">How Bahir Tech powers<br>the success of:<span>.</span></h2>
+      <div class="blog__controls">
+        <div class="blog__tabs" role="tablist" id="blogTabs">
+          <button class="blog__tab blog__tab--active" role="tab" aria-selected="true" data-tab="insights">Insights</button>
+          <button class="blog__tab blog__tab--inactive" role="tab" aria-selected="false" data-tab="cases">Case Studies</button>
+          <button class="blog__tab blog__tab--inactive" role="tab" aria-selected="false" data-tab="news">News</button>
+        </div>
+        <div class="blog__arrows">
+          <button class="blog__arrow" id="blogPrev" aria-label="Previous articles">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button class="blog__arrow" id="blogNext" aria-label="Next articles">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="blog__track-wrap">
+      <div class="blog__track" id="blogTrack">
+
+        <!-- Card 1: FEATURED -->
+        <article class="bcard bcard--featured">
+          <div class="bcard__img-wrap">
+            <img src="public/assets/Images/blog_infra.jpg" alt="Bahir Tech engineer in a bank's server room" loading="lazy">
+            <div class="bcard__overlay"></div>
+            <div class="bcard__badge">
+              <span class="bcard__badge-logo">BAHIR TECH</span>
+              <span class="bcard__badge-tag">Infrastructure</span>
+            </div>
+            <div class="bcard__featured-copy">
+              <h3>How CBE's network stayed up during the busiest trading week in a decade</h3>
+            </div>
+          </div>
+          <div class="bcard__meta">
+            <span class="bcard__author">Infrastructure Team</span>
+            <p class="bcard__title">How CBE's network stayed up during the busiest trading week in a decade</p>
+          </div>
+        </article>
+
+        <!-- Card 2 -->
+        <article class="bcard">
+          <div class="bcard__img-wrap">
+            <img src="public/assets/Images/blog_software.jpg" alt="Ethiopian developers building custom software" loading="lazy">
+            <div class="bcard__overlay"></div>
+            <div class="bcard__badge">
+              <span class="bcard__badge-logo">BAHIR TECH</span>
+            </div>
+          </div>
+          <div class="bcard__meta">
+            <span class="bcard__author">Software Team</span>
+            <p class="bcard__title">From idea to live system: how we built a custom loan platform in 90 days</p>
+          </div>
+        </article>
+
+        <!-- Card 3 -->
+        <article class="bcard">
+          <div class="bcard__img-wrap">
+            <img src="public/assets/Images/blog_security.jpg" alt="Cybersecurity analyst monitoring screens" loading="lazy">
+            <div class="bcard__overlay"></div>
+            <div class="bcard__badge">
+              <span class="bcard__badge-logo">BAHIR TECH</span>
+            </div>
+          </div>
+          <div class="bcard__meta">
+            <span class="bcard__author">Security Team</span>
+            <p class="bcard__title">Why endpoint detection stopped a ransomware attack before it spread</p>
+          </div>
+        </article>
+
+        <!-- Card 4 -->
+        <article class="bcard">
+          <div class="bcard__img-wrap">
+            <img src="public/assets/Images/blog_cloud.jpg" alt="Ethiopian engineer working on cloud architecture" loading="lazy">
+            <div class="bcard__overlay"></div>
+            <div class="bcard__badge">
+              <span class="bcard__badge-logo">BAHIR TECH</span>
+            </div>
+          </div>
+          <div class="bcard__meta">
+            <span class="bcard__author">Cloud Team</span>
+            <p class="bcard__title">Moving a government agency to cloud without a single hour of downtime</p>
+          </div>
+        </article>
+
+        <!-- Card 5 -->
+        <article class="bcard">
+          <div class="bcard__img-wrap">
+            <img src="public/assets/Images/blog_team.jpg" alt="Ethiopian executive presenting digital strategy" loading="lazy">
+            <div class="bcard__overlay"></div>
+            <div class="bcard__badge">
+              <span class="bcard__badge-logo">BAHIR TECH</span>
+            </div>
+          </div>
+          <div class="bcard__meta">
+            <span class="bcard__author">Leadership</span>
+            <p class="bcard__title">Digital transformation is not a project — it is a discipline</p>
+          </div>
+        </article>
+
+      </div><!-- /.blog__track -->
+    </div><!-- /.blog__track-wrap -->
+  </div>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section class="contact" id="contact">
+  <div class="container contact__grid">
+
+    <div class="contact__head">
+      <span class="eyebrow">Free Consultation</span>
+      <h2>Tell us what is breaking</h2>
+      <p class="lede">A 30-minute call with an engineer, not a salesperson. You leave with a clear
+        read on the problem and what fixing it involves — whether or not you work with us.</p>
+
+      <ul class="cinfo">
+        <li>
+          <span class="cinfo__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+          <div><b>Address</b><span>Laphto Mall, Bisrate Gebriel<br>Addis Ababa, Ethiopia</span></div>
+        </li>
+        <li>
+          <span class="cinfo__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+          <div><b>Call Us</b><span>+2519 30 573 337<br>Mon–Fri, 8:00 AM – 6:00 PM</span></div>
+        </li>
+        <li>
+          <span class="cinfo__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,6 12,13 2,6"/></svg></span>
+          <div><b>Email Us</b><span>info@bahirtech.com<br>support@bahirtech.com</span></div>
+        </li>
+      </ul>
+    </div>
+
+    <form class="cform" id="contactForm">
+      <h3>Send us a message</h3>
+      <div class="cform__row">
+        <div class="cfield">
+          <label for="cFirst">First Name</label>
+          <input id="cFirst" name="firstName" type="text" autocomplete="given-name" placeholder="Your first name" required>
+        </div>
+        <div class="cfield">
+          <label for="cLast">Last Name</label>
+          <input id="cLast" name="lastName" type="text" autocomplete="family-name" placeholder="Your last name">
+        </div>
+      </div>
+      <div class="cform__row">
+        <div class="cfield">
+          <label for="cEmail">Email Address</label>
+          <input id="cEmail" name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+        </div>
+        <div class="cfield">
+          <label for="cPhone">Phone Number</label>
+          <input id="cPhone" name="phone" type="tel" autocomplete="tel" placeholder="+251 XXX XXX XXX">
+        </div>
+      </div>
+      <div class="cfield">
+        <label for="cCompany">Company / Organization</label>
+        <input id="cCompany" name="company" type="text" autocomplete="organization" placeholder="Your company name">
+      </div>
+      <div class="cfield">
+        <label for="cService">Service Interest</label>
+        <select id="cService" name="service">
+          <option value="" selected>Select a service</option>
+          <option>IT Infrastructure &amp; Networking</option>
+          <option>Software Development</option>
+          <option>Cybersecurity Operations</option>
+          <option>Something else</option>
+        </select>
+      </div>
+      <div class="cfield">
+        <label for="cMessage">Message</label>
+        <!-- the CTA above offers a booked call, so the form has to take a time — one line here
+             rather than a date picker, which would need a real calendar behind it -->
+        <textarea id="cMessage" name="message" rows="4" placeholder="Tell us about your project — and a good day and time to call"></textarea>
+      </div>
+      <button type="submit" class="btn btn--primary">Send Message</button>
+    </form>
+
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="ft">
+  <div class="container">
+    <div class="ft__grid">
+      <div>
+        <div class="ft__logo" aria-label="Bahir Tech">
+          <img src="public/assets/logo/Bahirtech (B) logo icon.svg" alt="">
+          <span>BAHIR <b>TECH</b></span>
+        </div>
+        <p class="ft__tag">Guided by wisdom to create lasting impact through technology.</p>
+        <div class="ft__social">
+          <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+          <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>
+          <a href="#" aria-label="Telegram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></a>
+          <a href="#" aria-label="X"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg></a>
+        </div>
+      </div>
+      <div class="ft__news">
+        <h4>Join the Sea of Wisdom</h4>
+        <p>Subscribe for insights on digital transformation built for the Ethiopian landscape.</p>
+        <form class="ft__form" id="newsForm">
+          <input type="email" placeholder="Enter your email here" aria-label="Email address" required>
+          <button type="submit">Join</button>
+        </form>
+      </div>
+      <div class="ft__links">
+        <h4>Quick Links</h4>
+        <a href="index.html">Home</a>
+        <a href="service.html">Services</a>
+        <a href="#">Team</a>
+        <a href="about.html">About</a>
+      </div>
+      <div class="ft__contact">
+        <h4>Contact Us</h4>
+        <a href="tel:+251930573337">+2519 30 573 337</a>
+        <a href="mailto:info@bahirtech.com">info@bahirtech.com</a>
+        <p>Laphto Mall, Bisrate Gebriel<br>Addis Ababa, Ethiopia</p>
+      </div>
+    </div>
+    <div class="ft__bottom">
+      <p>&copy; 2025 BAHIR TECH PLC. All rights reserved.</p>
+      <div class="ft__legal">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- site-chrome.js no longer fetches the chrome - the header and footer are
+     already in the markup above. It only adds the nav's scroll phases and the
+     newsletter form behaviour; `site-chrome:ready` still fires once those are in. -->
+<script src="public/assets/js/site-chrome.js"></script>
+
+<!-- ============ HERO GLOBE + OCEAN (three.js) ============ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<!-- SHARED HERO STATE: pointer + scroll + visibility, smoothed once per frame -->
+<script>
+window.HeroFX = (function(){
+  var stage  = document.getElementById('stage');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var S = {
+    reduce: !!reduce,
+    px:0, py:0,     // raw pointer, -1..1 across the hero box
+    x:0,  y:0,      // smoothed pointer
+    over:false,     // pointer inside the hero box
+    scroll:0,       // 0..1 across the hero stage height
+    vel:0,          // decaying scroll velocity
+    active:true     // hero on screen AND tab visible
+  };
+  if (!stage) return S;
+
+  var lastY = window.pageYOffset, onScreen = true;
+
+  function pointer(e){
+    var r = stage.getBoundingClientRect();
+    S.px = ((e.clientX - r.left) / r.width)  * 2 - 1;
+    S.py = ((e.clientY - r.top)  / r.height) * 2 - 1;
+    S.over = e.clientX >= r.left && e.clientX <= r.right &&
+             e.clientY >= r.top  && e.clientY <= r.bottom;
+  }
+  window.addEventListener('pointermove', pointer, {passive:true});
+  window.addEventListener('pointerdown', pointer, {passive:true});
+  document.addEventListener('pointerleave', function(){ S.over = false; S.px = 0; S.py = 0; }, {passive:true});
+
+  /* The stage is full-bleed again, so the scroll response is back on: it drives the
+     globe's lift/shrink/tilt and the camera pull-back as the hero leaves. Those are all
+     in-scene transforms, so nothing can expose an edge of the stage. */
+  function scrolled(){
+    var h = stage.offsetHeight || window.innerHeight;
+    var y = window.pageYOffset;
+    S.scroll = Math.max(0, Math.min(1, y / h));
+    S.vel += (y - lastY) * 0.5;
+    lastY = y;
+  }
+  window.addEventListener('scroll', scrolled, {passive:true});
+  window.addEventListener('resize', scrolled, {passive:true});
+  scrolled();
+
+  if ('IntersectionObserver' in window){
+    new IntersectionObserver(function(e){ onScreen = e[0].isIntersecting; }, {threshold:0}).observe(stage);
+  }
+
+  /* The hero is pinned now, so its stage never stops intersecting and the observer
+     above would keep all three WebGL loops running for the entire page. Once the next
+     section's top reaches the viewport top the hero is completely hidden, so treat it
+     as inactive from there on. */
+  var cover = document.querySelector('.serve');
+  function covered(){ return !!cover && window.pageYOffset >= cover.offsetTop; }
+
+  (function loop(){
+    requestAnimationFrame(loop);
+    S.active = onScreen && !document.hidden && !covered();
+    var k = S.reduce ? 1 : 0.065;
+    S.x += (S.px - S.x) * k;
+    S.y += (S.py - S.y) * k;
+    S.vel *= 0.90;
+    if (!S.active) return;
+  })();
+
+  return S;
+})();
+</script>
+
+<!-- OCEAN + STARFIELD -->
+<script>
+(function(){
+  var FX     = window.HeroFX;
+  var canvas = document.getElementById('gl');
+  var stage  = document.getElementById('stage');
+  if (!canvas || !stage || !window.THREE) return;
+
+  var W = stage.clientWidth, H = stage.clientHeight;
+
+  var renderer = new THREE.WebGLRenderer({canvas:canvas, antialias:true, alpha:true, powerPreference:'high-performance'});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setSize(W, H);
+
+  var scene  = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(42, W/H, 0.1, 200);
+  camera.position.set(0, 0.4, 11);
+
+  function softDot(color, size, hardness){
+    var c = document.createElement('canvas');
+    c.width = c.height = size;
+    var ctx = c.getContext('2d');
+    var g = ctx.createRadialGradient(size/2,size/2,0,size/2,size/2,size/2);
+    g.addColorStop(0, color); g.addColorStop(hardness, color); g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g; ctx.fillRect(0,0,size,size);
+    return new THREE.CanvasTexture(c);
+  }
+
+  /* ---------------- starfield (twinkles, parallaxes with the pointer) ---------------- */
+  /* The mix used to be half lemon, and in a small panel that much saturated yellow is
+     what read as "too colourful". Mostly pale now, with green as the occasional spark. */
+  var STARS = 700;
+  var sPos = [], sCol = [], sPhase = [], sSize = [];
+  var cLemon = new THREE.Color(0xCFDE5D), cGreen = new THREE.Color(0xAAC638), cPale = new THREE.Color(0xE8ECFF);
+  for (var i = 0; i < STARS; i++){
+    sPos.push((Math.random()-0.5)*30, (Math.random()-0.5)*14, (Math.random()-0.5)*16 - 2);
+    var r = Math.random();
+    var c = r < 0.72 ? cPale : (r < 0.93 ? cGreen : cLemon);
+    sCol.push(c.r, c.g, c.b);
+    sPhase.push(Math.random());
+    sSize.push(0.5 + Math.random()*1.6);
+  }
+  var starGeo = new THREE.BufferGeometry();
+  starGeo.setAttribute('position', new THREE.Float32BufferAttribute(sPos,3));
+  starGeo.setAttribute('aCol',   new THREE.Float32BufferAttribute(sCol,3));
+  starGeo.setAttribute('aPhase', new THREE.Float32BufferAttribute(sPhase,1));
+  starGeo.setAttribute('aSize',  new THREE.Float32BufferAttribute(sSize,1));
+
+  var starUni = { time:{value:0}, uPix:{value:renderer.getPixelRatio()} };
+  var stars = new THREE.Points(starGeo, new THREE.ShaderMaterial({
+    uniforms: starUni, transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
+    vertexShader: [
+      'attribute vec3 aCol; attribute float aPhase; attribute float aSize;',
+      'uniform float time; uniform float uPix;',
+      'varying vec3 vCol; varying float vTw;',
+      'void main(){',
+      '  vCol = aCol;',
+      '  vTw = 0.45 + 0.55*sin(time*1.4 + aPhase*6.2831);',
+      '  vec4 mv = modelViewMatrix*vec4(position,1.0);',
+      '  gl_PointSize = aSize*uPix*(46.0/max(0.001,-mv.z));',
+      '  gl_Position = projectionMatrix*mv;',
+      '}'
+    ].join('\n'),
+    fragmentShader: [
+      'varying vec3 vCol; varying float vTw;',
+      'void main(){',
+      '  float d = length(gl_PointCoord-vec2(0.5));',
+      '  if(d>0.5) discard;',
+      '  float a = smoothstep(0.5,0.0,d);',
+      '  gl_FragColor = vec4(vCol*(0.55+0.85*vTw), a*(0.35+0.6*vTw));',
+      '}'
+    ].join('\n')
+  }));
+  scene.add(stars);
+
+  /* ---------------- ocean: waves + cursor bulge + click/move ripples ---------------- */
+  var MAXR = 8;
+  var ripples = [];
+  for (var ri = 0; ri < MAXR; ri++) ripples.push(new THREE.Vector3(0,0,-999));
+
+  var oceanUni = {
+    time:      {value:0},
+    uMouse:    {value:new THREE.Vector2(0,0)},
+    uMouseAmp: {value:0},
+    uRipples:  {value:ripples},
+    uScroll:   {value:0}
+  };
+
+  var oceanMat = new THREE.ShaderMaterial({
+    // normal (not additive) blending — additive is what let the globe's lime halo
+    // pile up on the water and read as a reflection
+    uniforms: oceanUni, wireframe:true, transparent:true, blending:THREE.NormalBlending,
+    vertexShader: [
+      'uniform float time; uniform vec2 uMouse; uniform float uMouseAmp;',
+      'uniform vec3 uRipples[8]; uniform float uScroll;',
+      'varying float vH; varying float vRip;',
+      'void main(){',
+      '  vec3 pos = position;',
+      '  float amp = 1.0 + uScroll*0.9;',
+      // swell speeds roughly halved — same wave shapes, calmer water
+      '  float w1 = sin(pos.x*0.60 + time*0.28)*0.22;',
+      '  float w2 = sin(pos.y*0.90 + time*0.42)*0.12;',
+      '  float w3 = sin((pos.x+pos.y)*0.35 + time*0.18)*0.15;',
+      '  float w4 = sin(pos.x*1.70 - time*0.60)*0.05;',
+      '  pos.z += (w1+w2+w3+w4)*amp;',
+      // soft swell that follows the cursor — gentler and slower than the ambient waves
+      '  float dm = distance(pos.xy, uMouse);',
+      '  pos.z += uMouseAmp*0.34*exp(-dm*dm*0.06)*(0.6+0.4*sin(time*0.85 - dm*1.2));',
+      // expanding ring ripples
+      '  float rip = 0.0;',
+      '  for(int i=0;i<8;i++){',
+      '    vec3 r = uRipples[i];',
+      '    float age = time - r.z;',
+      // ripples spread at ~45% of the old speed, so the window they live in is widened to match
+      '    if(r.z > 0.0 && age > 0.0 && age < 9.0){',
+      '      float d = distance(pos.xy, r.xy);',
+      '      float front = age*1.5;',
+      '      float band = exp(-(d-front)*(d-front)*0.55);',
+      '      rip += sin((d-front)*2.4)*band*exp(-age*0.38)*0.62;',
+      '    }',
+      '  }',
+      '  pos.z += rip;',
+      '  vH = pos.z; vRip = abs(rip);',
+      '  gl_Position = projectionMatrix*modelViewMatrix*vec4(pos,1.0);',
+      '}'
+    ].join('\n'),
+    fragmentShader: [
+      'varying float vH; varying float vRip;',
+      'void main(){',
+      '  float t = clamp((vH+0.5)/1.0, 0.0, 1.0);',
+      '  vec3 low  = vec3(0.09,0.12,0.32);',
+      '  vec3 mid  = vec3(0.25,0.42,0.55);',
+      '  vec3 high = vec3(0.42,0.56,0.49);',   // was lime (0.81,0.87,0.36) — pulled toward the blue mid tone
+      '  vec3 col = mix(low, mid, smoothstep(0.0,0.55,t));',
+      '  col = mix(col, high, smoothstep(0.5,1.0,t));',
+      '  col += vec3(0.55,0.62,0.28)*clamp(vRip*1.3,0.0,1.0);',
+      '  gl_FragColor = vec4(col, 0.5 + 0.35*t + 0.30*clamp(vRip,0.0,1.0));',
+      '}'
+    ].join('\n')
+  });
+
+  var ocean = new THREE.Mesh(new THREE.PlaneGeometry(34,16,140,70), oceanMat);
+  ocean.rotation.x = -Math.PI/2.35;
+  ocean.position.set(0,-2.78,1.5);   // lifted slightly — was -3.1
+  scene.add(ocean);
+  ocean.updateMatrixWorld(true);   // worldToLocal is used before the first render
+
+  /* drifting motes just above the water */
+  var motePos = [];
+  for (var m = 0; m < 260; m++) motePos.push((Math.random()-0.5)*24, -3 + Math.random()*1.6, Math.random()*8 - 2);
+  var moteGeo = new THREE.BufferGeometry();
+  moteGeo.setAttribute('position', new THREE.Float32BufferAttribute(motePos,3));
+  var motes = new THREE.Points(moteGeo, new THREE.PointsMaterial({
+    size:0.05, map:softDot('rgba(170,198,56,1)',64,0.1), transparent:true,
+    depthWrite:false, blending:THREE.AdditiveBlending, opacity:0.75
+  }));
+  scene.add(motes);
+
+  /* ---------------- pointer -> ocean surface (math plane, no per-triangle raycast) ---- */
+  var ray      = new THREE.Raycaster();
+  var ndc      = new THREE.Vector2();
+  var hitWorld = new THREE.Vector3();
+  var oceanPlane = new THREE.Plane().setFromNormalAndCoplanarPoint(
+    new THREE.Vector3(0,0,1).applyQuaternion(ocean.quaternion), ocean.position
+  );
+
+  var T = 0;               // shader clock, shared with ripple spawning
+  var lastSpawn = -1, spawnIdx = 0;
+
+  // returns local plane coords of the pointer, or null when it misses the water
+  function pointerOnWater(nx, ny){
+    ndc.set(nx, -ny);
+    ray.setFromCamera(ndc, camera);
+    if (!ray.ray.intersectPlane(oceanPlane, hitWorld)) return null;
+    var local = ocean.worldToLocal(hitWorld.clone());
+    if (Math.abs(local.x) > 20 || Math.abs(local.y) > 10) return null;
+    return local;
+  }
+  function spawnRipple(nx, ny, minGap){
+    if (FX.reduce) return;
+    if (T - lastSpawn < minGap) return;
+    var p = pointerOnWater(nx, ny);
+    if (!p) return;
+    ripples[spawnIdx].set(p.x, p.y, T);
+    spawnIdx = (spawnIdx + 1) % MAXR;
+    lastSpawn = T;
+  }
+  // read the pointer off the event itself: this listener runs before the window-level
+  // one in HeroFX, so FX.px/py would still hold the previous event's position
+  function evNorm(e){
+    var r = stage.getBoundingClientRect();
+    return [((e.clientX - r.left)/r.width)*2 - 1, ((e.clientY - r.top)/r.height)*2 - 1];
+  }
+  stage.addEventListener('pointermove', function(e){ var n = evNorm(e); spawnRipple(n[0], n[1], 0.22); }, {passive:true});
+  stage.addEventListener('pointerdown', function(e){ var n = evNorm(e); lastSpawn = -1; spawnRipple(n[0], n[1], 0); }, {passive:true});
+
+  function onResize(){
+    W = stage.clientWidth; H = stage.clientHeight;
+    camera.aspect = W/H;
+    camera.updateProjectionMatrix();
+    renderer.setSize(W,H);
+  }
+  window.addEventListener('resize', onResize);
+
+  var clock = new THREE.Clock();
+  var mrot = 0;
+  (function animate(){
+    requestAnimationFrame(animate);
+    if (!FX.active) return;
+
+    T = clock.getElapsedTime();
+    var p = FX.scroll;
+
+    starUni.time.value  = FX.reduce ? 0 : T;
+    oceanUni.time.value = FX.reduce ? 0 : T;
+    oceanUni.uScroll.value += (p - oceanUni.uScroll.value) * 0.08;
+
+    // cursor swell follows the pointer, fades out when it leaves the hero
+    var hit = FX.over ? pointerOnWater(FX.x, FX.y) : null;
+    if (hit) oceanUni.uMouse.value.set(hit.x, hit.y);
+    oceanUni.uMouseAmp.value += ((hit ? 1 : 0) - oceanUni.uMouseAmp.value) * 0.025;
+
+    if (!FX.reduce){
+      scene.rotation.y = FX.x * 0.075;
+      scene.rotation.x = FX.y * 0.024;
+      mrot = Math.sin(T*0.05)*0.05;
+      motes.rotation.y = mrot;
+      stars.rotation.y = T * 0.006 + FX.x * 0.03;
+    }
+
+    camera.position.x = FX.x * 0.7;
+    camera.position.y = 0.4 - FX.y * 0.45 - p * 1.1;
+    camera.position.z = 11 - p * 1.4;
+    camera.lookAt(0, -p * 0.8, 0);
+
+    renderer.render(scene, camera);
+  })();
+})();
+</script>
+
+<!-- GLOBE: exact Natural Earth coastlines, pointer spotlight, scroll response -->
+<script>
+(function(){
+  var FX = window.HeroFX;
+  var container = document.getElementById('globeContainer');
+  if (!container || !window.THREE) return;
+
+  /* Natural Earth 110m land, Douglas-Peucker simplified to 0.08deg, quantised to a
+     1/8-degree grid, zigzag-varint delta encoded over a 64-char alphabet.
+     Rings are '!' separated; longitudes are unwrapped past +/-180 at the antimeridian. */
+  var LAND = "m8BgFHPhBCjBATEHGmCBUMQF!sKoFdBVGTKKGeBcJEH!ujCgGUHGJCNxBJ_BFlBATGCGiBEOGmBagBCYB!sdoIWBSCHFPDVCPGEESB!oboIYFdCVEMEQD!woBiJSDSCIHnCAPEJGKCsBB!43BwJCFFLlBFTAIGlBDLEAIcISBGKASKIOCIFUb!A0CQKcFWGYFYIuBCwBLyCH8BDuBEkCBoBF2CKEG_BCxBENGrBCEIMMDIZELGZEoBAkBCYF2BMOEFIrBI9CEJGTGLGFSWF0BCOFYCqBISEYCAGFGEGWCIDsBGsBC6BMYDYEWDqBCuBB6CASGSCUDUCQGcPQGSFWBUDqBCYAsBDIGRMTAJGHSMBoBAUBQFGDWB$BISDUAOOOHSBUAMFqBBSDOGGGQFWCQDKFWCgBIgCGOEKEEIBGTYAGAGOOEGFMIIUKWKIISIQAKGYEUKOCIDFFVHLCNAVHHFBFAFIFJBPBbRBFEFKDYJQRIFEFCNKRBJRLTBRJXF9BJNFpDBGFYBSDKFRFbCVDBLSFEFUFiBBwCPwCF4BJYNUG2BK$BIoBAoCFKIWEoBAiEMaERMAG_CDDGCMGEyBIoBIOI2BGwBCwCQcKGGREGGKG0BMMGIIMESBIDUBAGIISBEFSBqBGSBGFSG2CMOEKGMDQCWNSEGGQEWAGFOG0BCkBDSJQE4BAgBEOGgBEMEIIKGQBGFODSCWJQEGGgBIiBGmBKQBYKOAOEEGMEsBGeBMDCFYJUBWJQAOCMIuBHgBAORBDBFNDNFEHSCDHNLMDSBSCOMUKMO8BGMMMGcIKGUEQAeCSAMEIKOLMB$BBKCOAMDuBESByBaWFeNgBBiBEYKSAMEMDUJSCeHUBQAYKOCeDeCcBgBGgCCEICIKFCFMLOD6CEmBBMFDFKDkBH6BHSAKGoBNmBDIFSDOFQBqCB0BHMFBFJFTRTDJDTDHFVLJLBNIFEFIDeDGF1BFdANJBHPLWDIHiBJuBJkBFIHuBBQFsBEgCJAzC_zFA!k4BiSUJYDHHPAHGDFNFRCLEPETIPIVSMBYLUFIIGMOGMBOT!48BuTMFDFVFHGNFHGUKODKG!k9DkUXAAICKMFOBABDH!2iF0YQFWGIBCTFDBNDELJNCJMBMHOAGKA!wwFyYEHMIEHAFPTHFGHNALFNZTLPAJGRABGIMUQMEYOKIIMGECIKIEF!qxF$aMRAMGDELMFMBIGIBDNDHLADFAFPVLHBGHCKMFKPGAGMGCMAKHKCEVUFMGAIHODEN!ytF$hBFDTMVSBGIAIFiBZ!mzFqkBGDDHJBHCBGGGIBEC!A4kBTHBGaKDH!ytFylBCNDCDABEAMID!gzDomBETEHBHBDFKDFELBFDDBNjBvDbJVKDIAOFOBMCKIEAEIMCMHQAQEIEKICOGIAWSEIBIGBKKAKGIINEJ!4hFkmBGLMGMNBFENCHEBENBHGLSHWNBDIJGRIEGFECCRgBbENARINBNFVAHJZLHLTDNFHDLBPJFRANHPLNGJECIHDNJvBMJKFUHGPCGIDMHLNBIICKGIBMLNJFFLLGAIJMHGCETKLANIdBlBJPAPHNDDHFFXBNCVBJHDAPJVCZMAKICEEAQAKJQBKAIFMAEHGBMHOBGGFDOGDGFAINWCKEECIBIGMCLGKOGIGMGGCGBMGKCCEEAIASGIGEIKICQKOGNICFIGIGDCMIIEIICAEIBAEQEKFKJUBDKIMIEDEIKKGIBOCBIJGICKDIFODEAKDKEGAECIHFHFFDBCFLPCDMHOFSNGAIDCFQFKGGQIWDUCMEEBGGWGGEHCJEBAHGHAN!s2E8nBHATMOCOJAD!uqFioBPCDCCGKBIH!6qFmoBBBLOBIEAGLGH!m4E$nBLDBCAGIKQGCEeGGBFDdLLL!$0E$oBGDKCEHdDHAGIIAEG!u3E$oBBHXDVCAEOEKDKAOG!$pF6oBABZSCAIBMHEF!qwE0pBeBEGeHGJYBUJRFRGfCrBKHBbGDINAKQUBUFCF!s9E8pBHJBMGKEDAH!$nFypBDAHGFKDMCCCFMNIDBF!gmFoqBHADFPHHAVKAEOBKCCICACHIAGGIGBKKAEDAHFJ!05EorBFDLCBIQAEF!o7EurBGLNGhBCEIUCSF!ymF4qBDDHQPMLEGEULMLCH!i9EusBEZSJMSUIOAYJSD6BTUPCJaJEHNBEJOJKRIAAFMBDDQFAFLADEdETSJOTIXJCLLFHERANOPCDDTAGMKEDSHOdONAXQDHFBDGAILGSGKAAEXAFKNEHIWCIGaFCF!04E2tBNPLBNCpBBBLONKGeGBHFEHJNFQTDFORALHDFGIMPFDECGLKCQLDCpBJBFEEOBQFAFMGKEMKgBOKMDUBUAQMCD!s6EytBBNHCBJGHDBFKFUEMEGCHKBCF!$uEiqBRANOTMTYTiBNMJcNKJMLKPSBIkBDOPWROPQAOLKNMFFNIDGBCJGJMAIJDTAZ!$0E$tBSPRBFJANPLAPFXBGRHFKLAHGRFFILALCBUHEHOBOCQIKMFMEEOGCUEacOKMKIMGAIHCFWJAFJACHLFHNKPBF!m5EmxBCRDPFQHHELDFRIDMEIJIFHFCLJDGIMSMGHMECIMABMOHCN!0iEkwBNDHMBYGaMJObBPFD!y7BiyBNBDCGEAGICEAAL!g4EkyBPTJMIICKICBLMQBP!o1E2xBVPIMWUIQENLHHJ!$2E$yBKDKAAHHFJDAOBI!44EizBERLEENHDAMDADKKBAGJMQAEF!42EyzBDNNUMBGD!22Eo2BKDEECDDHGJDNJFBLELIBICUJBHEDAHNIFIDFJKNBHEAGGEDEBFHKDGAQGFCaGOKA!m5Bk2BDDTABGCCOAIBCB!yzB$1BFBHCJGCEIAOBIDCDJA!21B$2BOBCCOAIDEAEFICAFIAGFFFFCNABBFBBEFBFJDCBEJERAFDJGCEaBGCFIAGJCCEKA!mxEq2BNFNEAOIISEIAEFFHDJ!oMy2BDDBCAGDGEEAEKDIHLF!myBs4BGFOCeTODADMAMHBDLBrBAKIFEJCFEDKHBPGDCVEDCGEPCLJFABDHBHCIGEGICYIaBQF!ozB84BDADIFGCKGBGLAJ!y2Es4BFLHOBKKQMMIDNjB!izBq6BPDBGSCAD!q9Ei$BCFHHHEHDDHJEAIIIKAGGMD!qrD6$BLFCDPFHCDGIAEEKAQE!8lD8$BIFYAADICBDVBAETCEI!4hDkgCFLCFBHLGfKEISBcE!0$C0hCILBVFCHFFEAUDKKBIG!wgFy_BFLCHHLTHbAXRJGAMbDTHRAQLJZLHFGEQJEHKQGIKQIMKgBGQDScKFgBWKUBSGKSCIVANNPAP!4$CiiCDLHEDKEGKGCN!$hFijCMBMGCRXDNPXKHPRABQIMQAEWGMSPMF!m6BokCKBQCHHFATGDGGEGH!k7BylCHAVENIGCUDQHCB!ocolCHBZIFENGBGPCHICEqBHOLQFGJ!$9BsmCJNKEKDFDQDGCQDDLKCIRHNFAJCCODCRNJAMIPEvBABEKGHEOKQaKIOGIALN!0XgoCQCDRONHAHIFIHEDICEGB!6hFsmCQbXEJVQPALLKJLDMCQBSEMAWHOAWQIFIGCKZAPGP!02CknCdJVEOQJQiBUOASJJJELLN!sgD6oCJNRKBGYGGH!wNypCPFHEBIWIKBIDNH!w4CqqCRRiBCDLNNQBQTMBOZSBBJHFIHPHTAbDHEJHNCLFHCYSOCZEDGQEHKCKYBCKJKTCDEGIDEJHAQHIGSMMMBUC!mH$qCJBTIQCOBAF!syBisCFHHCDEIGGAED!ixBssCTJJADGMGWAAB!kE8sCKBKCOFOBLDRGNADAAG!uvB6tCCFICuBNCHKAMDNFXEJIPHVJFKVBOICOGOMB!4yCouCDLSJTL7BNhCIQGjBIeEBEhBEMKYCYJaIUDaIaA!i0ByuCRADIIIOCMDAFBBJF!AwvCoBLqBPBJKDDKsBBgBNPHZAAPHDNALGVEDIPCRBHGEGTDIHJFTHVCOHKNIDCFDFdErBLPBtBTFHXMpBNFGPFVCDJTPAFUDDXNAFNGFbHFRXDDPXPFMP6BIWOKAIaC4BmBcMOWTAJNnBRNUnBFnBZMJ7BFCMZCTHvBEzBFxDjCaBIJODKISAYRANLPBTHXXXDL1BtBVJJAJIVLBDFAFDFFCLHDJFJDHDAFBBQJOTEJARFHPDLFNBBICMFSMCLOFEBDFBAEHEEGECBEEIACJCHEVDLHRDKIDGMKHKNFRLJJPAHHILOBAFOFSMOFKACJVDHHPHHLSHGPUZALJFEHKDHZHBXlBPTrBbRBJFFEHHVHRBDPJBDMEGVGHDTLNPDLcjBOJKNIdBbNJRJNNTNFKGKLKNCFIHQNINACMNABRNjBCLKAGPENIHKBWTGJCLBFCPGDGNAFLAhBYBIHMDMDIAMBIFGDIPQBJDKGYAMEOFICSFIHoBHMbRREEUBQNSCGHCLMDKDOHKNACFFHFCBBLCBDJATDALHJXJPTbTAHXHFBFLEhBFPAZHBHLGDPFDJHDNONmBNYFePWJ0BASDQXJJCVUIGDGTOJEFKLMtCDhCKFUHCLBPHTEPOPEVkBHBJGFHJCCHADKXIDEFKFALKTAMEIECGFAHDJEFCAADOCWAmBkBCBDHCNIJIFWDMPEBADHNFDFLHCBDDHCJABHAJFBHDDJAFDAFHDHAJDTFDLnBNPLJAJFbFDDDABDXBDKAIFQDICAAICCBIBGDGBGHGHMDOLKHEJOAWJSHGHCFKCEFIDEFMRYHBEYDFHTDDLMLYABGPWpBKRQRDBAJWRGPDBCRGROJKREPeVkBhBBFHDMHCFIFIAOESCcIOAQEIGGABVBFFPPnBNVNRRV3BpBRRFLLHDFFBBJFFBLFDHTAJMFADDJALMZGDCFC3BCHJVJJhBNRPFDJJHDALGLENEABPBFEDBFHFfNFFAFEBFfDHNJVbbZLHRFHABFJEHDPEJBFARFLBJFHBFGFAHIABBEAKFKGEAMdwBLMFMN0BBcNULeNOBYCOMkBSYAUDGHUGKHaHKCCHSnBuBJQMiBDCIgBFKFCDIDCAEPFFCFDNAHKFMJKZAbFvBRNEbCTBZJHAPIbULKNIJIDSNQHGDKLKHABIFCDQCIFMHGICGMEIAIEICQDYCIDIHGAOGEGIBGGMKKECEKCIEKMGKQIGOCOMIEMMDUKYKKcOQaKAKFQAYDOKSCKGQG2BEIBOGSAGDKCSGMBBHOGCDHHAFGDDNJHEJIAEHGBSFICMBWHINkBJSHIEGIBMEIMIKCWDGFaFEDWAmBLUKOAMBEHEGMDMAIEEEACEIEMQcBMEIFGGGJALCLHXBLIRADFJBPIRAJQJKGMJISOaCGMeBUKSEaAcJYFSCOBSIEIDKJGHCbSRGNKMCOOJGYGAEbDJDNBNFAJIDQCBFRBVJHECGPGCCQGFEXEBGNBFJLLADHBDAFRHHFJIPOFDDRATNFIAERCRFKHHBHAHIDDEJIFFDQLAJNEEHJBGNJANIHWNSDIJGAICQJIfQNENMECHGAGJCDHFGAGGCNCLFAHBDGHOHINSLMAEDDDaJOHCDDFHINEFLKFBHFAHNHBEOEELQFCDILCFILALIZSDQVIHBHHHANJfEVDBJAJNJVDAFJHFNGHJHBJNBJNjBAJDFFHAFGDKPCFDHCHBCMBKFCDGAKIGEQDSAMFGWM6BFoBAIKCgBPSLIXGBKWEaDDSOFmBMEOcGIEOYWGMAEEMAEDKIBGBKFIAQGKOAGGOEBHDFCDIBDFDCLLEHCFQDAFQEIESFIF4BSQDCBOBEIWGDMCMIKOGOLMAEWFBJGAKoBGSBQASIPIdB1BHJINGCQHOIKQKuBUBGVIbDNLCJ3BZLVMLOHNRPDFbJNTCHNRAFONULWJKfRVDVIFQDmBOKqBOgBQkC0BmCiBkBGaAYMeAcCyBJTFSJQGaJsBB8BTMFCLRHZDnCMLBcLCXgBHCIJGKGoBJMEJMmBQOBQDIKLKIKLKsBFKHVBCJMFYEEK6CWMBPHUBMGeAWGUJSMRIIGwBFWD6BRKIPIAETCGGHOAEcOMQMCqBDCHNNKDELBVQJFJfVSDIGQEGIMIHKGKPCDIMQTOcKDMIAIJFNSDHMcGgBCeJNOBQcEmBBkBCNKSKUAeIqBCGEqBCMDkBKeBEIQGmBIcFVDkBBEHOEwBAkBHMFDH7BNLFsBFOEIJIEaCyBBEHkCBAM8BBaJGJHFULYHQSaHaEgBDMEaBLOWIwEJOJqBLgCCgBBOFBLUDUCcAgBBeCcNUENKIIyBDiBAuBHWF!mqByvCJFVELAVGOGKGcHOH!A4wCAJRBBGUG!A4wCQAWDABRDTAAK!4sB4vCAPUMUJFLQJSKKOCSuBDWHAHLHMHBHfLVBPEFHNLFHRJVBNFAJRBTNRRFLARWDQZWCeFQFKHUDSHsBBBNEPMRYNMEIQHaLIaISMKKBMJMTMSSFOFaMCsBFMGkBPEFcBALGTODMHWIQSKI0B1BFJUJOHaDKFINMBGFCRXLZDTNbBhBCnBANLTFpBjBOCaUiBOYCOHPJKdWHaCQSALMFTJjBJPFRLLCAOcMrBBCFPFhBLJJBBAHGJGAAGEDBDtBFNFYEEDVDJAACDDEBBJLLBEHECHEDCFPREMHGBMBFCJJCMFANEBEVJLPDJJHAHFDFPJRPBLELENIJAHIRBPDJDBHCDGFERgBEKDKNMFEPHJIJERBNCLAHDEDAFCDBBFCFBLALINBLEJANDNLPHHFDHAREFJZBbIRCLMLEHGHQDIHmBKKCKGEKAOEEcIYACBAHHJDJEBHTDEBAABCABLABBPBDDABFEBCCGBECQBGAIEIBICKBQJEDBFCFFJATBAALDDCDGLURBDIAEDICSIEESDIBKJIAMMICCSKIKAACOASMIGGAEDDJJBGFAHHJGLIAEMFGAMUGBIEEGJMAKJAFgBCKFMBIEAEoBCNFGFMBMHELIAQJKJAHGBQLSDCEOAQDSFQLEHECOlBIBALLLGFcBAPMKwBNIJDJUGeHYAYNURMDOAGFIdFZdfJRLNDAFLCdFjBFFBVPTDPLHDJRAXFLFRFRLNPBLCHBPDHLJRbXTHPJHFJRJLEJBNILBHKBHUNBLKFAHPTXJfBRAEHDLEHJFPBPGFFCNMFIGEJNDLJDPDHNALHFLQLQDFNRJLRNFFHEPMJVCVJBPFARGnBUDKEKHKBcIOQMXGOOGaSFIiBJEFTJCM0BGMDQBSIAU0BIYDYEMBUKUMkDAaDWPKBGfQbSLKFMCGNUd$BHIDKLMLGGGHQEMOKIMDGFFJGEEBQECEKGKBGUKBGGAAIEGICMSFEEIDQCEBOLMBIEGDADGHEFBDDJFBBIJFDHABKDDDCDGRCABJGDCCEACPKBEDECFDDDGDABECKFCEEdcCECDACBEDCBDJALGHANGJAPKRSHGNEHBLFHBlCYPMZGFIRKHKDGGCBGEEAELWNQPMHKNIDEEKHCJIDMHCRQAEHMFMAGLIFBHEBFETWVCFCAEJSRGNINCJIAMNADHDBADILKRMAMBITMBBDEJEHKGAGGCILKJETiBHWLKFCBEJCFENCDCBIPQLWAETUBMHKEMBODMGQEcDWHUAEYFINEEBMFOrBWbIJOCKTGBMTMAIJGNGDOTMJQnBCREhBQrBKVBdITGRDEJbDNFRDBKIQQEDETHLLVJMHPLfLDFZHDHTFJAtBNZFDEiBMSISCIGmBUEMIITDDCHFLIDDFIPHJAAKCGJGVDXMAKLGGKOIEIOCKDOIMAMEDIHCMGbDDBLCXAVCHITI6BQOABHiBANKTGJIPGVGIIeAUIEIQIuBIOAYIYDMFICaAADYDQCuCHUCoCJaHQBOIUEYBYIaEKHMEEIKBcNWKCLUEGESBYFmBFWBQAWHVHcBsBAMESJSIRGMGgBCMDQHSCcHaCWAAKOEYFAPKOOAGQPITICSSKWBQFWRNHeD!$gByxCHHiBGYHSIOFMPKILQOCQBSHOZ4BPBFZBKFDF5BGRAdFlCDHIVENBTOkBEWAWCfE3BBHGkBGXAbEOMKIqBKSD!4lB2xCNJZMGCWAMD!6zByxCCDhBARBVKAGIAkBBcH!4uByxCMJOOoBGcPBLgBGOGkBHWHCFeCQJoBFOFOPbFkBJaDYPYADLbRTGZQTBBHQJWHGDMPFLTGnBMmBXEFrBIhBITIGEvBQADtBBLGKK$BEDEEIWQDIHGXGfGKEPKNCNEHDbB7BE5BGNGQIVAFQOOQGoBEJJ!6nB$xCUDcCEDNHYHDNZFPCJGnBMAGgBBPKSI!6hF0xC7BCOGWCWFCD!srBsxCPLRAJQAGIIQEiBAeDXNTD!4d2wCpBHHIjBISSMKNK2BEWDqBBgBJ7BPTJAH!slFyyCRFZAdGEGmCF!mrBwyCHFXATEKIWEOFGD!yiF6yCNL5BAZDfKIMWCqBA6BH!4oBszCMHAHFLZBRCAKZABMSBYGWACC!8jBkzCGFQCQACHJH1BBnBHXABGiBGnCBXEWQQEsBFcJcAVOOGSBEF!42DswCHB1BCDIbEBIQEAIeONCmBODI4CS2BEcEeEMHLDnDPxBPxBdENeL!2qByzCQFgBAODDFeHsBBaE6BASFCHJDXBTCtCDZCpBGFIBIPIhBCREGGiBA!8f6zCBLLFNAdHZBVEcMgBKYAWC!irB4zCjBADGgBAKDBB!8iB8zCbFXGMEYCWBFD!smD$zCjBFbCKEHGgBEGFYD!mjBq0CTDZAACQGeD!iqBg0CVBNEFGBGeBUFFF!goBm0CGHZCbGhBAOEREBGqCHOF!yuEk0C5CFcWOC0BJDH!kjD80C0BLnBHHJNDHNTAhBKOGXEdOLMqBGKFWAGGYAUD!4mDm1CeFXHtBBtBEDEVARIyBEWDQEqBD!yzDo1CjBBBDRBREKEjBC4BCCDKEOCYBFD!gsEu0CjBBrBEbGLMVEqBKkBEeHkBPBN!wuB60CSDTFdLbAhBCRGAGOEdARGJGWMSCHEmBAUH2BFML!43By2CuCDcDADnBHlBBNDiBA_BNZNhBBJDvBAWBLDOHPFXDHFVDCDcAADpBJpBGvBD1BEBIeCHMKCqBHVKZEOGcEEGVGFI4BBYGjBC3BBbGNGREDGqCGYGUASDMIyBEwBAIAuBCmCB!usC42CkDLdFxEBID4BCwBFgBGMFPJoBGuCGwBBIH_BJJDxBDkBAfVCRSJXAZFcHENPBUNjBAUFFFtBDUJCHfIHDUDWJGNbBfOEJRHgCB1CZtBFRARFVRhBJ1BHNJALJJZNILPbVBXOfAPIJQbUHKBOVQGMLGQSYGGGEMpBJRGBKGKQAgBDpBOPBNESQJGfcTGAGpBKhBAxCBtBQqBGgBAjCEjBGCG2DQGGpBGOG2BMYCFGmBEwBEyBASFqBK$CNlBKCG2BK4BBUG4BCgEB";
+  var CS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789$_';
+  var CMAP = {}; for (var ci = 0; ci < 64; ci++) CMAP[CS.charAt(ci)] = ci;
+
+  function decodeLand(str){
+    return str.split('!').map(function(seg){
+      var i = 0, x = 0, y = 0, pts = [];
+      function rd(){
+        var v = 0, sh = 0, c;
+        do { c = CMAP[seg.charAt(i++)]; v |= (c & 31) << sh; sh += 5; } while (c & 32);
+        return (v & 1) ? -((v + 1) >> 1) : (v >> 1);
+      }
+      while (i < seg.length){ x += rd(); y += rd(); pts.push(x/8 - 180, y/8 - 90); }
+      return pts;
+    });
+  }
+
+  /* Rasterise the coastlines into an equirectangular mask.
+     red = land fill, green = coastline stroke -> lets us light up shorelines. */
+  var MW = 2048, MH = 1024;
+  function buildMask(){
+    var rings = decodeLand(LAND);
+    var c = document.createElement('canvas');
+    c.width = MW; c.height = MH;
+    var ctx = c.getContext('2d');
+    ctx.fillStyle = '#000'; ctx.fillRect(0,0,MW,MH);
+
+    // only rings that actually cross the seam need the wrapped copies
+    var jobs = rings.map(function(r){
+      var lo = Infinity, hi = -Infinity;
+      for (var i = 0; i < r.length; i += 2){ if (r[i] < lo) lo = r[i]; if (r[i] > hi) hi = r[i]; }
+      return { pts:r, offs: (lo < -180 || hi > 180) ? [-360,0,360] : [0] };
+    });
+
+    function path(r, off){
+      ctx.beginPath();
+      for (var i = 0; i < r.length; i += 2){
+        var x = (r[i] + off + 180)/360 * MW;
+        var y = (90 - r[i+1])/180 * MH;
+        if (i === 0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      }
+      ctx.closePath();
+    }
+
+    ctx.fillStyle = '#f00';
+    jobs.forEach(function(j){ j.offs.forEach(function(o){ path(j.pts,o); ctx.fill(); }); });
+
+    ctx.globalCompositeOperation = 'lighter';   // keep the red land flag under the stroke
+    ctx.strokeStyle = '#0f0';
+    ctx.lineWidth = 3.5; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    jobs.forEach(function(j){ j.offs.forEach(function(o){ path(j.pts,o); ctx.stroke(); }); });
+    ctx.globalCompositeOperation = 'source-over';
+
+    return ctx.getImageData(0,0,MW,MH).data;
+  }
+
+  var MASK = buildMask();
+  // 0 = ocean, 1 = land, 2 = coastline
+  function sampleMask(u, v){
+    var x = Math.floor(u * MW), y = Math.floor((1 - v) * MH);
+    if (x < 0) x = 0; else if (x >= MW) x = MW - 1;
+    if (y < 0) y = 0; else if (y >= MH) y = MH - 1;
+    var i = (y * MW + x) * 4;
+    if (MASK[i+1] > 100) return 2;
+    return MASK[i] > 100 ? 1 : 0;
+  }
+
+  var isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+
+  var scene  = new THREE.Scene();
+  /* Apparent size is inversely proportional to camera distance, so pulling back from
+     15.5 to 17.22 (15.5 / 0.9) renders the globe 10% smaller. Kept as a constant
+     because the scroll response below offsets from the same number. */
+  var CAM_Z = 17.22;
+  var camera = new THREE.PerspectiveCamera(45, container.clientWidth/container.clientHeight, 0.1, 2000);
+  camera.position.set(0, 0, CAM_Z);
+
+  var renderer = new THREE.WebGLRenderer({antialias:true, alpha:true, powerPreference:'high-performance'});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.setClearColor(0x000000, 0);
+  container.appendChild(renderer.domElement);
+
+  var rad = 5;
+  var pivot = new THREE.Group();        // pointer tilt + scroll transform
+  var globeGroup = new THREE.Group();   // drag / auto rotation
+  pivot.add(globeGroup);
+  scene.add(pivot);
+
+  /* lat/lon -> the globe's local space. This mirrors the mask's own mapping exactly:
+     theta is the longitude in radians, phi is measured down from the north pole. Get
+     this wrong and the marker lands in the sea. */
+  function latLonToVec3(lat, lon, r){
+    return new THREE.Vector3().setFromSphericalCoords(
+      r, (90 - lat) * Math.PI / 180, lon * Math.PI / 180);
+  }
+  /* Ethiopia's national border, [lon, lat], simplified to ~45 points.
+     The LAND blob above is coastlines only — Natural Earth's land polygons carry no
+     internal country boundaries — so the outline has to be supplied separately. This
+     is a hand-simplified approximation: right shape and extent (33.0-48.0E, 3.4-14.9N,
+     the Ogaden point east, the Afar notch north-east), not a survey-grade boundary. */
+  var ETH_BORDER = [
+    [36.15,14.35],[37.10,14.45],[37.90,14.89],[38.55,14.50],[39.20,14.45],
+    [39.85,14.20],[40.20,14.45],[41.10,13.50],[41.80,12.60],[42.35,12.45],
+    [42.80,11.20],[43.00,10.40],[43.33, 9.55],[44.20, 8.90],[45.30, 8.50],
+    [46.60, 8.20],[47.98, 8.00],[46.80, 6.60],[45.60, 5.50],[44.50, 4.90],
+    [43.50, 4.60],[42.50, 4.30],[41.90, 3.98],[41.00, 4.10],[40.00, 4.30],
+    [39.20, 3.50],[38.10, 3.62],[37.10, 4.30],[36.05, 4.45],[35.80, 5.10],
+    [35.30, 5.50],[34.80, 6.50],[34.40, 7.20],[33.90, 7.70],[33.00, 7.95],
+    [33.30, 8.50],[34.00, 9.50],[34.30,10.20],[34.60,10.80],[35.10,11.60],
+    [35.50,12.30],[36.10,12.80],[36.40,13.40]
+  ];
+  var ETH_BB = (function(){
+    var b=[Infinity,Infinity,-Infinity,-Infinity];
+    ETH_BORDER.forEach(function(p){
+      if(p[0]<b[0])b[0]=p[0]; if(p[1]<b[1])b[1]=p[1];
+      if(p[0]>b[2])b[2]=p[0]; if(p[1]>b[3])b[3]=p[1];
+    });
+    return b;
+  })();
+  /* ray-cast point-in-polygon, bbox-gated so the 22k-point sweep stays cheap */
+  function inEthiopia(lon, lat){
+    if (lon < ETH_BB[0] || lon > ETH_BB[2] || lat < ETH_BB[1] || lat > ETH_BB[3]) return false;
+    var inside = false;
+    for (var i = 0, j = ETH_BORDER.length - 1; i < ETH_BORDER.length; j = i++){
+      var xi = ETH_BORDER[i][0], yi = ETH_BORDER[i][1],
+          xj = ETH_BORDER[j][0], yj = ETH_BORDER[j][1];
+      if (((yi > lat) !== (yj > lat)) && (lon < (xj - xi) * (lat - yi) / (yj - yi) + xi)) inside = !inside;
+    }
+    return inside;
+  }
+
+  /* soft round sprite — the ocean script has its own copy, this scope needs one too */
+  function dotTexture(color){
+    var c = document.createElement('canvas');
+    c.width = c.height = 64;
+    var ctx = c.getContext('2d');
+    var g = ctx.createRadialGradient(32,32,0,32,32,32);
+    g.addColorStop(0, color); g.addColorStop(0.35, color); g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g; ctx.fillRect(0,0,64,64);
+    return new THREE.CanvasTexture(c);
+  }
+
+  /* ---------------- point cloud sampled against the land mask ---------------- */
+  /* Density pass, after the Stripe map reference: more rings and more points per ring,
+     with a smaller dot size below, so the sphere reads as fine grain rather than as
+     countable dots. Ring count rises alongside the total — raising only the total makes
+     the grid dense along each ring but leaves the rings just as far apart.
+     Note desiredTotal is nominal, not the delivered count: rings are weighted by
+     sin(phi), so the sum lands at roughly 64% of it. 64000 yields ~41k candidates. */
+  var ringCount    = isMobile ? 130 : 240;
+  var desiredTotal = isMobile ? 24000 : 64000;
+  var approxEq     = Math.max(4, Math.ceil(desiredTotal / ringCount));
+
+  var pos = [], types = [], eths = [];
+  var sph = new THREE.Spherical();
+  for (var i = 0; i < ringCount; i++){
+    var phi = (i + 0.5)/ringCount * Math.PI;
+    var inRing = Math.max(3, Math.round(approxEq * Math.sin(phi)));
+    for (var j = 0; j < inRing; j++){
+      var theta = (j/inRing) * Math.PI * 2;
+      var p = new THREE.Vector3().setFromSphericalCoords(rad, phi, theta);
+      sph.setFromVector3(p);
+      var u = (sph.theta + Math.PI)/(Math.PI*2);
+      var v = 1 - sph.phi/Math.PI;
+      var t = sampleMask(u, v);
+      // thin the water harder now the overall count is up, so land still reads as land
+      if (t === 0 && Math.random() > (isMobile ? 0.16 : 0.20)) continue;
+      pos.push(p.x, p.y, p.z);
+      types.push(t);
+      eths.push(inEthiopia(u*360 - 180, v*180 - 90) ? 1 : 0);
+    }
+  }
+
+  /* The global sampling only lands ~50 points inside a country this size, which reads
+     as a smattering rather than a shape. This second pass fills Ethiopia on its own
+     grid so the outline has something solid inside it. */
+  var ethStep = isMobile ? 0.30 : 0.20;
+  for (var la = ETH_BB[1]; la <= ETH_BB[3]; la += ethStep){
+    for (var lo = ETH_BB[0]; lo <= ETH_BB[2]; lo += ethStep){
+      if (!inEthiopia(lo, la)) continue;
+      var q = latLonToVec3(la, lo, rad);
+      pos.push(q.x, q.y, q.z);
+      types.push(1);
+      eths.push(1);
+    }
+  }
+
+  var geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos,3));
+  geo.setAttribute('aType',    new THREE.Float32BufferAttribute(types,1));
+  geo.setAttribute('aEth',     new THREE.Float32BufferAttribute(eths,1));
+
+  var uMouse  = {value:new THREE.Vector2(0,0)};
+  var uAspect = {value:container.clientWidth/Math.max(1,container.clientHeight)};
+  var uTime   = {value:0};
+
+  /* smaller than before (was 0.055) — finer dots are what make a dense field read as
+     texture instead of as a cluster of blobs */
+  var mat = new THREE.PointsMaterial({size:0.042, transparent:true, opacity:1});
+  mat.onBeforeCompile = function(shader){
+    shader.uniforms.uMouse  = uMouse;
+    shader.uniforms.uAspect = uAspect;
+    shader.uniforms.uTime   = uTime;
+
+    shader.vertexShader = [
+      'attribute float aType; attribute float aEth;',
+      'uniform vec2 uMouse; uniform float uAspect; uniform float uTime;',
+      'varying float vType; varying float vHot; varying float vLit; varying float vEth;',
+      ''
+    ].join('\n') + shader.vertexShader;
+
+    shader.vertexShader = shader.vertexShader.replace('gl_PointSize = size;', [
+      '  vType = aType;',
+      '  vec2 sndc = gl_Position.xy / max(0.0001, gl_Position.w);',
+      '  vec2 dv = (sndc - uMouse) * vec2(uAspect, 1.0);',
+      '  vHot = (1.0 - smoothstep(0.0, 0.34, length(dv))) * step(0.0, gl_Position.w);',
+      '  vec3 nrm = normalize((modelViewMatrix * vec4(position, 0.0)).xyz);',
+      '  vLit = 0.55 + 0.45 * dot(nrm, normalize(vec3(-0.35, 0.45, 0.82)));',
+      '  float base = aType > 1.5 ? 3.0 : (aType > 0.5 ? 2.4 : 1.0);',
+      '  float wave = 1.0 + 0.14 * sin(uTime * 1.5 + position.y * 0.9 + position.x * 0.6);',
+      // per-point flag set on the CPU by point-in-polygon, so the highlight takes
+      // Ethiopia's real outline instead of the circular blob a falloff produced
+      '  vEth = aEth;',
+      '  gl_PointSize = size * base * wave * (1.0 + vHot * 1.6 + vEth * 0.45);'
+    ].join('\n'));
+
+    shader.fragmentShader = [
+      'varying float vType; varying float vHot; varying float vLit; varying float vEth;',
+      ''
+    ].join('\n') + shader.fragmentShader;
+
+    shader.fragmentShader = shader.fragmentShader.replace('vec4 diffuseColor = vec4( diffuse, opacity );', [
+      '  float dd = length(gl_PointCoord - vec2(0.5));',
+      '  if (dd > 0.5) discard;',
+      '  float soft = smoothstep(0.5, 0.08, dd);',
+      '  vec3 ocean = vec3(0.16, 0.21, 0.46);',
+      '  vec3 land  = vec3(0.63, 0.76, 0.20);',
+      '  vec3 coast = vec3(0.88, 0.94, 0.42);',
+      '  vec3 col = vType > 1.5 ? coast : (vType > 0.5 ? land : ocean);',
+      '  col *= vLit;',
+      '  col = mix(col, vec3(1.0, 1.0, 0.88), vHot * 0.75);',
+      // brand lemon #CFDE5D
+      '  col = mix(col, vec3(0.812, 0.871, 0.365), vEth);',
+      '  float a = (vType > 0.5 ? 0.96 : 0.40) * soft + vHot * 0.35 * soft + vEth * 0.30 * soft;',
+      '  vec4 diffuseColor = vec4(col, opacity * clamp(a, 0.0, 1.0));'
+    ].join('\n'));
+  };
+  globeGroup.add(new THREE.Points(geo, mat));
+
+  /* opaque core: hides back-face points so the continents read cleanly */
+  globeGroup.add(new THREE.Mesh(
+    new THREE.SphereGeometry(rad*0.985, 64, 64),
+    new THREE.MeshBasicMaterial({color:0x0E1436})
+  ));
+
+  /* ---------------- Ethiopia: marker, ping, and outbound routes ----------------
+     The icosahedron wireframe that used to sit here has been removed — it drew
+     polygonal lines straight across Africa and fought with everything below. */
+
+  var ORIGIN = latLonToVec3(9.03, 38.74, rad * 1.004);
+
+  /* where Bahir Tech delivers to — spread across every populated continent so the
+     arcs leave Ethiopia in visibly different directions */
+  var DESTINATIONS = [
+    [51.51,  -0.13],   // London
+    [40.71, -74.01],   // New York
+    [25.20,  55.27],   // Dubai
+    [ 1.35, 103.82],   // Singapore
+    [-26.20, 28.05],   // Johannesburg
+    [39.90, 116.41],   // Beijing
+    [-23.55,-46.63]    // Sao Paulo
+  ];
+
+  /* A great-circle-ish arc lifted off the surface. Longer hops bow higher, so a
+     transatlantic route clears the globe instead of scraping along it. */
+  function routeCurve(a, b){
+    var mid  = a.clone().add(b).multiplyScalar(0.5);
+    var lift = rad + a.distanceTo(b) * 0.42;
+    if (mid.lengthSq() < 1e-6) mid.copy(a);        // antipodal guard
+    mid.normalize().multiplyScalar(lift);
+    return new THREE.QuadraticBezierCurve3(a, mid, b);
+  }
+
+  /* Each route draws itself out of Addis rather than sitting there fully formed:
+     setDrawRange reveals the line vertex by vertex, a comet head rides the growing
+     tip, then the whole arc holds and fades before the next lap. Staggered per route
+     so one is always departing. */
+  var SEG = 88;                 // tubular segments per arc — the draw resolution
+  var RADIAL = 6;               // sides of the tube
+  var IDX_PER_SEG = RADIAL * 6; // TubeGeometry emits 6 indices per radial quad
+  var CYCLE = 5.0;              // seconds for draw + hold + fade
+  var ROUTE_ALPHA = 0.85;       // was 0.52 — the arcs were too faint to read
+  var routes = [];
+  DESTINATIONS.forEach(function(d, i){
+    var curve = routeCurve(ORIGIN, latLonToVec3(d[0], d[1], rad * 1.004));
+    /* A tube, not a line. LineBasicMaterial ignores `linewidth` on virtually every
+       platform, so thickness has to come from real geometry. TubeGeometry emits its
+       indices in order along the curve, which keeps setDrawRange usable as a draw-on
+       reveal — see IDX_PER_SEG in the frame loop. */
+    var g = new THREE.TubeGeometry(curve, SEG, 0.0196, RADIAL, false);
+    var m = new THREE.MeshBasicMaterial({color:0xCFDE5D, transparent:true, opacity:0,
+                                         depthWrite:false});
+    g.setDrawRange(0, 0);
+    globeGroup.add(new THREE.Mesh(g, m));
+    routes.push({curve:curve, geo:g, mat:m, offset:(i / DESTINATIONS.length) * CYCLE});
+  });
+
+  /* one Points object carrying every travelling pulse, rather than one per route */
+  var pulseArr = new Float32Array(routes.length * 3);
+  var pulseGeo = new THREE.BufferGeometry();
+  pulseGeo.setAttribute('position', new THREE.BufferAttribute(pulseArr, 3));
+  var pulses = new THREE.Points(pulseGeo, new THREE.PointsMaterial({
+    size:0.30, map:dotTexture('rgba(236,245,180,1)'), transparent:true,
+    depthWrite:false, blending:THREE.AdditiveBlending
+  }));
+  globeGroup.add(pulses);
+
+  /* Ethiopia's outline, traced on the surface. This is what actually makes the country
+     legible — the filled points alone read as a patch, the border gives it its shape. */
+  var borderPts = ETH_BORDER.map(function(p){ return latLonToVec3(p[1], p[0], rad * 1.007); });
+  borderPts.push(borderPts[0]);                       // close the ring
+  globeGroup.add(new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints(borderPts),
+    new THREE.LineBasicMaterial({color:0xCFDE5D, transparent:true, opacity:0.95, depthWrite:false})
+  ));
+
+  /* a small node where the routes leave Addis — no expanding ring, it swamped the shape */
+  var originGeo = new THREE.BufferGeometry();
+  originGeo.setAttribute('position', new THREE.Float32BufferAttribute(
+    [ORIGIN.x, ORIGIN.y, ORIGIN.z], 3));
+  globeGroup.add(new THREE.Points(originGeo, new THREE.PointsMaterial({
+    size:0.17, map:dotTexture('rgba(238,246,190,1)'), transparent:true,
+    depthWrite:false, blending:THREE.AdditiveBlending
+  })));
+
+  /* brand green rather than lemon, and a lower ceiling on the halo — see the clamp below */
+  var atmoUni = {glowColor:{value:new THREE.Color(0xAAC638)}, uBoost:{value:0}};
+  var atmosphere = new THREE.Mesh(
+    new THREE.SphereGeometry(rad*1.1, 48, 48),
+    new THREE.ShaderMaterial({
+      transparent:true, side:THREE.BackSide, depthWrite:false, uniforms:atmoUni,
+      vertexShader: [
+        'varying vec3 vNormal;',
+        'void main(){ vNormal = normalize(normalMatrix*normal);',
+        '  gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.0); }'
+      ].join('\n'),
+      fragmentShader: [
+        'varying vec3 vNormal; uniform vec3 glowColor; uniform float uBoost;',
+        'void main(){',
+        '  float intensity = pow(0.55 - dot(vNormal, vec3(0,0,1.0)), 3.0);',
+        '  gl_FragColor = vec4(glowColor, clamp(intensity*(1.0+uBoost),0.0,0.42));',
+        '}'
+      ].join('\n')
+    })
+  );
+  pivot.add(atmosphere);
+
+  var orbitRing = new THREE.Mesh(
+    new THREE.TorusGeometry(rad*1.42, 0.012, 8, 128),
+    new THREE.MeshBasicMaterial({color:0xAAC638, transparent:true, opacity:0.22})
+  );
+  orbitRing.rotation.x = Math.PI/2.3;
+  orbitRing.rotation.y = 0.4;
+  pivot.add(orbitRing);
+
+  /* Open on Ethiopia rather than on longitude 0 (which faces the camera at rotation 0).
+     Spinning the globe by -lon brings Addis round to face front; tilting by +lat lifts
+     it from 9N up to the camera's eye line. */
+  globeGroup.rotation.y = -38.74 * Math.PI / 180;
+  globeGroup.rotation.x =   9.03 * Math.PI / 180;
+
+  /* Rotation speed is a function of WHICH FACE is toward the camera, not of elapsed
+     time — so it repeats every revolution instead of ramping once and staying fast.
+     Ethiopia sits still-ish at ~2.1 deg/sec; the pace then rises like a volume knob
+     up to 30 deg/sec as Africa rotates away, and holds there for the rest of the
+     revolution. Time spent is inversely proportional to speed, so the globe dwells
+     on Addis and hurries through everything else — the whole point of the globe. */
+  var ETH_FACE_Y = -38.74 * Math.PI / 180;   // rotation.y at which Addis faces the camera
+  var SPIN_SLOW    = 0.0006108;              // Ethiopia front  (~2.1 deg/sec)
+  var SPIN_FAST    = 0.0087266;              // everywhere else  (~30 deg/sec)
+  /* Volume-style ramp: slow while Addis faces the camera, then the speed rises smoothly
+     (like turning a volume knob) and reaches 30 deg/sec only after Africa has rotated
+     away and disappeared. After that the globe holds a steady 30 deg/sec. */
+  var SLOW_HALF  = 100 * Math.PI / 180;
+
+  var autoRotate = true;
+
+  /* ---------------- drag to spin, with inertia ---------------- */
+  var dragging = false, prevX = 0, prevY = 0, velX = 0, velY = 0, activeId = null;
+  var el = renderer.domElement;
+
+  el.addEventListener('pointerdown', function(e){
+    dragging = true; autoRotate = false; activeId = e.pointerId;
+    prevX = e.clientX; prevY = e.clientY; velX = velY = 0;
+    container.classList.add('is-grabbing');
+    if (el.setPointerCapture) { try { el.setPointerCapture(e.pointerId); } catch(err){} }
+  });
+  window.addEventListener('pointermove', function(e){
+    if (!dragging) return;
+    var dx = e.clientX - prevX, dy = e.clientY - prevY;
+    globeGroup.rotation.y += dx * 0.005;
+    globeGroup.rotation.x = Math.max(-1.1, Math.min(1.1, globeGroup.rotation.x + dy * 0.005));
+    velX = dx * 0.005; velY = dy * 0.005;
+    prevX = e.clientX; prevY = e.clientY;
+  }, {passive:true});
+  function endDrag(){
+    if (!dragging) return;
+    dragging = false; activeId = null;
+    container.classList.remove('is-grabbing');
+  }
+  window.addEventListener('pointerup', endDrag);
+  window.addEventListener('pointercancel', endDrag);
+
+  function resize(){
+    var w = container.clientWidth, h = container.clientHeight;
+    camera.aspect = w/h;
+    uAspect.value = w/Math.max(1,h);
+    camera.updateProjectionMatrix();
+    renderer.setSize(w,h);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  /* ---------------- frame ---------------- */
+  var clock = new THREE.Clock();
+  var scrollEase = 0;
+
+  (function animate(){
+    requestAnimationFrame(animate);
+    if (!FX.active) return;
+
+    var t = clock.getElapsedTime();
+    uTime.value = FX.reduce ? 0 : t;
+
+    // pointer spotlight, in NDC (y flipped)
+    uMouse.value.set(FX.over ? FX.x : 99, FX.over ? -FX.y : 99);
+
+    // scroll: lift, shrink, tilt — and scroll velocity spins the globe
+    scrollEase += (FX.scroll - scrollEase) * 0.08;
+    pivot.position.y = scrollEase * 2.2;
+    pivot.position.x = scrollEase * 0.9;
+    pivot.rotation.z = scrollEase * 0.25;
+    pivot.scale.setScalar(1 - scrollEase * 0.22);
+    camera.position.z = CAM_Z + scrollEase * 2.0;
+    atmoUni.uBoost.value = scrollEase * 0.5;
+
+    if (!FX.reduce){
+      /* Horizontal parallax only. The vertical tilt that used to track the pointer is
+         gone: moving the mouse up and down no longer rolls the globe. Holding and
+         dragging still rotates it vertically — that is handled in the drag listener. */
+      pivot.rotation.y += (( FX.x * 0.20) - pivot.rotation.y) * 0.05;
+
+      if (autoRotate && !dragging){
+        /* NB: this factor must NOT be called `t` — `var` is function-scoped, so it
+           would shadow the clock on the first line of this frame and the routes below
+           would end up driven by the rotation speed instead of by elapsed seconds.
+           Slow only within SLOW_HALF of Ethiopia facing us; everywhere else, including
+           South America and the Pacific, runs at full speed. */
+        var off  = globeGroup.rotation.y - ETH_FACE_Y;
+        var dist = Math.abs(Math.atan2(Math.sin(off), Math.cos(off)));   // wrap to [0,PI]
+        var k    = Math.min(1, dist / SLOW_HALF);
+        var spin = SPIN_SLOW + (SPIN_FAST - SPIN_SLOW) * (k * k * (3 - 2 * k));
+        globeGroup.rotation.y += spin + FX.vel * 0.00035;
+      } else if (!dragging){
+        globeGroup.rotation.y += velX;
+        globeGroup.rotation.x += velY;
+        velX *= 0.94; velY *= 0.94;
+        if (Math.abs(velX) < 0.00005 && Math.abs(velY) < 0.00005){
+          autoRotate = true;
+        }
+      }
+      orbitRing.rotation.z += 0.0009;
+    }
+
+    /* Routes run off the wall clock and sit OUTSIDE the rotation block on purpose:
+       they must keep their own pace whether the globe is spinning slowly, being
+       dragged, or sitting under the pointer.
+       draw (0-55%) -> hold (55-78%) -> fade (78-100%), staggered per route. */
+    if (!FX.reduce){
+      for (var i = 0; i < routes.length; i++){
+        var R = routes[i];
+        var p = ((t + R.offset) % CYCLE) / CYCLE;
+        var grow, alpha;
+        if (p < 0.55){
+          grow  = p / 0.55;
+          grow  = grow * grow * (3 - 2 * grow);        // ease in-out
+          alpha = ROUTE_ALPHA;
+        } else if (p < 0.78){
+          grow = 1; alpha = ROUTE_ALPHA;
+        } else {
+          grow = 1; alpha = ROUTE_ALPHA * (1 - (p - 0.78) / 0.22);
+        }
+        // one ring of faces per tubular segment, so the reveal stays segment-aligned
+        R.geo.setDrawRange(0, Math.max(1, Math.round(grow * SEG)) * IDX_PER_SEG);
+        R.mat.opacity = alpha;
+
+        /* the comet head rides the tip while drawing; parked at the sphere's centre
+           otherwise, where the opaque core hides it */
+        if (p < 0.55){
+          var q = R.curve.getPointAt(Math.min(1, grow));
+          pulseArr[i*3] = q.x; pulseArr[i*3+1] = q.y; pulseArr[i*3+2] = q.z;
+        } else {
+          pulseArr[i*3] = 0; pulseArr[i*3+1] = 0; pulseArr[i*3+2] = 0;
+        }
+      }
+      pulseGeo.attributes.position.needsUpdate = true;
+    }
+
+    renderer.render(scene, camera);
+  })();
+})();
+</script>
+
+<script>
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- services: two levels of tabs, walked automatically ----
+     The left rail picks the practice, the pill bar inside the panel picks one item of it.
+     Both are real tablists: click, arrow keys, Home and End, with focus following the
+     selection as the ARIA tabs pattern expects. Visibility is the `hidden` attribute
+     rather than a class, so a hidden panel leaves the accessibility tree as well.
+
+     On top of that, a 15-second walk through every item: the pills of one practice in
+     order, then on to the next practice. See AUTO below for what stops it. */
+  (function(){
+    var cats = [].slice.call(document.querySelectorAll('.srv-cat'));
+    var panels = [].slice.call(document.querySelectorAll('.srv-panel'));
+    var section = document.getElementById('services-section');
+    if(!cats.length || cats.length !== panels.length) return;
+
+    /* One tablist's worth of wiring, used for both levels. `onPick` is where the two
+       differ: the practice rail also has to tell the 3D icon to swap. */
+    function tablist(tabs, targets, onPick){
+      var current = 0;
+
+      function select(i, moveFocus){
+        tabs.forEach(function(t, j){
+          var on = j === i;
+          t.classList.toggle('is-active', on);
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+          t.tabIndex = on ? 0 : -1;
+        });
+        targets.forEach(function(el, j){
+          var on = j === i;
+          el.classList.toggle('is-active', on);
+          if(on) el.removeAttribute('hidden');
+          else el.setAttribute('hidden', '');
+        });
+        current = i;
+        if(moveFocus) tabs[i].focus();
+        if(onPick) onPick(i);
+      }
+
+      tabs.forEach(function(t, i){
+        t.addEventListener('click', function(){ select(i); });
+        t.addEventListener('keydown', function(e){
+          var last = tabs.length - 1, next = -1;
+          /* Both rails are navigated with either axis: the practice rail is vertical and
+             the pill bar horizontal, but guessing wrong should not leave a reader stuck. */
+          if(e.key === 'ArrowDown' || e.key === 'ArrowRight') next = i === last ? 0 : i + 1;
+          else if(e.key === 'ArrowUp' || e.key === 'ArrowLeft') next = i === 0 ? last : i - 1;
+          else if(e.key === 'Home') next = 0;
+          else if(e.key === 'End') next = last;
+          else return;
+          e.preventDefault();
+          select(next, true);
+        });
+      });
+
+      return {select:select, count:tabs.length, index:function(){ return current; }};
+    }
+
+    /* the practice rail. The 3D icon listens for srv:change rather than being reached
+       into directly, which is the same contract the scroll version used. */
+    var rail = tablist(cats, panels, function(i){
+      document.dispatchEvent(new CustomEvent('srv:change', {detail:{index:i}}));
+    });
+
+    /* one pill bar per panel */
+    var bars = [];
+    panels.forEach(function(panel){
+      var tabs = [].slice.call(panel.querySelectorAll('.srv-tab'));
+      var cards = [].slice.call(panel.querySelectorAll('.srv-card'));
+      if(!tabs.length || tabs.length !== cards.length) return;
+      var bar = panel.querySelector('.srv-tabs');
+
+      var ctl = tablist(tabs, cards, function(i){
+        /* Keep the chosen pill inside the bar's own scroll box — it scrolls sideways on
+           narrow screens. Scrolling the bar directly rather than via scrollIntoView,
+           because that would also move the page when the section is only part way in
+           view, and the auto-walk would then drag the reader down the page. */
+        if(!bar) return;
+        var t = tabs[i];
+        var left = t.offsetLeft - (bar.clientWidth - t.offsetWidth) / 2;
+        if(bar.scrollTo) bar.scrollTo({left:left, behavior: reduce ? 'auto' : 'smooth'});
+        else bar.scrollLeft = left;
+      });
+
+      /* Re-assert the markup's starting state. Without this a panel that was never
+         opened keeps whatever `hidden` attributes the HTML shipped with, which is
+         correct — but it also means a stale `.is-active` class would go unnoticed. */
+      var start = tabs.indexOf(panel.querySelector('.srv-tab.is-active'));
+      ctl.select(start < 0 ? 0 : start);
+      bars.push(ctl);
+    });
+
+    /* ---- AUTO: one item every 15 seconds ----
+       It advances through the current practice's pills, then rolls on to the next
+       practice and starts at its first item, so a full lap covers all of them.
+
+       It gives way to the reader in four ways: it never starts under
+       prefers-reduced-motion, it holds while the pointer is over the section or focus is
+       inside it, it holds while the section is off screen or the tab is in the
+       background, and it stops for good the moment anyone picks a tab themselves —
+       nothing yanks the panel out from under someone who is reading it. */
+    if(reduce || bars.length !== panels.length) return;
+
+    var DWELL = 15000;
+    var timer = null, hovered = false, focused = false, onScreen = true, stopped = false;
+
+    function advance(){
+      var c = rail.index(), pills = bars[c];
+      if(pills.index() < pills.count - 1){
+        pills.select(pills.index() + 1);
+      } else {
+        var next = (c + 1) % cats.length;
+        rail.select(next);
+        bars[next].select(0);                       // each practice starts from its first item
+      }
+    }
+
+    function run(){
+      if(timer || stopped || hovered || focused || !onScreen || document.hidden) return;
+      timer = setInterval(advance, DWELL);
+    }
+    function hold(){
+      if(!timer) return;
+      clearInterval(timer);
+      timer = null;
+    }
+    /* a fresh interval on resume, so the item on screen gets its full 15 seconds rather
+       than whatever was left of the one that was interrupted */
+    function resume(){ hold(); run(); }
+
+    section.addEventListener('mouseenter', function(){ hovered = true; hold(); });
+    section.addEventListener('mouseleave', function(){ hovered = false; run(); });
+    section.addEventListener('focusin',  function(){ focused = true; hold(); });
+    section.addEventListener('focusout', function(){ focused = false; run(); });
+    document.addEventListener('visibilitychange', function(){
+      if(document.hidden) hold(); else resume();
+    });
+
+    /* capture phase: this has to win whether the tab handler above stops propagation or
+       not, and a keyboard pick counts as taking control just as much as a click does */
+    ['click','keydown'].forEach(function(ev){
+      section.addEventListener(ev, function(e){
+        var t = e.target;
+        if(t && t.closest && t.closest('.srv-cat,.srv-tab')){
+          stopped = true;
+          hold();
+        }
+      }, true);
+    });
+
+    if('IntersectionObserver' in window){
+      new IntersectionObserver(function(en){
+        onScreen = en[0].isIntersecting;
+        if(onScreen) run(); else hold();
+      }, {threshold:0.15}).observe(section);
+    }
+    run();
+  })();
+
+  /* ---- scroll reveal ---- */
+  /* ---- scroll parallax for the Problems cards ----
+     Writes --py rather than `transform` directly, so it cannot collide with the reveal
+     system (which sets transform on the elements it animates) or with the hover states.
+     Note .pcard is deliberately NOT in the reveal groups below for that same reason. */
+  (function(){
+    if (reduce) return;
+    var items = [].slice.call(document.querySelectorAll('[data-parallax]'));
+    if (!items.length) return;
+    var ticking = false;
+
+    function frame(){
+      ticking = false;
+      var vh = window.innerHeight;
+      for (var i = 0; i < items.length; i++){
+        var el = items[i], r = el.getBoundingClientRect();
+        // skip anything nowhere near the viewport — this runs on every scroll frame
+        if (r.bottom < -200 || r.top > vh + 200) continue;
+        // -1 entering from the bottom, +1 leaving past the top
+        var p = ((vh - r.top) / (vh + r.height)) * 2 - 1;
+        if (p < -1) p = -1; else if (p > 1) p = 1;
+        var depth = parseFloat(el.getAttribute('data-parallax')) || 0;
+        el.style.setProperty('--py', (-p * depth).toFixed(2) + 'px');
+      }
+    }
+    function onScroll(){
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(frame);
+    }
+    window.addEventListener('scroll', onScroll, {passive:true});
+    window.addEventListener('resize', onScroll, {passive:true});
+    frame();
+  })();
+
+  /* ---- hero scrub, after the Craft Silicon pattern ----
+     Their hero is pinned (ScrollTrigger pin+scrub over a 16-viewport runway) and the
+     PAGE does not move — the hero's contents animate against scroll position instead.
+     Ours is already pinned by `position:sticky`, so this only supplies the scrub: it
+     publishes progress through the hero as --hp and lets CSS do the transform.
+     Kept to a one-viewport runway rather than sixteen, so the first real content is
+     still one scroll away — raise HERO_RUNWAY if a longer sequence is wanted. */
+  (function(){
+    var hero = document.querySelector('.hero');
+    if (!hero || reduce) return;
+    var HERO_RUNWAY = 1;            // in hero-heights
+    var ticking = false;
+
+    function frame(){
+      ticking = false;
+      var span = hero.offsetHeight * HERO_RUNWAY;
+      var p = span ? window.pageYOffset / span : 0;
+      if (p < 0) p = 0; else if (p > 1) p = 1;
+      hero.style.setProperty('--hp', p.toFixed(4));
+    }
+    function onScroll(){
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(frame);
+    }
+    window.addEventListener('scroll', onScroll, {passive:true});
+    window.addEventListener('resize', onScroll, {passive:true});
+    frame();
+  })();
+
+  var groups = ['.hero__copy > *','.hero__aside > *','.scard','.problems__head','.problems__body > *',
+                '.services__head > *','.srv-cats','.srv-panels','.cta__panel','.why__head > *',
+                '.wcard','.why__foot','.contact__head','.cform','.ft__grid > *'];
+  var targets = [];
+  groups.forEach(function(sel){
+    Array.prototype.forEach.call(document.querySelectorAll(sel), function(el, i){
+      el.setAttribute('data-reveal','');
+      el.style.setProperty('--d', Math.min(i,3) * 70 + 'ms');
+      targets.push(el);
+    });
+  });
+
+  if(reduce){
+    targets.forEach(function(el){ el.classList.add('is-in'); });
+  } else {
+    /* A plain scroll sweep rather than an IntersectionObserver. The reveal hides
+       real copy, so the one thing it must never do is leave a section blank —
+       and an observer that misses an entry (throttled background tab, an anchor
+       jump, a stalled callback) does exactly that, with no second chance. This
+       re-checks on every scroll and resize, so anything on screen is always
+       shown. 24 elements and a rAF guard: the cost is nil. */
+    var sweep = function(){
+      var limit = window.innerHeight - 60;
+      targets = targets.filter(function(el){
+        if(el.getBoundingClientRect().top < limit){ el.classList.add('is-in'); return false; }
+        return true;
+      });
+      if(!targets.length){
+        window.removeEventListener('scroll', sweep);
+        window.removeEventListener('resize', sweep);
+        window.removeEventListener('load', sweep);
+      }
+    };
+    window.addEventListener('scroll', sweep, {passive:true});
+    window.addEventListener('resize', sweep);
+    /* a late webfont or image can shift the layout after first paint */
+    window.addEventListener('load', sweep);
+    sweep();
+  }
+
+  /* ---- the contact form is front-end only for now: confirm in place ---- */
+  function wire(id, doneText){
+    var form = document.getElementById(id);
+    if(!form) return;
+    var btn = form.querySelector('button[type="submit"]'), original = btn ? btn.textContent : '';
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      this.reset();
+      if(!btn) return;
+      form.classList.add('is-sent');
+      btn.textContent = doneText;
+      setTimeout(function(){ btn.textContent = original; form.classList.remove('is-sent'); }, 2600);
+    });
+  }
+  /* #newsForm lives in the footer, which is inline on the page now; site-chrome.js
+     wires it the same for every page. Only the contact form is on this page's own
+     markup. */
+  wire('contactForm', 'Message Sent');
+})();
+</script>
+
+<!-- ============ SUPPORT ICON — headset + speech bubble ============
+     Ported from the supplied r160 ES-module build onto the r128 global already loaded
+     for the globe, and from GSAP onto a plain clock. That avoids shipping a second copy
+     of three plus GSAP (~700KB) for a 68px corner icon. Two r128 gaps had to be closed:
+     CapsuleGeometry does not exist before r140, so capsules are a cylinder plus two
+     spheres; and colour management is `outputEncoding`, not `outputColorSpace`.
+     The studio PBR environment is dropped — clearcoat over a PMREM room would not
+     survive the downscale, and it costs a render target to build. -->
+<script>
+(function(){
+  var host = document.getElementById('supportDock');
+  if(!host || !window.THREE) return;
+
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var SIZE   = host.clientWidth || 68;
+
+  var renderer = new THREE.WebGLRenderer({alpha:true, antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setSize(SIZE, SIZE);
+  renderer.outputEncoding = THREE.sRGBEncoding;      // r128 spelling
+  host.appendChild(renderer.domElement);
+
+  var scene  = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+  camera.position.set(0, 0, 9.2);
+
+  /* The disc behind the icon is gone, so the shell is blue-black rather than white —
+     white had relied on that dark background and would dissolve against the light
+     sections. Rim lights are pushed harder than the original's to keep the silhouette
+     legible where it passes over the dark hero. */
+  var GREEN = 0xAAC638, LEMON = 0xCFDE5D, SHELL = 0x1B2144;
+
+  scene.add(new THREE.HemisphereLight(0xC9D4F0, 0x0B1030, 0.75));
+  var key = new THREE.DirectionalLight(0xffffff, 1.0);  key.position.set(-4, 6, 8);  scene.add(key);
+  var rim = new THREE.DirectionalLight(LEMON, 1.05);    rim.position.set(-6, 2, -6);  scene.add(rim);
+  var rim2= new THREE.DirectionalLight(0x9FB8FF, 0.75); rim2.position.set(6, -2, -6); scene.add(rim2);
+
+  /* Matte, to match the globe. MeshStandardMaterial is a PBR shader — its specular
+     lobe is what produced the glossy moulded-plastic highlights of the original.
+     Lambert is diffuse only: no specular term at all, so there is nothing to catch a
+     highlight, while shading still describes the form. Going all the way to
+     MeshBasicMaterial (what the globe itself uses) would be flat and unlit, which
+     collapses a headset and a sphere into one unreadable silhouette at this size. */
+  var greenMat = new THREE.MeshLambertMaterial({color:GREEN});
+  var whiteMat = new THREE.MeshLambertMaterial({color:SHELL});
+
+  function D(deg){ return deg * Math.PI / 180; }
+  var root = new THREE.Group(); scene.add(root);
+  var headset = new THREE.Group(); root.add(headset);
+  var bubble  = new THREE.Group(); root.add(bubble);
+
+  /* r128 has no CapsuleGeometry — build one from a cylinder and two hemispheres */
+  function capsule(r, len, mat){
+    var g = new THREE.Group();
+    g.add(new THREE.Mesh(new THREE.CylinderGeometry(r, r, len, 18), mat));
+    var a = new THREE.Mesh(new THREE.SphereGeometry(r, 18, 12), mat); a.position.y =  len/2;
+    var b = new THREE.Mesh(new THREE.SphereGeometry(r, 18, 12), mat); b.position.y = -len/2;
+    g.add(a); g.add(b);
+    return g;
+  }
+
+  /* Open arc for the white frame. This MUST use class syntax: THREE.Curve is an ES6
+     class in the r128 build, and an ES6 class constructor cannot be invoked via
+     Curve.call(this) — the ES5 subclassing pattern throws
+     "Class constructor cannot be invoked without 'new'". */
+  class ArcCurve extends THREE.Curve {
+    constructor(r, a0, sweep){ super(); this.r = r; this.a0 = a0; this.sweep = sweep; }
+    getPoint(t, target){
+      target = target || new THREE.Vector3();
+      var a = this.a0 + this.sweep * t;
+      return target.set(Math.cos(a) * this.r, Math.sin(a) * this.r, 0);
+    }
+  }
+
+  var R_BUB = 1.55, R_RING = 2.37, T_RING = 0.145;
+  var MIC_A = D(-76), RING_ARC = D(320), A_END = MIC_A + RING_ARC;
+
+  var ringGeo = new THREE.TubeGeometry(new ArcCurve(R_RING, A_END, -RING_ARC), 200, T_RING, 12, false);
+  headset.add(new THREE.Mesh(ringGeo, whiteMat));
+  var ringTotal = ringGeo.index.count;
+  ringGeo.setDrawRange(0, 0);
+
+  var endCap = new THREE.Mesh(new THREE.SphereGeometry(T_RING, 16, 12), whiteMat);
+  endCap.position.set(Math.cos(A_END) * R_RING, Math.sin(A_END) * R_RING, 0);
+  headset.add(endCap);
+
+  var bandGroup = new THREE.Group();
+  var B_R = 2.42, B_T = 0.27, bStart = D(46), bArc = D(88);
+  var band = new THREE.Mesh(new THREE.TorusGeometry(B_R, B_T, 16, 60, bArc), greenMat);
+  band.rotation.z = bStart; band.scale.z = 0.9;
+  bandGroup.add(band);
+  [bStart, bStart + bArc].forEach(function(a){
+    var c = new THREE.Mesh(new THREE.SphereGeometry(B_T, 18, 12), greenMat);
+    c.position.set(Math.cos(a) * B_R, Math.sin(a) * B_R, 0); c.scale.z = 0.9;
+    bandGroup.add(c);
+  });
+  headset.add(bandGroup);
+
+  function makeCup(s){
+    var g = new THREE.Group();
+    var body = capsule(0.53, 0.62, whiteMat);
+    var pad  = capsule(0.47, 0.60, greenMat); pad.position.x = s * 0.30;
+    var cap  = capsule(0.36, 0.46, whiteMat); cap.position.x = s * 0.56;
+    g.add(body); g.add(pad); g.add(cap);
+    g.position.set(s * 2.35, 0, 0);
+    headset.add(g);
+    return g;
+  }
+  var cupL = makeCup(-1), cupR = makeCup(1);
+
+  var micTip = capsule(0.245, 0.50, greenMat);
+  micTip.rotation.z = MIC_A;
+  micTip.position.set(Math.cos(MIC_A) * R_RING * 0.97, Math.sin(MIC_A) * R_RING * 0.97, 0);
+  headset.add(micTip);
+
+  bubble.add(new THREE.Mesh(new THREE.SphereGeometry(R_BUB, 40, 28), whiteMat));
+  var tail = new THREE.Mesh(new THREE.ConeGeometry(0.58, 1.15, 24), whiteMat);
+  tail.rotation.z = D(151); tail.position.set(-0.82, -1.50, 0);
+  bubble.add(tail);
+
+  /* dots on both faces, so the icon still reads while it sways */
+  var dots = [];
+  [1, -1].forEach(function(side){
+    [-0.78, 0, 0.78].forEach(function(x, i){
+      var y = 0.10;
+      var z = Math.sqrt(Math.max(0, R_BUB*R_BUB - x*x - y*y)) * side * 0.97;
+      var d = new THREE.Mesh(new THREE.SphereGeometry(0.28, 20, 14), greenMat);
+      d.position.set(x, y, z); d.scale.setScalar(0.0001); d.userData.order = i;
+      bubble.add(d); dots.push(d);
+    });
+  });
+
+  /* ---- hand-rolled easing, replacing the GSAP timeline ---- */
+  function cl(v){ return v < 0 ? 0 : (v > 1 ? 1 : v); }
+  function seg(t, start, dur){ return cl((t - start) / dur); }
+  function outBack(x){ var c1 = 1.70158, c3 = c1 + 1;
+    return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); }
+  function inOut(x){ return x < 0.5 ? 2*x*x : 1 - Math.pow(-2*x + 2, 2) / 2; }
+
+  var INTRO_END = 2.15, DOT_CYCLE = 3.6;
+
+  function pose(t){
+    ringGeo.setDrawRange(0, Math.floor(inOut(seg(t, 0, 1.0)) * ringTotal));
+    endCap.scale.setScalar(outBack(seg(t, 0.85, 0.35)) || 0.0001);
+
+    var b = seg(t, 0.50, 0.70), be = outBack(b);
+    bandGroup.position.y = (1 - be) * 1.6;
+    bandGroup.scale.setScalar(0.5 + 0.5 * be);
+
+    var c = outBack(seg(t, 0.55, 0.70));
+    cupL.position.x = -2.35 - (1 - c) * 2.45;
+    cupR.position.x =  2.35 + (1 - c) * 2.45;
+
+    micTip.scale.setScalar(Math.max(0.0001, outBack(seg(t, 0.90, 0.50))));
+    bubble.scale.setScalar(Math.max(0.0001, outBack(seg(t, 1.05, 1.05))));
+
+    /* typing dots: staggered in, hold, staggered out, repeating */
+    var dt = t - INTRO_END;
+    for (var i = 0; i < dots.length; i++){
+      var d = dots[i], o = d.userData.order, s;
+      if (dt < 0){ s = 0.0001; }
+      else {
+        var ph = dt % DOT_CYCLE;
+        var up = outBack(seg(ph, o * 0.22, 0.50));
+        var dn = 1 - inOut(seg(ph, 2.30 + o * 0.09, 0.32));
+        s = Math.max(0.0001, Math.min(up, dn));
+        d.position.y = 0.10 + Math.sin((dt + o * 0.16) * 4.2) * 0.06;
+      }
+      d.scale.setScalar(s);
+    }
+  }
+
+  var clock = new THREE.Clock();
+  /* Rotation comes in bursts rather than a constant sway: a full turn over SPIN_DUR,
+     then a pause until the next interval. Ending on a full 2PI means the resting pose
+     is identical to the starting one, so the hold has no visible snap. */
+  var SPIN_EVERY = 5.5, SPIN_DUR = 1.6;
+
+  function onResize(){
+    var s = host.clientWidth || SIZE;
+    if (s === SIZE) return;
+    SIZE = s; renderer.setSize(SIZE, SIZE);
+  }
+  window.addEventListener('resize', onResize, {passive:true});
+
+  if (reduce){
+    pose(99);                                   // settled pose, no motion
+    dots.forEach(function(d){ d.scale.setScalar(1); });
+    renderer.render(scene, camera);
+    return;                                     // no rAF loop at all
+  }
+
+  (function frame(){
+    requestAnimationFrame(frame);
+    if (document.hidden) return;
+    var t = clock.getElapsedTime();
+    pose(t);
+    /* burst-spin: one full turn, then rest until the next interval */
+    var ph = (t % SPIN_EVERY) / SPIN_DUR;
+    root.rotation.y = ph < 1 ? inOut(ph) * Math.PI * 2 : 0;
+    root.rotation.x = Math.sin(t * 0.45) * 0.03 + 0.02;
+    root.position.y = Math.sin(t * 1.2) * 0.07;
+    renderer.render(scene, camera);
+  })();
+})();
+</script>
+
+<!-- ============ SERVICE ICONS: three auto-rotating 3D marks ============ -->
+<script>
+(function(){
+  var host = document.getElementById('srvIcon');
+  if(!host || !window.THREE) return;
+
+  /* The column is display:none below 901px. Allocating a WebGL context there would cost
+     memory on exactly the devices that can least afford it, for something that never
+     renders — so the build waits until the column actually has a box.
+
+     What matters is WHEN that gets tested. The original asked `host.offsetParent` inline
+     and, on a null answer, waited for a resize: a reading taken mid-parse is not reliable,
+     and a desktop that answered null was never going to fire a resize, so the icon never
+     built at all. So the test is deferred out of parsing and retried from three
+     independent wake-ups — a task, the load event, and resize. None of them depends on
+     the compositor, which rules out the whole class of "never built" failure.
+
+     `attempt` is idempotent, so it does not matter how many of them fire — and a short
+     bounded poll backs them up, for a layout that settles late without announcing it. */
+  var built = false, poll = null, tries = 0;
+  function attempt(){
+    if(built || !host.offsetParent) return false;
+    built = true;
+    clearInterval(poll);
+    window.removeEventListener('resize', attempt);
+    window.removeEventListener('load', attempt);
+    build();
+    return true;
+  }
+  setTimeout(attempt, 0);                              // after parse, out of the parser's way
+  window.addEventListener('load', attempt, {passive:true});
+  window.addEventListener('resize', attempt, {passive:true});   // narrow -> wide, later on
+  /* ~5s ceiling, then it gives up and leaves the resize listener to it — long enough for a
+     slow first layout, short enough that a genuinely narrow screen is not polled forever */
+  poll = setInterval(function(){ if(attempt() || ++tries > 12) clearInterval(poll); }, 400);
+
+  function build(){
+  /* Blue and blue-black across all three marks. Green survives in exactly one place —
+     the blinking server LEDs — which is what makes them read as live activity rather
+     than as more structure. BLACK is for the shield's tick, where blue-black would not
+     separate from the blue body it sits on. */
+  var BLUE = 0x2D6BE4, BLUE_LT = 0x7FA8F5, BLUE_BLK = 0x141A3E, BLACK = 0x0B0E1C;
+  var GREEN = 0xAAC638, LED_DIM = 0x25305E;   // the LED's off state, not a third colour
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var size = Math.max(160, Math.min(288, host.clientWidth || 260));
+  var renderer = new THREE.WebGLRenderer({alpha:true, antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setSize(size, size);
+  host.appendChild(renderer.domElement);
+
+  var scene  = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
+  camera.position.set(5.8, 5.0, 7.4);
+  camera.lookAt(0.05, 0.35, 0);
+
+  /* Matte materials — Lambert has zero specular shine / glare. Only marks 02 and 03
+     use them; 01 is built from unlit Points and Basic materials, like the hero globe. */
+  var matBlue   = new THREE.MeshLambertMaterial({color:BLUE});
+  var matBlueLt = new THREE.MeshLambertMaterial({color:BLUE_LT});
+  var matBlueBlk= new THREE.MeshLambertMaterial({color:BLUE_BLK});
+  var matBlack  = new THREE.MeshLambertMaterial({color:BLACK});
+  /* the rack's blade LEDs blink between these two — the one place green survives */
+  var matGreen  = new THREE.MeshLambertMaterial({color:GREEN});
+  var matLedDim = new THREE.MeshLambertMaterial({color:LED_DIM});
+
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x48547a, 0.95));
+  var key = new THREE.DirectionalLight(0xffffff, 1.0); key.position.set(7, 12, 9); scene.add(key);
+  var fill = new THREE.DirectionalLight(0x7e8ea6, 0.45); fill.position.set(-6, 3, -5); scene.add(fill);
+
+  var groups = [];
+  var animUpdaters = [];
+  function make(){ var g = new THREE.Group(); g.visible = false; scene.add(g); groups.push(g); return g; }
+
+  /* ---- 01 IT Infrastructure & Networking: a solid rack, a solid cloud, two uplinks ----
+     Built from the same matte Lambert solids as the </> and shield marks that follow, so
+     the three read as one set. It is a mark rather than a model: one chassis, four blades
+     and a cloud, at a weight that survives being drawn 288px wide. The only moving parts
+     are the green blade LEDs, a cube climbing each uplink, and the cloud's drift. */
+  (function(){
+    var g = make();
+    g.position.set(-0.25, -0.15, 0);
+
+    function box(w, h, d, mat, x, y, z){
+      var m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+      m.position.set(x, y, z);
+      g.add(m);
+      return m;
+    }
+
+    var TX = -0.85, TZ = 0;                       // tower centre
+    var TW = 1.94, TH = 2.86, TD = 1.86;          // chassis
+    var BASE_Y = -1.34, FLOOR = BASE_Y + 0.09;
+
+    /* base slab, then the chassis sitting on it */
+    box(TW + 0.42, 0.18, TD + 0.34, matBlueBlk, TX, BASE_Y, TZ);
+    box(TW, TH, TD, matBlueBlk, TX, FLOOR + TH / 2, TZ);
+    /* a blue cap, so the tower is not one unbroken block from base to top */
+    box(TW + 0.1, 0.16, TD + 0.1, matBlue, TX, FLOOR + TH + 0.08, TZ);
+
+    /* four blades, proud of the front and right faces, each with an LED at its end */
+    var leds = [];
+    [-0.37, 0.29, 0.95, 1.61].forEach(function(y, i){
+      box(TW * 0.9, 0.4, 0.14, matBlue, TX, y, TZ + TD / 2 + 0.06);      // front face
+      box(0.14, 0.4, TD * 0.9, matBlue, TX + TW / 2 + 0.06, y, TZ);      // right face
+
+      var f = box(0.15, 0.15, 0.1, matGreen, TX + TW * 0.33, y, TZ + TD / 2 + 0.17);
+      var r = box(0.1, 0.15, 0.15, matGreen, TX + TW / 2 + 0.17, y, TZ + TD * 0.3);
+      leds.push({mesh:f, speed:2.2 + i * 0.55, offset:i * 1.3});
+      leds.push({mesh:r, speed:2.6 + i * 0.42, offset:i * 1.7 + 0.6});
+    });
+
+    /* the cloud: the same extruded silhouette this mark has always used, in blue */
+    var cloudGroup = new THREE.Group();
+    var CLOUD_Y = 2.66;
+    cloudGroup.position.set(1.74, CLOUD_Y, 0.26);
+    cloudGroup.rotation.set(-0.1, 0.5, 0.03);       // turned toward the camera's azimuth
+    g.add(cloudGroup);
+
+    var cs = new THREE.Shape();
+    cs.moveTo(-0.9, -0.45);
+    cs.lineTo(0.9, -0.45);
+    cs.bezierCurveTo(1.35, -0.45, 1.45, -0.05, 1.35, 0.35);
+    cs.bezierCurveTo(1.45, 0.8, 1.05, 1.15, 0.65, 1.15);
+    cs.bezierCurveTo(0.5, 1.55, -0.2, 1.6, -0.45, 1.3);
+    cs.bezierCurveTo(-0.85, 1.35, -1.2, 1.05, -1.15, 0.65);
+    cs.bezierCurveTo(-1.45, 0.4, -1.45, -0.1, -1.2, -0.45);
+    cs.lineTo(-0.9, -0.45);
+    cs.closePath();
+    var cloudGeo = new THREE.ExtrudeGeometry(cs, {
+      depth:0.5, bevelEnabled:true, bevelSegments:3, steps:1, bevelSize:0.13, bevelThickness:0.13
+    });
+    cloudGeo.center();
+    var cloudMesh = new THREE.Mesh(cloudGeo, matBlue);
+    cloudMesh.scale.setScalar(0.76);
+    cloudGroup.add(cloudMesh);
+
+    /* Two uplinks: an L of solid bars from the floor beside the tower up to the cloud,
+       with a cube climbing each. Drawn as geometry rather than lines because
+       LineBasicMaterial ignores linewidth on nearly every platform. */
+    var START_X = TX + TW / 2 + 0.28, TURN_X = 1.32, TOP_Y = CLOUD_Y - 0.72;
+    var BAR = 0.1;
+    var packets = [];
+    [-0.2, 0.22].forEach(function(lz, i){
+      var hLen = TURN_X - START_X;
+      box(hLen, BAR, BAR, matBlue, START_X + hLen / 2, FLOOR, lz);
+      var vLen = TOP_Y - FLOOR;
+      box(BAR, vLen, BAR, matBlue, TURN_X, FLOOR + vLen / 2, lz);
+      var cube = box(0.19, 0.19, 0.19, matBlueLt, START_X, FLOOR, lz);
+      packets.push({mesh:cube, hLen:hLen, vLen:vLen, lz:lz, speed:0.34 + i * 0.05, offset:i * 0.5});
+    });
+
+    if (reduce) return;                             // built pose is the settled pose
+
+    animUpdaters[0] = function(t){
+      cloudGroup.position.y = CLOUD_Y + Math.sin(t * 1.6) * 0.07;
+
+      for (var p = 0; p < packets.length; p++){
+        var pk = packets[p], total = pk.hLen + pk.vLen;
+        var dist = ((t * pk.speed + pk.offset) % 1) * total;
+        if (dist < pk.hLen) pk.mesh.position.set(START_X + dist, FLOOR, pk.lz);
+        else pk.mesh.position.set(TURN_X, FLOOR + (dist - pk.hLen), pk.lz);
+      }
+
+      /* the blink: swapping the material rather than tinting one, which is what the rest
+         of this file does and what keeps every LED sharing two materials */
+      for (var i = 0; i < leds.length; i++){
+        var d = leds[i];
+        d.mesh.material = Math.sin(t * d.speed + d.offset) > 0.05 ? matGreen : matLedDim;
+      }
+    };
+  })();
+
+  /* ---- 02 developer: the </> mark, built from beams ---- */
+  (function(){
+    var g = make();
+    function beam(len, x, y, rot, mat){
+      var m = new THREE.Mesh(new THREE.BoxGeometry(len, 0.42, 0.42), mat);
+      m.position.set(x, y, 0); m.rotation.z = rot;
+      return m;
+    }
+    var D2R = Math.PI / 180;
+    // left chevron
+    g.add(beam(1.9, -1.35,  0.62,  135 * D2R, matBlue));
+    g.add(beam(1.9, -1.35, -0.62, -135 * D2R, matBlue));
+    // right chevron
+    g.add(beam(1.9,  1.35,  0.62,  45 * D2R, matBlue));
+    g.add(beam(1.9,  1.35, -0.62, -45 * D2R, matBlue));
+    // the slash between them, blue-black so it separates from the chevrons it crosses
+    g.add(beam(3.0, 0, 0, 72 * D2R, matBlueBlk));
+  })();
+
+  /* ---- 03 cyber shield: an extruded shield with a tick ---- */
+  (function(){
+    var g = make();
+    var s = new THREE.Shape();
+    s.moveTo(0, 2.0);
+    s.lineTo(-1.55, 1.25);
+    s.lineTo(-1.55, -0.3);
+    s.quadraticCurveTo(-1.5, -1.65, 0, -2.15);
+    s.quadraticCurveTo(1.5, -1.65, 1.55, -0.3);
+    s.lineTo(1.55, 1.25);
+    s.closePath();
+    var body = new THREE.Mesh(new THREE.ExtrudeGeometry(s, {
+      depth:0.42, bevelEnabled:true, bevelSize:0.07, bevelThickness:0.07, bevelSegments:2
+    }), matBlue);
+    body.position.z = -0.2;
+    g.add(body);
+    // tick, sitting proud of the face. Black, not blue-black: on a blue body the two
+    // blues sit too close to read as separate shapes at this size.
+    function stroke(len, x, y, rot){
+      var m = new THREE.Mesh(new THREE.BoxGeometry(len, 0.3, 0.3), matBlack);
+      m.position.set(x, y, 0.42); m.rotation.z = rot;
+      return m;
+    }
+    g.add(stroke(1.0, -0.42, -0.28, -50 * Math.PI/180));
+    g.add(stroke(1.75, 0.34, 0.13,  50 * Math.PI/180));
+  })();
+
+  var active = 0;
+  groups[0].visible = true;
+
+  document.addEventListener('srv:change', function(e){
+    var i = e.detail && e.detail.index;
+    if(typeof i !== 'number' || i < 0 || i >= groups.length || i === active) return;
+    groups[active].visible = false;
+    active = i;
+    groups[active].visible = true;
+    groups[active].rotation.y = -0.3;
+  });
+
+  function resize(){
+    var s = Math.max(160, Math.min(288, host.clientWidth || 260));
+    renderer.setSize(s, s);
+  }
+  window.addEventListener('resize', resize);
+
+  /* only render while the section is actually on screen */
+  var onScreen = true;
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(en){ onScreen = en[0].isIntersecting; },
+      {threshold:0}).observe(host);
+  }
+
+  // Mouse parallax interaction
+  var mouseX = 0, mouseY = 0, targetRotX = 0, targetRotY = 0;
+  host.addEventListener('mousemove', function(e){
+    var rect = host.getBoundingClientRect();
+    var x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    var y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+    targetRotY = x * 0.15;
+    targetRotX = -y * 0.1;
+  });
+  host.addEventListener('mouseleave', function(){
+    targetRotX = 0;
+    targetRotY = 0;
+  });
+
+  var clock = new THREE.Clock();
+  (function tick(){
+    requestAnimationFrame(tick);
+    if(!onScreen || document.hidden) return;
+    var t = clock.getElapsedTime();
+    var g = groups[active];
+
+    if (animUpdaters[active]) {
+      animUpdaters[active](t);
+    }
+
+    if(!reduce){
+      if (active === 0) {
+        var idleRotY = Math.sin(t * 0.4) * 0.03;
+        var idleRotX = Math.sin(t * 0.6) * 0.015;
+        g.rotation.y += (targetRotY + idleRotY - g.rotation.y) * 0.05;
+        g.rotation.x += (targetRotX + idleRotX - g.rotation.x) * 0.05;
+      } else {
+        g.rotation.y += (0.5 - g.rotation.y) * 0.06 + 0.006;
+        g.rotation.x = Math.sin(t * 0.5) * 0.12;
+        g.position.y = Math.sin(t * 1.1) * 0.09;
+      }
+    }
+    renderer.render(scene, camera);
+  })();
+  }
+})();
+</script>
+
+<!-- ============ SUPPORT PANEL: open/close + WhatsApp hand-off ============ -->
+<script>
+(function(){
+  var btn   = document.getElementById('supportDock'),
+      pop   = document.getElementById('supportPop'),
+      shutX = document.getElementById('spopClose'),
+      msg   = document.getElementById('spopMsg'),
+      send  = document.getElementById('spopSend');
+  if(!btn || !pop || !msg || !send) return;
+
+  var WA_NUMBER = '251915965321';   // wa.me wants digits only — no +, spaces or dashes
+
+  /* The link is rebuilt as the message is edited. wa.me opens WhatsApp's compose
+     screen with the text prefilled — it never sends on its own, the sender still
+     has to press send there. */
+  function syncLink(){
+    var text = (msg.value || '').trim();
+    send.href = 'https://wa.me/' + WA_NUMBER +
+                (text ? '?text=' + encodeURIComponent(text) : '');
+  }
+  msg.addEventListener('input', syncLink);
+  syncLink();
+
+  function open(){
+    pop.hidden = false;
+    pop.classList.add('is-closed');
+    /* Force a reflow so the browser has a start state to animate from. A rAF callback
+       would be the usual trick, but it never fires in a backgrounded tab and the panel
+       would then be stuck invisible — this is synchronous and cannot stall. */
+    void pop.offsetHeight;
+    pop.classList.remove('is-closed');
+    btn.setAttribute('aria-expanded','true');
+    msg.focus();
+  }
+  function shut(){
+    pop.classList.add('is-closed');
+    btn.setAttribute('aria-expanded','false');
+    setTimeout(function(){
+      if(pop.classList.contains('is-closed')) pop.hidden = true;
+    }, 230);
+  }
+  function toggle(){ btn.getAttribute('aria-expanded') === 'true' ? shut() : open(); }
+
+  btn.addEventListener('click', toggle);
+  shutX.addEventListener('click', shut);
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && !pop.hidden) shut();
+  });
+  document.addEventListener('click', function(e){
+    if(pop.hidden) return;
+    if(!pop.contains(e.target) && !btn.contains(e.target)) shut();
+  });
+  // the link opens in a new tab, so tidy the panel away behind it
+  send.addEventListener('click', function(){ setTimeout(shut, 150); });
+})();
+</script>
+
+<!-- page-loader dismissal -->
+<script>
+(function(){
+  var loader=document.getElementById('pageLoader');
+  if(!loader) return;
+  var minTime=3200, maxTime=12000, ready=false, elapsed=false;
+  function dismiss(){
+    if(!ready||!elapsed) return;
+    loader.classList.add('is-hidden');
+    document.body.classList.remove('is-loading');
+    setTimeout(function(){ loader.remove(); },700);
+  }
+  function forceReady(){ ready=true; dismiss(); }
+  window.addEventListener('load', forceReady);
+  setTimeout(function(){ elapsed=true; dismiss(); }, minTime);
+  /* hard cap: dismiss even if window.load never fires (slow/broken network) */
+  setTimeout(forceReady, maxTime);
+})();
+</script>
+
+<!-- ============ BLOG CAROUSEL ============ -->
+<script>
+(function(){
+  var track  = document.getElementById('blogTrack');
+  var prev   = document.getElementById('blogPrev');
+  var next   = document.getElementById('blogNext');
+  if(!track || !prev || !next) return;
+
+  var STEP = 322; /* card width (300) + gap (22) */
+  var pos  = 0;
+
+  function clamp(v){
+    var maxScroll = track.scrollWidth - track.parentElement.offsetWidth;
+    return Math.max(0, Math.min(v, maxScroll));
+  }
+
+  function go(delta){
+    pos = clamp(pos + delta);
+    track.style.transform = 'translateX(-' + pos + 'px)';
+    prev.style.opacity = pos <= 0 ? '0.4' : '1';
+    next.style.opacity = pos >= clamp(pos + 1) ? '0.4' : '1';
+  }
+
+  prev.addEventListener('click', function(){ go(-STEP); });
+  next.addEventListener('click', function(){ go(STEP); });
+  go(0); /* set initial arrow states */
+
+  /* ---- tab switching ---- */
+  var tabs = document.querySelectorAll('#blogTabs .blog__tab');
+  tabs.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      tabs.forEach(function(t){
+        t.classList.remove('blog__tab--active');
+        t.classList.add('blog__tab--inactive');
+        t.setAttribute('aria-selected','false');
+      });
+      btn.classList.remove('blog__tab--inactive');
+      btn.classList.add('blog__tab--active');
+      btn.setAttribute('aria-selected','true');
+      pos = 0;
+      track.style.transform = 'translateX(0)';
+    });
+  });
+})();
+</script>
+</body>
+</html>

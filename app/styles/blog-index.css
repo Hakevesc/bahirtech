@@ -1,0 +1,28 @@
+/* Blog index grid (Phase 4). */
+.blog-index{padding:clamp(56px,6vw,90px) 0;background:#fff}
+.blog-index .container{width:min(1180px,90%)}
+.blog-index__head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:34px}
+.blog-index__head h1{font-size:clamp(28px,4vw,40px);color:var(--ink,#232A60);line-height:1.15}
+.blog-index__head p{color:var(--body,#5A6076);max-width:46ch}
+.blog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px}
+.blog-grid__card{
+  border:1px solid var(--line,#E4E6EE);border-radius:var(--r-lg,16px);overflow:hidden;background:#fff;
+  display:flex;flex-direction:column;transition:border-color .25s,box-shadow .25s}
+.blog-grid__card:hover{border-color:rgba(35,42,96,.28);box-shadow:0 16px 38px rgba(6,9,26,.08)}
+.blog-grid__img-wrap{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--bg-alt,#F7F8FA)}
+.blog-grid__img-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+.blog-grid__img-empty{
+  position:absolute;inset:0;display:grid;place-items:center;color:var(--muted,#676D82);font-size:13px;
+  letter-spacing:.12em}
+/* Same category chip as the homepage carousel (.bcard__badge-tag) — the two were a navy
+   pill here and a translucent white outline there, for the same piece of information. */
+.blog-grid__badge{
+  position:absolute;top:12px;left:12px;display:inline-flex;align-items:center;
+  background:var(--green,#AAC638);color:#1B2350;font-size:11px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;line-height:1.2;
+  border-radius:99px;padding:5px 12px;white-space:nowrap}
+.blog-grid__body{padding:18px 20px 22px;display:flex;flex-direction:column;flex:1}
+.blog-grid__meta{font-size:12.5px;color:var(--muted,#676D82);margin-bottom:8px}
+.blog-grid__title{font-size:18px;color:var(--ink,#232A60);line-height:1.35;margin-bottom:8px}
+.blog-grid__excerpt{font-size:14px;color:var(--body,#5A6076);line-height:1.65;margin-bottom:14px;flex:1}
+.blog-grid__more{color:var(--green-ink,#AAC638);font-weight:600;font-size:14px}

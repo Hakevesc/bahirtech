@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Bahirtech Logo</title>
+<style>
+  *{margin:0;padding:0}
+  html,body{height:100%;overflow:hidden;background:transparent}
+  canvas{position:fixed;inset:0;display:block}
+</style>
+<script type="importmap">
+{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}
+</script>
+</head>
+<body>
+<script type="module">
+import * as THREE from 'three';
+import { SVGLoader } from 'three/addons/loaders/SVGLoader.js';
+
+/* Brand SVG — paths 1:1 from Bahirtech (B) logo icon.svg (whitespace artifacts repaired) */
+const SVG_LOGO = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 308 282">
+<path fill="#232A60" d="M190.225 234.708H125.63C102.007 234.708 82.8492 215.577 82.8492 191.988V180.758C82.8492 167.722 77.5369 155.87 69.0033 147.349C66.6297 144.979 64.0301 142.891 61.2609 141.085C52.7839 135.611 47.3585 126.468 47.3585 116.367V115.012C47.3585 105.193 51.3145 96.3327 57.7571 89.9557C64.1996 83.5222 73.0723 79.5718 82.8492 79.5718H88.5005C112.236 79.5718 131.451 98.7594 131.451 122.462V140.746C131.451 162.868 149.422 180.814 171.576 180.814H190.225C197.685 180.814 204.41 183.862 209.327 188.715C214.187 193.625 217.239 200.34 217.239 207.79C217.239 222.688 205.145 234.765 190.225 234.765V234.708ZM216.787 133.466H200.85C188.643 133.466 178.81 123.59 178.81 111.457V76.9759C178.81 52.3143 158.747 32.2803 134.051 32.2803H44.7589C20.0059 32.3367 0 52.3143 0 77.0323V92.1002C0 108.015 8.98569 121.841 22.2099 128.782C30.3479 133.071 35.4906 141.423 35.4906 150.622V237.304C35.4906 262.022 55.553 282 80.2495 282H216.787C241.54 282 261.546 261.966 261.546 237.304V178.218C261.546 153.5 241.483 133.466 216.73 133.523L216.787 133.466Z"/>
+<path fill="#AAC638" d="M236.962 0H220.121C214.753 0 210.401 4.3458 210.401 9.70662V26.5239C210.401 31.8847 214.753 36.2305 220.121 36.2305H236.962C242.331 36.2305 246.683 31.8847 246.683 26.5239V9.70662C246.683 4.3458 242.331 0 236.962 0Z"/>
+<path fill="#AAC638" d="M299.636 63.7139H285.055C280.405 63.7139 276.635 67.4785 276.635 72.1225V86.6824C276.635 91.3264 280.405 95.0911 285.055 95.0911H299.636C304.286 95.0911 308.056 91.3264 308.056 86.6824V72.1225C308.056 67.4785 304.286 63.7139 299.636 63.7139Z"/>
+<path fill="#AAC638" d="M295.737 2.48291H276.522C269.749 2.48291 264.258 7.9657 264.258 14.7291V33.9166C264.258 40.6799 269.749 46.1627 276.522 46.1627H295.737C302.509 46.1627 308 40.6799 308 33.9166V14.7291C308 7.9657 302.509 2.48291 295.737 2.48291Z"/>
+<path fill="#AAC638" d="M243.292 53.7812H220.856C212.148 53.7812 205.088 60.8305 205.088 69.5263V91.9305C205.088 100.626 212.148 107.676 220.856 107.676H243.292C252 107.676 259.059 100.626 259.059 91.9305V69.5263C259.059 60.8305 252 53.7812 243.292 53.7812Z"/>
+</svg>`;
+
+const clamp01=v=>Math.max(0,Math.min(1,v));
+const ramp=(t,a,b)=>clamp01((t-a)/(b-a));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const easeIOC=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const easeOB=x=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2);};
+
+const GREEN=0xAAC638, BLUE=0x232A60;
+
+/* timeline */
+const DRAW0=0.35, DRAW_STAG=0.28, DRAW_DUR=0.95;
+const FILL0=2.35, FILL_STAG=0.16, FILL_DUR=0.75;
+const MERGE_S=3.85, MERGE_E=4.9;
+const MORPH_S=5.45, MORPH_DUR=1.5;
+const BSTROKE_S=5.7, BSTROKE_E=6.75, BHOLE_S=6.35, BHOLE_E=7.05;
+const BFILL_S=6.5, BFILL_E=7.5;
+const EJECT=8.0, EJECT_STAG=0.09, EJECT_DUR=1.05;
+
+/* renderer — transparent canvas */
+const renderer=new THREE.WebGLRenderer({antialias:true, alpha:true, preserveDrawingBuffer:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
+renderer.setClearColor(0x000000,0);
+document.body.appendChild(renderer.domElement);
+
+const scene=new THREE.Scene();           // no background -> transparent
+const FOV=40;
+const camera=new THREE.PerspectiveCamera(FOV,innerWidth/innerHeight,10,4000);
+let camZ=560;
+function fitCamera(){
+  const aspect=innerWidth/innerHeight;
+  const tanF=Math.tan(THREE.MathUtils.degToRad(FOV/2));
+  camZ=Math.max((154*1.3)/(aspect*tanF),(141*1.34)/tanF);
+  camera.aspect=aspect; camera.updateProjectionMatrix();
+}
+fitCamera();
+camera.position.set(0,0,camZ); camera.lookAt(0,0,0);
+
+/* SVG parse */
+const CX=154, CY=141;
+const toLogo=p=>new THREE.Vector2(p.x-CX, CY-p.y);
+const data=new SVGLoader().parse(SVG_LOGO);
+
+function mainShape(path){
+  const shapes=SVGLoader.createShapes(path);
+  if(shapes.length===1) return shapes[0];
+  const area=s=>Math.abs(THREE.ShapeUtils.area(s.getPoints(4)));
+  shapes.sort((a,b)=>area(b)-area(a));
+  for(let i=1;i<shapes.length;i++) shapes[0].holes.push(new THREE.Path(shapes[i].getPoints(24)));
+  return shapes[0];
+}
+const ensureCCW=p=>{ if(THREE.ShapeUtils.isClockWise(p)) p.reverse(); return p; };
+const ensureCW =p=>{ if(!THREE.ShapeUtils.isClockWise(p)) p.reverse(); return p; };
+
+function lineLoop(pts,color){
+  const g=new THREE.BufferGeometry().setFromPoints([...pts,pts[0]]);
+  return new THREE.Line(g,new THREE.LineBasicMaterial({color,transparent:true,opacity:0,depthWrite:false}));
+}
+
+/* flat fill shader — exact brand color, radial wipe */
+const FILL_VERT=`varying vec2 vPos; void main(){ vPos=position.xy; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`;
+const FILL_FRAG=`
+uniform float uProgress,uOpacity,uRadius;
+uniform vec3 uColor; uniform vec2 uCenter; varying vec2 vPos;
+void main(){
+  float d=distance(vPos,uCenter)/uRadius;
+  float edge=uProgress*1.12;
+  float reveal=smoothstep(edge,edge-0.12,d);
+  if(reveal<=0.001) discard;
+  gl_FragColor=vec4(uColor,uOpacity*reveal);
+  #include <colorspace_fragment>
+}`;
+function fillMaterial(color,center,radius){
+  return new THREE.ShaderMaterial({
+    transparent:true, vertexShader:FILL_VERT, fragmentShader:FILL_FRAG,
+    uniforms:{
+      uProgress:{value:0}, uOpacity:{value:0},
+      uColor:{value:new THREE.Color(color)},
+      uCenter:{value:new THREE.Vector2(center.x,center.y)},
+      uRadius:{value:radius}
+    }
+  });
+}
+
+const logoGroup=new THREE.Group(); scene.add(logoGroup);
+
+/* ---- THE B ---- */
+const DIV=28;
+const bMain=mainShape(data.paths[0]);
+const bOuter=ensureCCW(bMain.getPoints(DIV).map(toLogo));
+const bHoles=bMain.holes.map(h=>ensureCW(h.getPoints(DIV).map(toLogo)));
+const bShape=new THREE.Shape(bOuter);
+bHoles.forEach(h=>bShape.holes.push(new THREE.Path(h)));
+const bGeo=new THREE.ShapeGeometry(bShape);
+const bb=new THREE.Box2().setFromPoints(bOuter);
+const bCenter=bb.getCenter(new THREE.Vector2());
+const bRadius=bb.getSize(new THREE.Vector2()).length()/2*1.03;
+
+const bGroup=new THREE.Group(); logoGroup.add(bGroup);
+const bFillMat=fillMaterial(BLUE,bCenter,bRadius);
+bGroup.add(new THREE.Mesh(bGeo,bFillMat));
+const bOuterLine=lineLoop(bOuter,BLUE);
+const bHoleLines=bHoles.map(h=>lineLoop(h,BLUE));
+bGroup.add(bOuterLine,...bHoleLines);
+
+/* ---- FOUR GREEN SQUARES ---- */
+function roundedRectShape(w,h,r){
+  const x=-w/2,y=-h/2,s=new THREE.Shape();
+  s.moveTo(x+r,y); s.lineTo(x+w-r,y); s.quadraticCurveTo(x+w,y,x+w,y+r);
+  s.lineTo(x+w,y+h-r); s.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  s.lineTo(x+r,y+h); s.quadraticCurveTo(x,y+h,x,y+h-r);
+  s.lineTo(x,y+r); s.quadraticCurveTo(x,y,x+r,y); return s;
+}
+const squares=data.paths.slice(1,5).map(p=>{
+  const raw=mainShape(p).getPoints(24);
+  const box=new THREE.Box2().setFromPoints(raw);
+  const cSvg=box.getCenter(new THREE.Vector2());
+  const size=box.getSize(new THREE.Vector2());
+  const local=ensureCCW(raw.map(q=>new THREE.Vector2(q.x-cSvg.x,-(q.y-cSvg.y))));
+  const rMax=local.reduce((m,q)=>Math.max(m,q.length()),0)*1.06;
+  const fillMat=fillMaterial(GREEN,{x:0,y:0},rMax);
+  const group=new THREE.Group();
+  group.add(new THREE.Mesh(new THREE.ShapeGeometry(new THREE.Shape(local)),fillMat));
+  const line=lineLoop(local,GREEN);
+  group.add(line);
+  group.position.z=4;
+  logoGroup.add(group);
+  return {group,fillMat,line,pts:local,cSvg,sizeMax:Math.max(size.x,size.y),
+          finalPos:new THREE.Vector2(cSvg.x-CX,CY-cSvg.y)};
+});
+const CEN=squares.reduce((v,s)=>v.add(s.cSvg),new THREE.Vector2()).multiplyScalar(0.25);
+const SLOTS=[new THREE.Vector2(-23,23),new THREE.Vector2(23,-23),new THREE.Vector2(23,23),new THREE.Vector2(-23,-23)];
+const SPIN0=[0.9,-0.75,0.7,-0.9];
+const SPAWN=new THREE.Vector2(26,58);
+squares.forEach((s,i)=>{
+  s.intro=new THREE.Vector2((s.cSvg.x-CEN.x)*1.5,-(s.cSvg.y-CEN.y)*1.5);
+  s.slot=SLOTS[i]; s.slotScale=46/s.sizeMax; s.spin0=SPIN0[i];
+  const d=s.slot.clone().sub(s.intro);
+  s.arc=new THREE.Vector2(-d.y,d.x).normalize().multiplyScalar((i%2?-1:1)*Math.min(26,d.length()*0.22));
+  const d2=s.finalPos.clone().sub(SPAWN);
+  s.perp=new THREE.Vector2(-d2.y,d2.x).normalize();
+  s.bend=(i%2?-1:1)*(14+i*4);
+  s.spin1=(i%2?-1:1)*(2.4+0.25*i);
+});
+
+/* ---- single merged square ---- */
+const singleShape=roundedRectShape(92,92,10);
+const singleGroup=new THREE.Group(); singleGroup.position.z=2; singleGroup.visible=false; logoGroup.add(singleGroup);
+const singleFillMat=fillMaterial(GREEN,{x:0,y:0},66);
+singleGroup.add(new THREE.Mesh(new THREE.ShapeGeometry(singleShape),singleFillMat));
+const singleLine=lineLoop(singleShape.getPoints(14),GREEN); singleGroup.add(singleLine);
+
+/* ---- particle morph (flat) ---- */
+const N=2400;
+function sampleGeometry(geo,n){
+  const pos=geo.attributes.position, tris=pos.count/3, cum=[]; let tot=0;
+  const A=new THREE.Vector3(),B=new THREE.Vector3(),Cc=new THREE.Vector3();
+  for(let i=0;i<tris;i++){
+    A.fromBufferAttribute(pos,i*3); B.fromBufferAttribute(pos,i*3+1); Cc.fromBufferAttribute(pos,i*3+2);
+    tot+=new THREE.Triangle(A.clone(),B.clone(),Cc.clone()).getArea(); cum.push(tot);
+  }
+  const out=[];
+  for(let k=0;k<n;k++){
+    const r=Math.random()*tot; let ti=cum.findIndex(v=>v>=r); if(ti<0)ti=tris-1;
+    A.fromBufferAttribute(pos,ti*3); B.fromBufferAttribute(pos,ti*3+1); Cc.fromBufferAttribute(pos,ti*3+2);
+    let u=Math.random(),v=Math.random(); if(u+v>1){u=1-u;v=1-v;}
+    out.push({x:A.x+(B.x-A.x)*u+(Cc.x-A.x)*v, y:A.y+(B.y-A.y)*u+(Cc.y-A.y)*v});
+  }
+  return out;
+}
+let src=[]; for(let i=0;i<N;i++) src.push({x:(Math.random()*2-1)*46,y:(Math.random()*2-1)*46});
+let dst=sampleGeometry(bGeo,N);
+src.sort((a,b)=>Math.atan2(a.y,a.x)-Math.atan2(b.y,b.x));
+dst.sort((a,b)=>Math.atan2(a.y-bCenter.y,a.x-bCenter.x)-Math.atan2(b.y-bCenter.y,b.x-bCenter.x));
+const pPos=new Float32Array(N*3), pSize=new Float32Array(N);
+for(let i=0;i<N;i++){ pPos[i*3]=src[i].x; pPos[i*3+1]=src[i].y; pPos[i*3+2]=(Math.random()-0.5)*8; pSize[i]=1.6+Math.random()*2.2; }
+const pGeo=new THREE.BufferGeometry();
+pGeo.setAttribute('position',new THREE.BufferAttribute(pPos,3).setUsage(THREE.DynamicDrawUsage));
+pGeo.setAttribute('aSize',new THREE.BufferAttribute(pSize,1));
+const pMat=new THREE.ShaderMaterial({
+  transparent:true, depthWrite:false, blending:THREE.NormalBlending,
+  uniforms:{ uMix:{value:0}, uOpacity:{value:0},
+    uColA:{value:new THREE.Color(GREEN)}, uColB:{value:new THREE.Color(BLUE)} },
+  vertexShader:`attribute float aSize;
+    void main(){ vec4 mv=modelViewMatrix*vec4(position,1.0);
+      gl_PointSize=aSize*(260.0/-mv.z); gl_Position=projectionMatrix*mv; }`,
+  fragmentShader:`uniform vec3 uColA,uColB; uniform float uMix,uOpacity;
+    void main(){ float d=length(gl_PointCoord-0.5); if(d>0.5) discard;
+      gl_FragColor=vec4(mix(uColA,uColB,uMix),uOpacity);
+      #include <colorspace_fragment> }`
+});
+const particles=new THREE.Points(pGeo,pMat); particles.frustumCulled=false; particles.visible=false; logoGroup.add(particles);
+
+/* ================= UPDATE ================= */
+const start=performance.now()+200;
+function update(t,tAbs){
+
+  /* squares */
+  squares.forEach((s,i)=>{
+    const dA=DRAW0+i*DRAW_STAG, fA=FILL0+i*FILL_STAG;
+    const drawP=ramp(t,dA,dA+DRAW_DUR), drawE=easeIOC(drawP);
+    const fillP=ramp(t,fA,fA+FILL_DUR);
+    const n=s.pts.length+1;
+    s.line.geometry.setDrawRange(0,Math.max(2,Math.min(n,2+Math.floor(drawE*(n-2)))));
+    s.fillMat.uniforms.uProgress.value=1.35*easeIOC(fillP);
+
+    let px=s.intro.x, py=s.intro.y, rot=0, scl=1+0.05*Math.sin(Math.PI*fillP);
+    let lineOp=ramp(t,dA,dA+0.15), fillOp=ramp(t,fA,fA+0.3);
+    py+=Math.sin(tAbs*1.3+i*1.9)*1.6*ramp(t,0,0.6)*(1-ramp(t,MERGE_S,MERGE_S+0.3));
+
+    if(t>=MERGE_S&&t<MERGE_E){
+      const mp=easeIOC(ramp(t,MERGE_S,MERGE_E));
+      px=lerp(s.intro.x,s.slot.x,mp)+s.arc.x*Math.sin(Math.PI*mp);
+      py=lerp(s.intro.y,s.slot.y,mp)+s.arc.y*Math.sin(Math.PI*mp);
+      rot=(1-mp)*s.spin0;
+      scl=lerp(1,s.slotScale,mp);
+      const fade=1-ramp(t,MERGE_E-0.14,MERGE_E);
+      lineOp*=fade; fillOp*=fade;
+    }
+    const ES=EJECT+i*EJECT_STAG;
+    if(t>=ES){
+      const er=ramp(t,ES,ES+EJECT_DUR);
+      if(er<1){
+        const ep=easeOB(er);
+        px=lerp(SPAWN.x,s.finalPos.x,ep)+s.perp.x*Math.sin(Math.PI*er)*s.bend;
+        py=lerp(SPAWN.y,s.finalPos.y,ep)+s.perp.y*Math.sin(Math.PI*er)*s.bend;
+        rot=(1-easeIOC(er))*s.spin1;
+        scl=0.5+0.5*ep;
+        fillOp=ramp(t,ES,ES+0.12); lineOp=fillOp;
+      }else{
+        px=s.finalPos.x; py=s.finalPos.y+Math.sin(tAbs*1.2+i*2.1)*1.3;
+        rot=Math.sin(tAbs*0.9+i)*0.02; scl=1; fillOp=1; lineOp=1;
+      }
+    }
+    s.group.position.x=px; s.group.position.y=py;
+    s.group.rotation.z=rot; s.group.scale.setScalar(scl);
+    s.group.visible=(t>=dA-0.01)&&!(t>=MERGE_E&&t<ES);
+    s.line.material.opacity=lineOp;
+    s.fillMat.uniforms.uOpacity.value=fillOp;
+  });
+
+  /* single square */
+  {
+    const op=Math.min(ramp(t,MERGE_E-0.1,MERGE_E+0.08),1-ramp(t,MORPH_S,MORPH_S+0.12));
+    singleGroup.visible=op>0.002&&t>MERGE_E-0.12;
+    let s=1+0.05*Math.sin((t-MERGE_E)*13)*Math.exp(-(t-MERGE_E)*2.6);
+    if(t>MORPH_S) s*=1+1.3*ramp(t,MORPH_S,MORPH_S+0.12);
+    singleGroup.scale.setScalar(s);
+    singleFillMat.uniforms.uOpacity.value=op;
+    singleFillMat.uniforms.uProgress.value=1.4;
+    singleLine.material.opacity=op;
+  }
+
+  /* particles */
+  {
+    const win=t>=MORPH_S&&t<=MORPH_S+MORPH_DUR+0.6;
+    particles.visible=win;
+    if(win){
+      const p=easeIOC(ramp(t,MORPH_S,MORPH_S+MORPH_DUR));
+      pMat.uniforms.uMix.value=p;
+      pMat.uniforms.uOpacity.value=ramp(t,MORPH_S,MORPH_S+0.18)*(1-ramp(t,MORPH_S+MORPH_DUR-0.15,MORPH_S+MORPH_DUR+0.45));
+      const arr=pGeo.attributes.position.array, w=Math.sin(p*Math.PI);
+      for(let i=0;i<N;i++){
+        const S=src[i],D=dst[i],ph=pSize[i];
+        let x=lerp(S.x,D.x,p), y=lerp(S.y,D.y,p);
+        const ang=ph*3+tAbs*1.4;
+        x+=Math.cos(ang)*14*w*(1-p*0.6); y+=Math.sin(ang*1.3)*14*w;
+        const b=Math.max(0,1-p*4);
+        x+=S.x*0.55*b; y+=S.y*0.55*b;
+        arr[i*3]=x; arr[i*3+1]=y;
+      }
+      pGeo.attributes.position.needsUpdate=true;
+    }
+  }
+
+  /* B stroke / fill */
+  {
+    const oP=easeIOC(ramp(t,BSTROKE_S,BSTROKE_E));
+    const nO=bOuter.length+1;
+    bOuterLine.geometry.setDrawRange(0,Math.max(2,Math.min(nO,2+Math.floor(oP*(nO-2)))));
+    bHoleLines.forEach(l=>{
+      const hP=easeIOC(ramp(t,BHOLE_S,BHOLE_E));
+      const nH=l.geometry.attributes.position.count;
+      l.geometry.setDrawRange(0,Math.max(2,Math.min(nH,2+Math.floor(hP*(nH-2)))));
+    });
+    const strokeOp=ramp(t,BSTROKE_S,BSTROKE_S+0.15);
+    bOuterLine.material.opacity=strokeOp;
+    bHoleLines.forEach(l=>l.material.opacity=strokeOp);
+    bFillMat.uniforms.uProgress.value=1.35*easeIOC(ramp(t,BFILL_S,BFILL_E));
+    bFillMat.uniforms.uOpacity.value=ramp(t,BFILL_S,BFILL_S+0.2);
+  }
+
+  /* gentle idle float after completion */
+  const idle=ramp(t,9.3,10.3);
+  logoGroup.position.y=Math.sin(tAbs*0.85)*2.4*idle;
+  logoGroup.rotation.z=Math.sin(tAbs*0.5)*0.008*idle;
+}
+
+function frame(now){
+  requestAnimationFrame(frame);
+  update((now-start)/1000, now/1000);
+  renderer.render(scene,camera);
+}
+addEventListener('resize',()=>{ renderer.setSize(innerWidth,innerHeight); fitCamera(); camera.position.z=camZ; });
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

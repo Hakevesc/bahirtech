@@ -1,0 +1,43 @@
+{
+  "name": "bahirtech",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Bahir Tech website — Next.js migration (Phases 1–2 of bahirtech-implementation-plan.md)",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "prepare:static": "node scripts/prepare-static.mjs",
+    "db:check": "node scripts/db-check.mjs",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:admin": "node scripts/create-admin.mjs",
+    "db:seed:blog": "node scripts/seed-blog.mjs"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "drizzle-orm": "^0.45.2",
+    "next": "^16.3.2",
+    "postgres": "^3.4.9",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "sanitize-html": "^2.17.7",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/pg": "^8.15.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/sanitize-html": "^2.16.1",
+    "drizzle-kit": "^0.31.0",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "16.3.2",
+    "typescript": "^5.9.0"
+  }
+}

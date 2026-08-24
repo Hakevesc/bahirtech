@@ -1,0 +1,1115 @@
+/* ============================================================================
+   TOKENS
+   Brand green stays, but it is now an ACCENT: buttons, small marks, hover
+   states, one panel. Everything structural is white, navy and hairline grey.
+   No gradients anywhere on the page.
+   ============================================================================ */
+:root{
+  --ink:#232A60;          /* headings, brand navy                      */
+  --ink-dk:#1B2144;       /* dark surfaces (CTA panel, footer)         */
+  --body:#5A6076;         /* body copy                                 */
+  --muted:#676D82;        /* captions, meta — 4.8:1 on both surfaces   */
+  --line:#E4E6EE;         /* hairlines and card borders                */
+  --line-2:#EFF1F6;       /* faint dividers                            */
+  --bg:#FFFFFF;
+  --bg-alt:#F7F8FA;       /* alternating section band                  */
+  --night:#0E1436;        /* hero + floating chrome — the globe's core colour */
+  --lemon:#CFDE5D;        /* light lemon — Ethiopia, routes, accents on dark */
+
+  --green:#AAC638;        /* brand green — fills only                  */
+  --green-ink:#AAC638;    /* brand green — TEXT on white (was darkened #5F7616) */
+  --green-soft:#F1F5DF;   /* faint green wash                          */
+
+  --font:'Ubuntu',system-ui,-apple-system,Segoe UI,sans-serif;
+  --section-y:clamp(72px,7.4vw,116px);
+  --r-sm:8px; --r-md:12px; --r-lg:16px;
+  --curve:clamp(28px,4.6vw,66px); /* the light page's rounded lip over the hero */
+  --dock-h:60px;                  /* floating dock height, reserved at page bottom */
+  --dock-gap:18px;                /* its inset from the viewport edges            */
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--body);
+  font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+a{text-decoration:none;color:inherit}
+ul{list-style:none}
+/* Widened from min(1180px,92%): at a 1900px viewport that capped content at 1180 and
+   left ~360px of dead margin each side. 1580 puts the page edge at ~160px instead —
+   the measure marked on the review screenshot. Applies to every section. */
+.container{width:min(1580px,90%);margin-inline:auto}
+section[id]{scroll-margin-top:88px}
+
+h1,h2,h3,h4{color:var(--ink);font-weight:500;line-height:1.18;letter-spacing:-.018em;text-wrap:balance}
+h1{font-size:clamp(38px,4.4vw,58px);line-height:1.1}
+h2{font-size:clamp(28px,3.1vw,42px)}
+h3{font-size:20px;letter-spacing:-.01em}
+p{text-wrap:pretty}
+
+:focus-visible{outline:2px solid var(--green-ink);outline-offset:3px;border-radius:4px}
+/* the dark surfaces need the brighter green, not the darkened text one */
+.hero :focus-visible,.dock:focus-visible,.dock :focus-visible,.support:focus-visible,
+.cta__panel :focus-visible,.ft :focus-visible{outline-color:var(--green)}
+::selection{background:rgba(170,198,56,.3);color:var(--ink)}
+
+/* ---------- shared bits ---------------------------------------------------- */
+/* A forced break that only applies once there is room for it. Below 1250px the CTA's
+   middle column is narrower than the 503px that line needs, so the break would land on
+   an already-wrapped line and add a stray fourth one — off by default, on when it helps. */
+.br-wide{display:none}
+@media (min-width:1250px){.br-wide{display:inline}}
+
+.eyebrow{display:inline-flex;align-items:center;gap:10px;margin-bottom:16px;
+  font-size:12.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--green-ink)}
+.eyebrow::before{content:"";width:22px;height:2px;background:var(--green);flex:none}
+
+.lede{font-size:17px;line-height:1.65;color:var(--body);max-width:56ch}
+
+.btn{display:inline-flex;align-items:center;gap:9px;border:1px solid transparent;cursor:pointer;
+  font:inherit;font-size:15px;font-weight:500;line-height:1;padding:14px 26px;border-radius:var(--r-sm);
+  transition:background .25s var(--ease),border-color .25s var(--ease),color .25s var(--ease)}
+.btn svg{width:15px;height:15px;flex:none}
+/* navy text on brand green — 7.8:1, so the brand colour can carry a real button */
+/* White fill wipes across on hover, text goes blue-black, arrow turns green.
+   Done with a background-image layer rather than a pseudo-element: the label is a bare
+   text node, so a ::before overlay would need the text wrapped to stay on top of it —
+   a background always paints behind content. */
+.btn--primary{background-color:var(--green);color:#1B2350;font-weight:700;
+  background-image:linear-gradient(#fff,#fff);background-repeat:no-repeat;
+  background-position:left center;background-size:0% 100%;
+  transition:background-size .4s var(--ease),color .28s var(--ease)}
+.btn--primary svg{transition:stroke .28s var(--ease)}
+.btn--primary:hover,.btn--primary:focus-visible{background-size:100% 100%;color:var(--ink-dk)}
+.btn--primary:hover svg,.btn--primary:focus-visible svg{stroke:var(--green-ink)}
+.btn--outline{background:#fff;border-color:var(--line);color:var(--ink)}
+.btn--outline:hover{border-color:var(--ink);background:#fff}
+.btn--onDark{background-color:var(--green);color:#1B2350;font-weight:700;
+  background-image:linear-gradient(#fff,#fff);background-repeat:no-repeat;
+  background-position:left center;background-size:0% 100%;
+  transition:background-size .4s var(--ease),color .28s var(--ease)}
+.btn--onDark:hover,.btn--onDark:focus-visible{background-size:100% 100%;color:var(--ink-dk)}
+.btn--ghostDark{background:transparent;border-color:rgba(255,255,255,.3);color:#fff}
+.btn--ghostDark:hover{border-color:#fff;background:rgba(255,255,255,.08)}
+
+/* text link with a small arrow */
+.tlink{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:500;color:var(--ink);
+  transition:color .25s var(--ease)}
+.tlink svg{width:14px;height:14px;transition:transform .25s var(--ease)}
+.tlink:hover{color:var(--green-ink)}
+.tlink:hover svg{transform:translateX(3px)}
+
+/* ---------- photo slots ---------------------------------------------------- */
+.shot{position:relative;overflow:hidden;border-radius:var(--r-lg);background:var(--bg-alt);
+  border:1px solid var(--line);display:grid;place-items:center}
+.shot__img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2}
+.shot__note{display:flex;flex-direction:column;align-items:center;gap:10px;padding:24px;text-align:center;
+  font-size:13px;line-height:1.5;color:var(--muted)}
+.shot__note svg{width:26px;height:26px;color:#C3C8D6}
+.shot__note b{display:block;font-weight:500;color:#767C90}
+
+/* ============================================================================
+   NAV — white, sticky, hairline. Nothing floats over a dark photo any more.
+   ============================================================================ */
+/* ============================================================================
+   PAGE CHROME — there is no top bar any more. The hero fills the viewport and
+   carries the logo and Contact at its top; navigation lives in a floating dock
+   at the bottom of the screen, with Support beside it. Dock and Support are
+   fixed, so they survive past the hero — otherwise scrolling would leave the
+   page with no navigation at all.
+   ============================================================================ */
+.hero__top{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.hero__logo img{height:32px;width:auto;display:block}
+.hero__logo-fallback{font-weight:700;font-size:20px;color:#fff;letter-spacing:.01em}
+.hero__logo-fallback span{color:var(--green)}
+
+/* Header and footer styling now lives in public/assets/css/site-chrome.css. */
+
+/* Now a 3D headset icon rather than a labelled pill. The surface is the globe's navy,
+   not the frosted white it used to be: the headset renders in shell-white and brand
+   green, both of which vanish against a white disc. Same night colour as the globe's
+   core, so the two read as a pair. */
+.support{position:fixed;bottom:var(--dock-gap);right:var(--dock-gap);z-index:60;
+  width:88px;height:88px;padding:0;display:grid;place-items:center;
+  background:none;border:none;box-shadow:none;cursor:pointer;font:inherit;
+  transition:transform .3s var(--ease)}
+.support:hover{transform:translateY(-3px) scale(1.04)}
+.support canvas{display:block;width:100%;height:100%}
+/* ---- support panel ---- sits directly above the icon, same dark glass as the page
+   chrome so it reads as part of it rather than as a browser dialog */
+.spop{position:fixed;z-index:61;right:var(--dock-gap);bottom:calc(var(--dock-gap) + 88px + 10px);
+  width:min(320px,calc(100vw - 32px));padding:18px;border-radius:18px;
+  background:rgba(255,255,255,.96);border:1px solid var(--line);
+  -webkit-backdrop-filter:blur(18px) saturate(1.2);backdrop-filter:blur(18px) saturate(1.2);
+  box-shadow:0 22px 60px rgba(20,26,64,.22);color:var(--ink);
+  transform-origin:100% 100%;
+  transition:opacity .22s var(--ease),transform .22s var(--ease)}
+.spop[hidden]{display:none}
+.spop.is-closed{opacity:0;transform:translateY(10px) scale(.97);pointer-events:none}
+.spop__head{display:flex;align-items:flex-start;gap:11px;margin-bottom:16px}
+.spop__dot{width:9px;height:9px;border-radius:50%;background:var(--green);flex:none;margin-top:6px;
+  box-shadow:0 0 0 4px rgba(170,198,56,.22)}
+.spop__head>div{flex:1;min-width:0}
+.spop__head b{display:block;font-size:15px;font-weight:600;line-height:1.3;color:var(--ink)}
+.spop__head span{font-size:12.5px;color:var(--muted)}
+.spop__x{width:28px;height:28px;flex:none;border-radius:8px;border:none;cursor:pointer;padding:0;
+  background:var(--bg-alt);color:var(--muted);display:grid;place-items:center;
+  transition:background .2s var(--ease),color .2s var(--ease)}
+.spop__x:hover{background:var(--line);color:var(--ink)}
+.spop__x svg{width:14px;height:14px}
+.spop__label{display:block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:8px}
+.spop__msg{width:100%;resize:vertical;font:inherit;font-size:14px;line-height:1.5;color:var(--ink);
+  padding:11px 13px;border-radius:11px;background:var(--bg-alt);
+  border:1px solid var(--line);outline:none;
+  transition:border-color .2s var(--ease),background .2s var(--ease)}
+.spop__msg::placeholder{color:#9AA0B4}
+.spop__msg:focus{border-color:var(--green);background:#fff;
+  box-shadow:0 0 0 3px rgba(170,198,56,.18)}
+.spop__send{width:100%;justify-content:center;margin-top:12px}
+.spop__rows{margin-top:16px;padding-top:14px;border-top:1px solid var(--line-2);
+  display:grid;gap:4px}
+.spop__row{display:flex;align-items:flex-start;gap:11px;padding:9px 8px;border-radius:11px;
+  transition:background .2s var(--ease)}
+.spop__row:not(.spop__row--static):hover{background:var(--bg-alt)}
+/* Same treatment as .cinfo__ico in the contact section, which carries these very same
+   pin/phone glyphs: the green is the FILL and the glyph is navy on top of it. Putting
+   the green on the glyph instead only works on a dark panel — on this white one it
+   measured 1.7:1 and read as an empty disc. */
+.spop__ico{width:30px;height:30px;flex:none;border-radius:50%;display:grid;place-items:center;
+  background:var(--green);color:#1B2350}
+.spop__ico svg{width:14px;height:14px}
+.spop__row>span:last-child{font-size:13px;line-height:1.5;color:var(--body)}
+.spop__row b{display:block;font-size:13.5px;font-weight:600;color:var(--ink)}
+@media (max-width:760px){
+  .spop{bottom:calc(var(--dock-gap) + 70px + 10px)}
+}
+
+/* the button keeps an accessible name without showing a caption next to the icon */
+.support__label{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
+  clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ============================================================================
+   HERO — light, two columns, one photograph. The WebGL globe, the aurora, the
+   floating pills and the dark scrim are all gone.
+   ============================================================================ */
+/* The globe and ocean run full-bleed behind the hero, so the hero is the one dark
+   band on the page. It shares the nav's blue-black, and #0E1436 is also the globe's
+   own core colour — the sphere seats into the background instead of reading as a
+   disc pasted on top of it. */
+/* Pinned. The hero never scrolls away — it stays at the top of the viewport and the
+   rest of the page rides up over it, which is the parallax cover effect. */
+.hero{position:sticky;top:0;z-index:0;overflow:hidden;background:var(--night);color:#fff;
+  isolation:isolate}
+/* Every following section has to be BOTH positioned and opaque. A static block paints
+   its background below any positioned element, so without `position:relative` the
+   pinned hero shows straight through them; and .problems/.cta/.contact were relying on
+   the body's white, which is now behind the hero rather than in front of it. */
+.serve,.problems,.services,.cta,.why,.contact,.blog{position:relative;z-index:2}
+.problems,.cta,.contact{background:var(--bg)}
+.hero__bg{position:absolute;inset:0;z-index:0}
+.hero__bg canvas{display:block}
+.hero__bg #gl{position:absolute;inset:0;width:100%;height:100%}
+/* pushed off the headline column so the copy never sits on the brightest part */
+.hero__bg #globeContainer{position:absolute;inset:0;cursor:grab;transform:translateX(20%);
+  touch-action:pan-y}
+.hero__bg #globeContainer.is-grabbing{cursor:grabbing}
+
+/* Legibility layer. Heaviest over the copy column, clearing to almost nothing on the
+   globe side. It no longer fades out at the bottom — the section below now rides up
+   over the hero on a rounded lip, so the blue is meant to stay full strength and be
+   cut by that curve rather than dissolve into it. */
+.hero__scrim{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:
+    /* blue-black bottom band — tallest on the left (under the title), easing back a
+       few percent on the right, so the copy sits on solid ground over the ocean */
+    linear-gradient(6deg,rgba(14,20,54,.98) 0%,rgba(14,20,54,.92) 12%,
+      rgba(14,20,54,.84) 25%,rgba(14,20,54,.72) 38%,
+      rgba(14,20,54,.55) 48%,rgba(14,20,54,.28) 56%,rgba(14,20,54,0) 64%),
+    /* thin top gradient only to separate the nav from the globe */
+    linear-gradient(180deg,rgba(14,20,54,.45) 0%,rgba(14,20,54,.10) 24%,rgba(14,20,54,0) 46%)}
+
+/* Full viewport, three rows: logo/Contact at the top, copy pinned to the bottom of
+   the free space, scroll cue beneath it. svh not vh so mobile browser chrome does not
+   push the bottom row off screen. The layer is full width, so it must not swallow
+   drags meant for the globe. */
+/* The hero runs a full viewport PLUS the curve. The next section pulls itself up by
+   exactly that curve, so its white lip lands on the fold line rather than inside the
+   first screen — previously it cut across the bottom of the hero. The same extra
+   height carries the copy and the aside further down the screen. */
+.hero__inner{position:relative;z-index:2;pointer-events:none;
+  min-height:calc(100svh + var(--curve));
+  display:grid;grid-template-rows:1fr;
+  padding:96px 0 calc(44px + var(--dock-gap) + var(--curve) + 12px)}
+.hero__inner a,.hero__inner button{pointer-events:auto}
+/* Title alone on the left so it genuinely sits at the bottom; the supporting line,
+   buttons and stats move to a right-hand column on the same baseline. Keeping them
+   under the title pushed it up into the middle of the screen. */
+.hero__mid{align-self:end;display:grid;grid-template-columns:minmax(0,1fr) auto;
+  gap:clamp(28px,4vw,64px);align-items:end}
+/* the description and the single CTA now live under the title in the left column;
+   only the stats remain on the right */
+/* Scrubbed against scroll via --sp (0 when .serve's lip is at the fold, 1 when it
+   reaches the top). The copy lifts, shrinks slightly and fades as the next section
+   rides up over the pinned hero — the Craft Silicon effect, where the content moves
+   and the page does not. transform lives here on the wrapper; the reveal system
+   animates .hero__copy > * (the children), so the two never touch the same property
+   on the same element.
+
+   -100svh, not the -64px this used to be. The copy is bottom-anchored, so it starts
+   only ~74px clear of the lip while the lip travels a full viewport: at 64px of lift
+   the gap closed almost at once and the rising white curve sliced through the CTA
+   button 74px into the scroll and through the headline at 255px, both still better
+   than half opaque. Moving at the lip's own speed holds that 74px constant, so the
+   fade — now finished at --sp 0.5 — is the only thing that ever removes the copy.
+   See the STACKED SECTIONS block at the end of this file. */
+.hero__copy{max-width:min(880px,100%);
+  transform-origin:0 100%;
+  transform:translate3d(0,calc(var(--sp,0) * -100svh),0) scale(calc(1 - var(--sp,0) * .06));
+  opacity:calc(1 - var(--sp,0) * 2);
+  will-change:transform,opacity}
+@media (prefers-reduced-motion:reduce){
+  .hero__copy{transform:none;opacity:1}
+}
+.hero__aside{justify-self:end;align-self:end}
+.hero__aside .hero__stats{margin-top:0;border-top:none;padding-top:0}
+.hero__cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:28px}
+
+/* far bigger than the page's default h1 — this is the whole screen now */
+.hero h1{font-size:clamp(36px,5.3vw,70px);line-height:1.06;letter-spacing:-.028em}
+.hero .lede{max-width:560px}
+/* the global `h1{color:var(--ink)}` outranks .hero's inherited white, so it is
+   restated here — without this the headline is navy on navy */
+.hero h1{color:#fff}
+.hero .eyebrow{color:var(--green)}
+.hero .eyebrow::before{background:var(--green)}
+.hero h1 .accent{color:var(--green)}
+.hero .lede{margin-top:24px;color:rgba(233,236,246,.82)}
+.hero__stats{display:flex;align-items:center;gap:24px;margin-top:44px;padding-top:28px;
+  border-top:1px solid rgba(255,255,255,.18);flex-wrap:wrap}
+.stat{display:inline-flex;flex-direction:column;align-items:center;gap:6px;
+  padding:14px 20px;border-radius:16px;
+  border:1px solid rgba(255,255,255,.06);
+  background:rgba(255,255,255,.02);
+  transition:border-color .25s var(--ease),background-color .25s var(--ease)}
+.stat b{font-size:32px;font-weight:700;color:var(--green);line-height:1;letter-spacing:-.02em}
+.stat span{font-size:13px;color:rgba(233,236,246,.7)}
+
+/* ============================================================================
+   WHO WE SERVE — plain bordered cards. The three neon photographs are removed;
+   these read better as text anyway, and it is three fewer photos to source.
+   ============================================================================ */
+/* The light page starts here and rides up over the hero on a rounded lip, so the blue
+   is cut by a curve instead of fading out. It is a sibling of .hero painted later, so
+   position+z-index is all that is needed to bring it over the top. */
+.serve{position:relative;z-index:3;
+  margin-top:calc(var(--curve) * -1);
+  border-radius:var(--curve) var(--curve) 0 0;
+  padding:calc(var(--section-y) + var(--curve) * .5) 0 var(--section-y);
+  background:var(--bg-alt)}
+.serve__head{max-width:640px;margin-bottom:44px}
+.serve__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.scard{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:28px 28px 24px;
+  display:flex;flex-direction:column;
+  transition:border-color .3s var(--ease),box-shadow .3s var(--ease),transform .3s var(--ease)}
+.scard:hover{border-color:#CBD1E0;box-shadow:0 20px 44px -30px rgba(35,42,96,.55);transform:translateY(-2px)}
+
+/* The audience we are called about most often. Tinted and chipped rather than shouted:
+   a heavier border or a bolder heading would have made the other two read as lesser
+   options, when they are alternatives rather than a worse tier. */
+.scard--featured{background:#FAFCF0;border-color:#DCE6AC}
+.scard--featured:hover{border-color:#CBD996}
+.scard--featured .scard__num{color:var(--green-ink)}
+.scard__chip{align-self:flex-start;margin-bottom:16px;
+  background:var(--green-soft);border-radius:999px;padding:5px 12px;
+  /* the darkened green, not --green-ink: #AAC638 on this wash is about 1.7:1 */
+  color:#5F7616;font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  line-height:1.2}
+
+/* the outcome line under each audience heading */
+.scard>p{font-size:14.5px;line-height:1.62;color:var(--body);margin:0 0 22px}
+.scard__top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px}
+.scard__icon{width:52px;height:52px;border-radius:14px;background:var(--green);
+  color:#1B2350;display:grid;place-items:center;flex:none}
+.scard__icon svg{width:24px;height:24px}
+/* Decorative index (aria-hidden). Big and pale rather than small and bold — it numbers
+   the set at a glance without competing with the heading underneath it. */
+.scard__num{font-size:30px;font-weight:600;letter-spacing:-.02em;line-height:1;color:#C4CADA}
+.scard h3{font-size:19px;font-weight:600;margin-bottom:12px}
+
+/* Attribute pills, each with its own glyph. White-on-white for the plain cards, so the
+   hairline does the work; the tinted card needs the white fill to lift them off its wash. */
+.scard__tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.scard__tags li{display:inline-flex;align-items:center;gap:7px;
+  font-size:13px;line-height:1.35;color:var(--body);
+  background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 13px}
+.scard__tags svg{width:14px;height:14px;flex:none;color:var(--ink)}
+.scard--featured .scard__tags li{border-color:#E4EBC6}
+
+.scard .tlink{margin-top:auto;padding-top:18px;border-top:1px solid var(--line-2);font-weight:600}
+.scard--featured .tlink{border-top-color:#E4EBC6}
+/* green arrow against the navy label, which is the pairing the CTA panels already use */
+.scard .tlink svg{color:var(--green-ink)}
+
+/* ============================================================================
+   PROBLEMS WE SOLVE
+   ============================================================================ */
+.problems{padding:var(--section-y) 0}
+/* the three proof numbers, moved out of the hero to sit with the 13+ years claim */
+.problems__stats{margin-top:30px;padding-top:26px;border-top:1px solid var(--line)}
+.problems__stats .stat b{color:var(--ink)}
+.problems__stats .stat span{color:var(--muted)}
+.problems__head{max-width:720px;margin-bottom:52px}
+.problems__head h2 .green{color:var(--green-ink)}
+.problems__head .lede{margin-top:20px}
+.problems__body{display:grid;grid-template-columns:340px 1fr;gap:clamp(40px,5vw,72px);align-items:start}
+.problems .shot{aspect-ratio:5/7}
+.prows{display:grid;gap:16px}
+/* Each card carries its own scroll offset in --py, written by the parallax script.
+   Keeping the drift in a custom property means the hover states below can animate
+   other properties without ever fighting the transform. */
+.pcard{position:relative;overflow:hidden;display:grid;grid-template-columns:auto 1fr auto;
+  gap:22px;align-items:start;padding:24px 26px;
+  background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);
+  transform:translate3d(0,var(--py,0px),0);
+  transition:border-color .3s var(--ease),box-shadow .3s var(--ease)}
+.pcard:hover{border-color:#CBD1E0;box-shadow:0 14px 34px rgba(20,26,64,.09)}
+/* accent rail wipes down the left edge on hover */
+.pcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--green);
+  transform:scaleY(0);transform-origin:top;transition:transform .35s var(--ease)}
+.pcard:hover::before,.pcard:focus-visible::before{transform:scaleY(1)}
+.pcard__ico{width:50px;height:50px;flex:none;border-radius:14px;display:grid;place-items:center;
+  background:var(--green-soft);color:var(--ink);
+  transition:background .3s var(--ease),color .3s var(--ease),transform .3s var(--ease)}
+.pcard__ico svg{width:23px;height:23px}
+.pcard:hover .pcard__ico{background:var(--green);color:#1B2350;transform:translateY(-3px)}
+.pcard__body h3{font-size:19px;margin-bottom:8px}
+.pcard__body p{font-size:15px;color:var(--body)}
+.pcard__go{width:32px;height:32px;flex:none;border-radius:50%;display:grid;place-items:center;
+  color:var(--muted);opacity:0;transform:translateX(-6px);
+  transition:opacity .3s var(--ease),transform .3s var(--ease),color .3s var(--ease)}
+.pcard__go svg{width:15px;height:15px}
+.pcard:hover .pcard__go,.pcard:focus-visible .pcard__go{opacity:1;transform:none;color:var(--ink)}
+@media (max-width:620px){
+  .pcard{grid-template-columns:auto 1fr;gap:16px;padding:20px}
+  .pcard__go{display:none}
+}
+/* the drift is decoration — hold every card still when motion is not wanted */
+@media (prefers-reduced-motion:reduce){
+  .pcard{transform:none}
+}
+
+/* ============================================================================
+   OUR SERVICES — scroll-driven. The left rail of three boxes is gone; the left
+   column now carries one oversized number that counts 01 → 02 → 03 while the whole
+   right-hand panel swaps under it. A pill bar inside each panel still picks one item
+   of that practice's work.
+
+   The header scrolls away in normal flow and only `.services__runway` pins, which is
+   what buys the sticky frame enough height to hold the icon, the counter and a full
+   card inside one viewport.
+
+   Every pinning rule below is nested under `.services.is-pinned`, a class
+   ServicesScroll adds on mount and drops below 901px. Unpinned — no JS, or a narrow
+   screen — the section is three panels stacked in normal flow, which is also what
+   the <noscript> block at the end of the section relies on.
+   ============================================================================ */
+.services{padding:var(--section-y) 0;background:var(--bg-alt);border-block:1px solid var(--line-2)}
+.services__head{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;flex-wrap:wrap;
+  margin-bottom:40px}
+.services__head p{max-width:38ch;font-size:16.5px}
+
+/* minmax(0,…) on both tracks: a bare `1fr` floors at min-content, which let this grid
+   push past the container between 1081px and ~1250px (where the narrow-screen overrides
+   have not kicked in yet) and put a horizontal scrollbar on the page. */
+/* 430px: the counter column also carries the progress rail and the gutter that separates
+   it from the title, so it needs the width the panel gives up.
+
+   `--srv-num-size` is shared. The counter uses it as its font size, and the panel opposite
+   derives its top padding from it, which is what lines the two titles up — see
+   `.srv-panel` below. Both columns start at the same top for that to hold, hence
+   `align-items:start` rather than `center`. */
+/* Three shared measurements. The counter reads `--srv-num-size`; the panel opposite
+   derives its top padding from all three, which is what lands the two titles on the same
+   line. Keeping them as variables means the alignment survives a change to any one of
+   them instead of silently drifting. */
+/* `min()` of a width and a height term: the counter is the tallest single thing in the
+   column, so on a short viewport it has to answer to the height too or the pinned frame
+   clips it. The vh term only binds below about a 1000px-tall window. */
+.services__body{--srv-num-size:clamp(110px,min(19.5vw,30vh),300px);
+  --srv-bar-gap:clamp(38px,4.2vw,62px);
+  --srv-panel-drop:18px;
+  display:grid;grid-template-columns:minmax(0,430px) minmax(0,1fr);
+  gap:clamp(28px,2.8vw,44px);align-items:start;margin-top:44px}
+
+/* ---- the runway: one viewport of scrolling per practice ---- */
+/* Unpinned this is an ordinary wrapper with no height of its own. */
+/* svh, not vh: on mobile the URL bar collapsing mid-scroll changes vh, which would
+   resize the runway under the reader and make the counter jump a chapter. */
+.services__runway{--srv-steps:3}
+.services.is-pinned .services__runway{position:relative;height:calc(var(--srv-steps) * 100svh)}
+.services.is-pinned .services__sticky{position:sticky;top:0;height:100svh;min-height:600px;
+  display:grid;align-items:center;overflow:hidden}
+
+/* Two columns: the counter stack, and a full-height progress rail down the right edge.
+   The 3D icon cell was removed; the rail still spans the number + title rows. */
+/* The column stretches to the full height of the row — which the panel opposite sets,
+   since it is much taller — while `align-content:start` keeps the counter and title
+   pinned to the top of it. The third `1fr` row is empty and just absorbs the slack, so
+   the rail beside them has a definite height to centre itself against. */
+.srv-side{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto auto auto 1fr;
+  column-gap:clamp(22px,2.4vw,38px);row-gap:12px;align-content:start;align-self:stretch}
+.srv-num{grid-column:1;grid-row:1}
+.srv-label{grid-column:1;grid-row:2}
+.srv-aside{grid-column:1;grid-row:3;position:relative;margin-top:10px}
+
+/* ---- blurb + promise card ---- */
+/* The three panes are stacked in one box and cross-faded like the counter above them.
+   Grid rather than absolute positioning so the box keeps the height of the tallest pane
+   and the column below never shifts as they swap. */
+.srv-aside{display:grid}
+.srv-aside__pane{grid-area:1/1;opacity:0;visibility:hidden;transform:translateY(8px);
+  transition:opacity .45s var(--ease),transform .45s var(--ease),visibility 0s linear .45s}
+.srv-aside__pane.is-active{opacity:1;visibility:visible;transform:none;
+  transition:opacity .45s var(--ease),transform .45s var(--ease),visibility 0s}
+.srv-aside__rule{display:block;width:74px;height:3px;border-radius:3px;background:var(--green);
+  margin-bottom:20px}
+.srv-aside__blurb{font-size:15.5px;line-height:1.62;color:var(--body);max-width:34ch}
+
+/* ---- step through the practices ---- */
+/* The blog carousel's arrows, restated for a light background: same 48px circle and the
+   same chevrons, but a hairline border and navy ink instead of the translucent white that
+   only works over the dark band. */
+.srv-nav{grid-column:1;grid-row:4;display:flex;gap:10px;margin-top:28px}
+.srv-nav__btn{width:48px;height:48px;border-radius:50%;cursor:pointer;
+  border:1.5px solid var(--line);background:#fff;color:var(--ink);
+  display:grid;place-items:center;
+  transition:border-color .25s var(--ease),background .25s var(--ease),color .25s var(--ease)}
+.srv-nav__btn svg{width:18px;height:18px}
+.srv-nav__btn:hover:not(:disabled){border-color:var(--green);background:var(--green-soft)}
+/* Disabled at the first and last practice. Kept visible rather than hidden so the pair
+   does not reflow, and so the greyed state itself says where the reader is in the run. */
+.srv-nav__btn:disabled{cursor:default;opacity:.4;border-color:var(--line-2);color:var(--muted)}
+
+/* ---- the counter ---- */
+/* All three digits are stacked in the same box and cross-faded, so the column cannot
+   resize as they change — a reflow here would shift the panel beside it on every step. */
+.srv-num{position:relative;height:1em;font-size:var(--srv-num-size);line-height:1;
+  font-weight:300;letter-spacing:-.045em;color:var(--green-ink)}
+.srv-num__n{position:absolute;left:0;top:0;opacity:0;transform:translateY(.1em);
+  transition:opacity .45s var(--ease),transform .45s var(--ease)}
+.srv-num__n.is-active{opacity:1;transform:none}
+
+/* The font size lives on the WRAPPER and the text inherits it. `min-height:2.3em` has to
+   resolve against the display size to reserve two lines — set on the wrapper while the
+   size sat on the child, `em` resolved against the inherited 16px and reserved 42px for
+   95px of text, so the absolutely-positioned title spilled over the icon below it. */
+.srv-label{position:relative;font-size:clamp(30px,2.9vw,52px);min-height:2.3em}
+.srv-label__t{position:absolute;left:0;top:0;font-size:inherit;font-weight:500;
+  line-height:1.14;letter-spacing:-.02em;color:var(--ink);opacity:0;transform:translateY(8px);
+  transition:opacity .45s var(--ease),transform .45s var(--ease)}
+.srv-label__t.is-active{opacity:1;transform:none}
+
+/* ---- the progress rail ---- */
+/* A vertical line down the right of the column, cut into one segment per practice —
+   and the only keyboard route through them now that the rail of boxes is gone, so they
+   are real tab buttons rather than decoration. The label stays in the accessibility tree
+   but off screen, which is what gives each button its name.
+
+   Centred rather than stretched: it spans every row, but takes a share of that height and
+   sits in the middle of it, so the rail reads as a marker beside the section instead of a
+   border running its full length. Equal `1fr` rows split it into three even segments. */
+.srv-steps{grid-column:2;grid-row:1/-1;align-self:center;justify-self:end;z-index:1;
+  display:grid;grid-auto-rows:1fr;gap:12px;height:clamp(200px,58%,340px)}
+.srv-step{cursor:pointer;border:0;background:none;padding:0;font:inherit;
+  display:grid;align-items:stretch;width:3px}
+.srv-step__bar{display:block;width:3px;height:100%;border-radius:3px;background:#D2D7E3;
+  transition:background .35s var(--ease)}
+.srv-step.is-active .srv-step__bar{background:var(--green)}
+.srv-step:hover .srv-step__bar{background:#AEB5C8}
+.srv-step.is-active:hover .srv-step__bar{background:var(--green)}
+.srv-step:focus-visible{outline-offset:6px}
+.srv-step__label{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
+  clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ---- the panel: one soft card holding the pill bar and the active item ---- */
+.srv-panel{background:#EBEFFA;border-radius:var(--r-lg);
+  padding:clamp(20px,2.2vw,30px) clamp(28px,3.2vw,48px) clamp(24px,2.4vw,34px)}
+
+/* Pinned, the top padding is DERIVED rather than chosen: it is whatever puts the card's
+   heading level with the practice title in the counter column opposite.
+
+   Counter side, measured from the top of the body:  --srv-num-size + 12px row gap.
+   Panel side:  --srv-panel-drop + this padding + 49px pill bar + --srv-bar-gap.
+   Equate the two and solve for the padding. The 49px is the bar's own height — 14.5px
+   text, 10px pill padding, 5px bar padding and 1px border, each doubled. `max()` floors
+   the result so a small counter can never produce negative padding.
+
+   The pill bar keeps its place at the top of the panel; the space this opens beneath it
+   is the band the oversized number occupies on the other side. */
+/* SUPERSEDED by the mockups. Deriving this padding kept the card's heading level with the
+   practice title opposite, but it also made the panel grow point-for-point with the
+   counter — and once the four-up strip was added the panel wanted ~860px, which no longer
+   fits a pinned viewport. The mockups do not use that alignment either: the card heading
+   sits above the practice title, roughly level with the gap under the number. So the
+   padding is a plain value again and the counter is free to stay large. */
+.services.is-pinned .srv-panel{padding-top:clamp(24px,2.6vw,38px)}
+
+/* The counter drives the panel's height. Because the padding above the card is derived
+   from it, the body works out at roughly `--srv-num-size + 460px` — the card's copy
+   column and the panel's bottom padding make up the rest. The pinned frame clips
+   (`overflow:hidden`), so on a short viewport the counter has to come back down.
+   Each step below is the largest size that still leaves the body inside that height. */
+/* The per-height counter overrides that used to sit here are gone: the `min(19.5vw,30vh)`
+   above already answers to viewport height, and below 720px tall ServicesScroll stops
+   pinning altogether — the panel is a fixed ~715px once the four-up strip is in it, which
+   no shorter frame can hold whatever size the counter is. */
+/* Unpinned the panels simply stack, so they need air between them. */
+.srv-panel + .srv-panel{margin-top:22px}
+
+/* Everything that depends on NOT being pinned is keyed to the class, not to a width.
+   Pinning can now fail on height as well (a wide but short window), and in that case a
+   width-based rule would leave the counter column on screen showing "01" beside all three
+   stacked panels. Keyed this way, the fallback is the same however pinning was refused —
+   narrow, short, or no JS at all. */
+.services:not(.is-pinned) .services__body{grid-template-columns:minmax(0,1fr);gap:24px}
+.services:not(.is-pinned) .srv-side{display:none}
+.services:not(.is-pinned) .srv-panel__name{display:flex}
+/* Shown only in that stacked state — see the max-width:900px block. */
+.srv-panel__name{display:none;align-items:baseline;gap:12px;margin-bottom:18px;
+  font-size:17px;font-weight:500;color:var(--ink)}
+.srv-panel__name i{font-style:normal;font-size:28px;font-weight:300;letter-spacing:-.03em;
+  color:var(--green-ink)}
+
+/* Pinned, all three occupy the same cell and the inactive ones fade out. Stacking
+   with grid rather than `position:absolute` keeps the frame sized to the tallest
+   panel, so the layout does not jump as they swap. `visibility` rather than
+   `display` so the cross-fade has something to animate — and it still takes the
+   hidden panels out of the tab order and the accessibility tree. */
+/* `align-items:stretch` + `height:100%` is what keeps the three the SAME height. The
+   cell is already sized to the tallest of them, but a panel whose content is shorter
+   would otherwise draw a shorter box — so the soft background visibly grew and shrank as
+   the chapters changed. Now every panel fills the cell and the box never moves. */
+/* The panel sits a touch below the top of the counter and the rail, rather than dead
+   level with them — square across all three columns read as a seam. */
+.services.is-pinned .srv-panels{display:grid;align-items:stretch;margin-top:var(--srv-panel-drop)}
+/* The stacking margin has to go here. All three share one grid cell, but they are still
+   adjacent siblings, so `.srv-panel + .srv-panel` kept applying and pushed panels 2 and 3
+   22px down inside their own cell — every chapter but the first sat lower than the one
+   before it. */
+.services.is-pinned .srv-panel + .srv-panel{margin-top:0}
+.services.is-pinned .srv-panel{grid-area:1/1;height:100%;opacity:0;visibility:hidden;
+  transform:translateY(18px);
+  transition:opacity .45s var(--ease),transform .45s var(--ease),visibility 0s linear .45s}
+.services.is-pinned .srv-panel.is-active{opacity:1;visibility:visible;transform:none;
+  transition:opacity .45s var(--ease),transform .45s var(--ease),visibility 0s}
+
+/* the pill bar. It scrolls sideways rather than wrapping: a wrapped bar changes height
+   between practices, which shifts the card body up and down on every switch.
+   Left-aligned — `margin-inline:auto` centred it over the card, which left the bar
+   floating with a ragged gap on both sides instead of lining up with the heading. */
+.srv-tabs{display:flex;gap:4px;margin:0 0 var(--srv-bar-gap,32px);width:fit-content;max-width:100%;
+  padding:5px;background:#fff;border:1px solid #DDE2F0;border-radius:999px;
+  overflow-x:auto;scrollbar-width:none}
+.srv-tabs::-webkit-scrollbar{display:none}
+.srv-tab{flex:none;cursor:pointer;white-space:nowrap;border:0;border-radius:999px;
+  padding:10px 20px;background:transparent;font-family:inherit;font-size:14.5px;
+  line-height:1.2;color:var(--body);
+  transition:background .28s var(--ease),color .28s var(--ease)}
+.srv-tab:hover{color:var(--ink);background:#F2F4FB}
+.srv-tab.is-active{background:var(--green);color:#1B2350;font-weight:700}
+
+/* ---- the item itself: copy on the left, photograph on the right ---- */
+/* The cards within a panel are still one-at-a-time, picked by the pill bar. They are
+   toggled by class rather than the `hidden` attribute now, because ServicesScroll owns
+   both levels and a single mechanism is easier to keep honest. */
+/* `align-items:start`, not `center`. The photograph is much taller than the copy, so
+   centring the copy against it pushed the heading ~150px down the panel and opened a
+   gap under the pill bar that read as a mistake. Top-aligned, the heading starts level
+   with the top of the photograph. */
+/* The photograph gives back some width so it starts further right, and the gutter between
+   the two columns widens to match — the copy now runs most of the way to the photograph
+   rather than stopping halfway and leaving a dead strip. */
+.srv-card{display:none;grid-template-columns:minmax(0,1fr) minmax(0,48%);
+  gap:clamp(38px,4.4vw,68px);align-items:start}
+.srv-card.is-active{display:grid;animation:srvCardIn .42s var(--ease) both}
+@keyframes srvCardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.srv-card__copy h4{font-size:clamp(22px,2.1vw,30px);font-weight:500;line-height:1.22;
+  letter-spacing:-.018em;color:var(--ink);margin-bottom:16px}
+/* 46ch was narrower than the column it sits in, so the paragraph wrapped well short of
+   the card's own edge and left a ragged strip of empty panel between the copy and the
+   photograph. 56ch lets it run to the column, which is what now sets the measure. */
+.srv-card__copy p{font-size:16px;max-width:56ch;margin-bottom:22px}
+/* Wider and shorter again, 3/2 → 16/9. The card now starts much further down the panel
+   so its heading can meet the counter's title, and the photograph has to give that height
+   back or the panel simply grows by the same amount. */
+.srv-card .shot{aspect-ratio:16/9}
+
+/* ---- the four-up strip along the bottom of the panel ---- */
+/* Four equal columns divided by hairlines, above a rule that separates the strip from the
+   card. The dividers are borders on the items rather than separate elements, and the first
+   one is suppressed so the row does not open with a stray line. */
+/* Tight vertical rhythm on purpose. The panel has to fit inside the pinned frame, and the
+   widened gutter above pushed the copy onto more lines — this strip and the panel's bottom
+   padding are where that height is paid back, being the least-noticed space in the card. */
+.srv-feats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  margin-top:clamp(16px,1.8vw,24px);padding-top:clamp(14px,1.6vw,22px);
+  border-top:1px solid #DCE1F0;list-style:none}
+.srv-feat{display:flex;gap:12px;align-items:flex-start;padding:0 clamp(12px,1.4vw,20px);
+  border-left:1px solid #DCE1F0}
+.srv-feat:first-child{border-left:0;padding-left:0}
+.srv-feat__ico{flex:none;width:38px;height:38px;border-radius:10px;display:grid;
+  place-items:center;background:var(--green);color:var(--ink)}
+.srv-feat__ico svg{width:19px;height:19px}
+.srv-feat b{display:block;font-size:14px;font-weight:600;color:var(--ink);margin-bottom:4px;
+  line-height:1.3}
+.srv-feat p{font-size:13px;line-height:1.5;color:var(--body)}
+
+/* ---- the action row on the cyber items ----
+   The coverage lists, commitment rows and the block "under attack" strip that used to sit
+   here now live on cybersecurity.html, which has room for them. Two copies of that content
+   made this panel twice the height of the other two, so selecting Cybersecurity visibly
+   burst the section. What stays is the incident path, as one line rather than a panel:
+   someone mid-incident should not have to go and find a phone number. */
+.srv-act{display:flex;flex-wrap:wrap;align-items:stretch;gap:12px 14px}
+/* Was a bare red line of text with a dot, sitting next to a button — two different
+   kinds of thing on one row, which read as an afterthought. Now it is a tinted chip of
+   the same height as the button beside it: the label sits above the number so the phone
+   number is the part that carries weight. */
+.srv-urgent{display:inline-flex;align-items:center;gap:11px;
+  padding:9px 18px;border-radius:var(--r-sm);
+  background:#FCEFEE;border:1px solid #F0CFCC;color:#A82F2A;
+  transition:background .25s var(--ease),border-color .25s var(--ease)}
+.srv-urgent svg{width:17px;height:17px;flex:none}
+.srv-urgent span{display:flex;flex-direction:column;line-height:1.25;text-align:left;
+  font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.srv-urgent b{font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
+  color:#C0554F}
+.srv-urgent:hover{background:#F9E2E0;border-color:#E3AEA9}
+
+/* Every panel gets the same floor, so moving between practices — including the 15-second
+   auto-walk — never resizes the section under the reader. The value is the tallest item's
+   natural height at this breakpoint; below 901px the layout is one column and stacks
+   freely, so it is deliberately not applied there. */
+@media (min-width:901px){
+  .srv-panel{min-height:460px}
+}
+
+/* ============================================================================
+   CTA — solid navy panel, with the floating square cluster restored from the original
+   build and a dot texture that is masked to the right-hand side only.
+   ============================================================================ */
+.cta{padding:var(--section-y) 0}
+.cta__panel{position:relative;overflow:hidden;background:var(--ink-dk);border-radius:var(--r-lg);
+  padding:clamp(40px,4.8vw,68px) clamp(28px,4.4vw,64px);
+  display:grid;grid-template-columns:auto 1fr auto;gap:clamp(28px,4vw,56px);align-items:center}
+/* the dots: low contrast, and wiped out toward the left so only the right reads */
+.cta__panel::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:radial-gradient(rgba(255,255,255,.13) 1px,transparent 1.4px);
+  background-size:9px 9px;
+  -webkit-mask-image:linear-gradient(90deg,transparent 30%,rgba(0,0,0,.45) 62%,#000 100%);
+  mask-image:linear-gradient(90deg,transparent 30%,rgba(0,0,0,.45) 62%,#000 100%)}
+.cta__panel>*{position:relative;z-index:1}
+.cta__panel h2{color:#fff}
+/* no max-width: the 46ch cap held this to 415px inside a 650px column, so the first
+   line wrapped before reaching the forced break and the paragraph ran to four lines.
+   It now fills the column and lines up with the heading above it. */
+.cta__panel p{color:rgba(233,236,246,.72);margin-top:16px;font-size:16px}
+/* stacked, not side by side — primary on top, secondary beneath, matched widths */
+.cta__actions{display:flex;flex-direction:column;align-items:stretch;gap:12px}
+.cta__actions .btn{justify-content:center}
+
+/* animated B logo — replaces the old four static squares */
+.cta__logo-anim{flex:none;width:clamp(180px,22vw,280px);height:clamp(180px,22vw,280px);
+  border:none;border-radius:var(--r-lg);overflow:hidden;pointer-events:none}
+
+/* ============================================================================
+   WHY BAHIR TECH — the notch-masked photo shape and the three animal photos
+   are gone; plain panel, plain cards.
+   ============================================================================ */
+.why{padding:var(--section-y) 0;background:var(--bg-alt);border-top:1px solid var(--line-2)}
+.why__head{display:grid;grid-template-columns:1fr 1.05fr;gap:clamp(36px,5vw,72px);align-items:center;
+  margin-bottom:52px}
+.why__head .lede{margin-top:20px}
+.why__head .btn{margin-top:28px}
+.why .shot{aspect-ratio:16/10}
+.why__cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.wcard{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:30px 28px;
+  display:flex;flex-direction:column;transition:border-color .3s var(--ease)}
+.wcard:hover{border-color:#CBD1E0}
+.wcard__ico{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);color:var(--ink);
+  display:grid;place-items:center;margin-bottom:24px;transition:.3s var(--ease)}
+.wcard__ico svg{width:13px;height:13px;display:block}
+.wcard:hover .wcard__ico{background:var(--green);border-color:var(--green);color:#1B2350}
+.wcard h3{margin-bottom:12px}
+.wcard p{font-size:15px}
+/* the single filled panel on the page — the one place the brand green leads */
+.wcard--accent{background:var(--green);border-color:var(--green);justify-content:flex-end}
+/* margin-bottom:auto keeps the icon at the top while the copy sits at the bottom.
+   It used to also carry align-self:center, which centred it horizontally while the
+   other two cards' icons sat on the left text edge — that was the odd one out. */
+.wcard--accent .wcard__ico{border-color:rgba(27,35,80,.3);color:#1B2350;margin-bottom:auto}
+.wcard--accent:hover{border-color:var(--green)}
+.wcard--accent:hover .wcard__ico{background:#1B2350;border-color:#1B2350;color:var(--green)}
+/* :not(.wcard__ico) matters — the icon is a <span> too, so a bare `span` selector
+   handed it this caption's 28px top margin and knocked it out of line with the icons
+   on the other two cards. */
+.wcard--accent span:not(.wcard__ico){display:block;font-size:14px;
+  color:rgba(27,35,80,.75);margin-top:28px}
+.wcard--accent h3{color:#1B2350;font-size:23px;margin:4px 0 0}
+.why__foot{display:flex;gap:12px;flex-wrap:wrap;margin-top:34px;padding-top:28px;border-top:1px solid var(--line)}
+.why__foot span{font-size:14px;color:var(--muted)}
+
+/* ============================================================================
+   BLOG / INSIGHTS — dark-panel carousel, inspired by editorial storytelling.
+   ============================================================================ */
+.blog{background:var(--ink);padding:clamp(60px,7vw,100px) 0;overflow:hidden}
+.blog__inner{position:relative}
+.blog__top{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:40px;flex-wrap:wrap}
+.blog__heading{font-size:clamp(28px,3.1vw,42px);font-weight:500;color:#fff;line-height:1.18;letter-spacing:-.018em;max-width:28ch}
+.blog__heading span{color:var(--green)}
+.blog__controls{display:flex;flex-direction:column;align-items:flex-end;gap:20px}
+.blog__tabs{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.blog__tab{border:none;cursor:pointer;font:inherit;font-size:14.5px;font-weight:500;padding:9px 20px;border-radius:999px;transition:background .25s,color .25s}
+.blog__tab--active{background:rgba(255,255,255,.18);color:#fff}
+.blog__tab--inactive{background:transparent;color:rgba(255,255,255,.55)}
+.blog__tab--inactive:hover{color:#fff;background:rgba(255,255,255,.1)}
+.blog__arrows{display:flex;gap:10px}
+.blog__arrow{width:48px;height:48px;border-radius:50%;border:1.5px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);
+  color:#fff;display:grid;place-items:center;cursor:pointer;transition:background .25s,border-color .25s}
+.blog__arrow:hover{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.5)}
+.blog__arrow svg{width:18px;height:18px}
+.blog__track-wrap{overflow:hidden}
+.blog__track{display:flex;gap:22px;transition:transform .5s cubic-bezier(.22,.61,.36,1)}
+.bcard{flex:0 0 300px;cursor:pointer}
+.bcard__img-wrap{position:relative;border-radius:var(--r-lg);overflow:hidden;aspect-ratio:4/3;margin-bottom:16px}
+.bcard__img-wrap img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s var(--ease)}
+.bcard:hover .bcard__img-wrap img{transform:scale(1.04)}
+.bcard__overlay{position:absolute;inset:0;background:transparent;transition:background .3s}
+.bcard:hover .bcard__overlay{background:rgba(14,20,54,.55)}
+.bcard--featured .bcard__overlay{background:rgba(14,20,54,.30)}
+/* The category chip. Solid brand green with navy text — the same pill the service tabs
+   use, and the one contrast pair the tokens vouch for at 7.8:1. It replaces a 9px white
+   label on a 5%-white fill, which had nothing to hold it against a photograph and
+   disappeared entirely over a pale one. Top-LEFT, where a category is looked for, and
+   where the blog index already put its own.
+   `.bcard__badge-logo` went with it: the markup no longer carries a "BAHIR TECH" pill,
+   since repeating the publisher on every card of a Bahir Tech carousel said nothing and
+   competed with the category beside it. */
+.bcard__badge{position:absolute;top:12px;left:12px;display:flex;align-items:center;gap:8px}
+.bcard__badge-tag{background:var(--green);color:#1B2350;border-radius:999px;
+  padding:5px 12px;font-size:11px;font-weight:700;line-height:1.2;letter-spacing:.08em;
+  text-transform:uppercase;white-space:nowrap}
+.bcard__featured-copy{position:absolute;bottom:0;left:0;right:0;padding:20px 18px 18px;
+  background:linear-gradient(0deg,rgba(14,20,54,.9) 0%,transparent 100%)}
+.bcard__featured-copy h3{color:#fff;font-size:17px;font-weight:600;line-height:1.35;margin:0}
+.bcard__meta{display:flex;flex-direction:column;gap:12px}
+.bcard__author{font-size:13.5px;font-weight:600;color:rgba(255,255,255,.7)}
+.bcard__title{font-size:15px;font-weight:600;color:#fff;line-height:1.4;margin:0}
+.bcard__subtitle{font-size:12.5px;font-weight:500;color:var(--lemon);line-height:1.4;margin:0}
+
+@media(max-width:900px){
+  .blog__top{flex-direction:column;align-items:flex-start}
+  .blog__controls{align-items:flex-start}
+  .bcard{flex:0 0 260px}
+}
+@media(max-width:620px){
+  .bcard{flex:0 0 230px}
+  .blog__arrows{display:none}
+  .blog__track-wrap{overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+  .blog__track{transition:none;scroll-snap-align:start}
+  .bcard{scroll-snap-align:start}
+}
+
+/* ============================================================================
+   CONTACT — flat card, hairline border, no overlap into the footer.
+   ============================================================================ */
+.contact{padding:var(--section-y) 0}
+.contact__grid{display:grid;grid-template-columns:1fr 1.1fr;gap:clamp(40px,5vw,76px);align-items:start}
+.contact__head .lede{margin-top:18px;margin-bottom:38px}
+.cinfo li{display:flex;gap:16px;padding:18px 0;border-top:1px solid var(--line-2)}
+.cinfo li:last-child{border-bottom:1px solid var(--line-2)}
+.cinfo__ico{width:38px;height:38px;border-radius:var(--r-sm);background:var(--green);color:#1B2350;
+  display:grid;place-items:center;flex:none}
+.cinfo__ico svg{width:17px;height:17px}
+.cinfo b{display:block;font-size:15px;font-weight:500;color:var(--ink)}
+/* :not(.cinfo__ico) — the icon is a <span> too, and a bare `span` selector was
+   repainting its glyph muted grey (3.2:1 on the green fill), overriding the navy
+   the icon rule above asks for. */
+.cinfo span:not(.cinfo__ico){font-size:14.5px;color:var(--body);line-height:1.6}
+
+.cform{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:clamp(28px,3.4vw,40px);
+  display:flex;flex-direction:column;gap:18px}
+.cform h3{font-size:21px;margin-bottom:2px}
+.cform__row{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.cfield{display:flex;flex-direction:column;gap:7px;min-width:0}
+.cfield label{font-size:13px;font-weight:500;color:var(--ink)}
+.cform input,.cform select,.cform textarea{width:100%;background:#fff;border:1px solid var(--line);
+  border-radius:var(--r-sm);padding:13px 15px;font:inherit;font-size:14.5px;color:var(--ink);outline:none;
+  transition:border-color .2s,box-shadow .2s}
+.cform input::placeholder,.cform textarea::placeholder{color:#A8AEC0}
+.cform input:focus,.cform select:focus,.cform textarea:focus{border-color:var(--green);
+  box-shadow:0 0 0 3px rgba(170,198,56,.18)}
+.cform select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:42px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5 6 6.5l5-5' stroke='%235A6076' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 15px center}
+.cform select:has(option[value=""]:checked){color:#A8AEC0}
+.cform select option{color:var(--ink)}
+/* height pinned rather than left to `rows`, so the box does not grow with the
+   inherited line-height and unbalance the form column */
+.cform textarea{resize:vertical;height:88px;min-height:88px;line-height:1.5}
+.cform .btn{align-self:flex-start;margin-top:4px}
+.cform.is-sent .btn{background:var(--ink);color:#fff}
+
+
+/* ============================================================================
+   SCROLL REVEAL — one short fade. Nothing floats, pulses or drifts.
+   ============================================================================ */
+[data-reveal]{opacity:0;transform:translateY(14px);
+  transition:opacity .6s var(--ease),transform .6s var(--ease);transition-delay:var(--d,0ms)}
+[data-reveal].is-in{opacity:1;transform:none}
+
+/* ============================================================================
+   RESPONSIVE
+   ============================================================================ */
+@media (max-width:1080px){
+  /* the copy now sits over the globe instead of beside it, so the scrim goes
+     top-weighted and even rather than left-weighted */
+  .hero__bg #globeContainer{transform:none}
+  .hero__scrim{background:
+    linear-gradient(6deg,rgba(14,20,54,.98) 0%,rgba(14,20,54,.90) 12%,
+      rgba(14,20,54,.78) 25%,rgba(14,20,54,.60) 38%,
+      rgba(14,20,54,.40) 48%,rgba(14,20,54,0) 62%),
+    linear-gradient(180deg,rgba(14,20,54,.9) 0%,rgba(14,20,54,.76) 42%,
+      rgba(14,20,54,.60) 72%,rgba(14,20,54,.52) 100%)}
+  .problems__body{grid-template-columns:280px 1fr}
+  .services__body{grid-template-columns:300px 1fr}
+  /* the photograph gives way first — the copy is what carries the item */
+  .srv-card{grid-template-columns:minmax(0,1fr) minmax(0,46%)}
+  /* Both sizes are re-set at their SOURCE, not on the elements that read them. The title
+     size has to stay on `.srv-label`, because that is where `min-height:2.3em` resolves —
+     setting it on `.srv-label__t` here made the wrapper reserve 69px for 73px of text and
+     the title overflowed onto the panel. Likewise the counter reads `--srv-num-size`, so
+     the variable moves rather than `.srv-num`'s font-size. */
+  .services__body{--srv-num-size:clamp(70px,11vw,120px)}
+  .srv-label{font-size:clamp(24px,3vw,32px)}
+  .why__head{grid-template-columns:1fr;gap:40px}
+  .cta__panel{grid-template-columns:1fr;gap:32px}
+  .contact__grid{grid-template-columns:1fr;gap:44px}
+}
+@media (max-width:900px){
+  /* the aside drops under the title rather than squeezing into a side column */
+  .hero__mid{grid-template-columns:1fr;gap:30px}
+  .hero__aside{justify-self:start;max-width:560px}
+  .serve__grid{grid-template-columns:1fr}
+  .problems__body{grid-template-columns:1fr;gap:36px}
+  .problems .shot{aspect-ratio:16/10}
+  /* No pinning below here — ServicesScroll drops `.is-pinned`, so the three panels
+     stack in normal flow. A pinned frame does not survive this width: the card turns
+     into one column with the photograph above the copy, which runs ~880px against a
+     ~810px phone viewport, and `overflow:hidden` on the sticky frame would cut the
+     bottom off. The whole side column goes with it — the counter has no chapters left
+     to count — and each panel shows its own number and name instead. */
+  .services__body{grid-template-columns:1fr;gap:24px}
+  .srv-side{display:none}
+  .srv-panel__name{display:flex}
+  .srv-card{grid-template-columns:1fr;gap:28px}
+  /* the photograph leads on narrow screens: it is the first thing that reads at speed */
+  .srv-card .shot{grid-row:1;aspect-ratio:16/10}
+  .why__cards{grid-template-columns:1fr}
+}
+/* Narrow: the dock takes most of the width, so Support cannot share the bottom line
+   with it — it lifts above the dock and drops its label, like a chat button. */
+@media (max-width:760px){
+  .support{width:70px;height:70px}
+  /* nothing is occupying the bottom line, so Support drops back down to it */
+  body[data-dock-vis="off"] .support,
+  body[data-dock-pos="top"] .support{bottom:var(--dock-gap)}
+  .support__label{display:none}
+  .dock a{padding:10px 14px;font-size:14px}
+  .hero__top .btn{padding:10px 16px;font-size:14px}
+}
+@media (max-width:620px){
+  .hero__stats{gap:18px}
+  .cform__row{grid-template-columns:1fr}
+  /* three practices side by side stop fitting; they stack again */
+  .srv-cats{grid-auto-flow:row;grid-auto-columns:auto}
+  .srv-cat{grid-template-columns:auto 1fr;gap:12px;align-items:baseline}
+  /* the pill bar keeps to one line and scrolls, so it needs a hint that it does */
+  .srv-tabs{width:100%;justify-content:flex-start;
+    -webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);
+    mask-image:linear-gradient(90deg,#000 88%,transparent)}
+  .srv-tab{padding:9px 16px;font-size:14px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  [data-reveal]{opacity:1;transform:none;transition:none}
+  *{transition-duration:.01ms !important}
+  /* the rule above only covers transitions — keyframe animations need their own stop */
+  .srv-card.is-active{animation:none}
+  .cta__logo-anim{display:none}
+}
+
+/* ============================================================================
+   PAGE LOADER — full-screen overlay with animated B logo
+   ============================================================================ */
+.page-loader{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;
+  justify-content:center;background:#0E1436;transition:opacity .6s ease,visibility .6s ease}
+.page-loader.is-hidden{opacity:0;visibility:hidden;pointer-events:none}
+.page-loader iframe{width:min(320px,60vw);height:min(320px,60vw);border:none}
+body.is-loading{overflow:hidden}
+
+/* ============================================================================
+   STACKED SECTIONS — the hero's cover effect, applied the whole way down.
+
+   Every section pins once its BOTTOM lands on the fold, and the next one rides
+   up over it on the same rounded lip the hero already used. Two custom
+   properties drive it, both published by components/home/StackScroll.tsx:
+
+     --pin-top  per layout. min(0, fold - section height). Sticky's `top` is an
+                offset from the top of the viewport, so a plain `top:0` would
+                pin a section the moment its HEAD arrived and freeze the rest of
+                its content off screen. Offsetting by its own height instead
+                pins it when its FOOT arrives, which is the moment the next
+                section's lip appears and the handoff actually starts.
+     --sp       per frame. 0 -> 1 as the next section travels from the bottom of
+                the viewport to the top of it: how far this section is covered.
+
+   Why the content translates at exactly -100svh per unit of --sp: the lip also
+   crosses one viewport over that same range, so the two move in lockstep and
+   the gap between them never closes. The original hero scrub moved its copy
+   only 64px against the lip's 720, which is why the lip used to cut through the
+   headline and the CTA button while they were still fully opaque. The scale
+   works about the BOTTOM edge for the same reason — shrinking then opens that
+   gap instead of closing it.
+
+   The chain ends at .contact. The footer is deliberately outside it: the whole
+   mechanism works by holding a section still so the next one can slide over it,
+   so the only way for the footer not to be overlaid on top of .contact is for
+   .contact not to pin. It is the last lid either way.
+
+   Everything is scoped to `body.is-stacked` AND gated at 901px. .cta, .why and
+   .contact are class names on the other pages too and this stylesheet ships in
+   the shared bundle, so an unscoped `position:sticky` here would leak sideways;
+   901px is the same breakpoint .services already uses to drop its own pin.
+   ============================================================================ */
+@media (min-width:901px){
+  /* Painting order. Each section sits above the one it covers. The footer is
+     NOT part of the stack — it closes the page in normal flow rather than
+     sliding over anything — but it still needs the top z-index, because the
+     sections pinned behind it stay pinned forever and would otherwise show
+     straight through it. */
+  body.is-stacked .serve   {z-index:3}
+  body.is-stacked .problems{z-index:4}
+  body.is-stacked .services{z-index:5}
+  body.is-stacked .cta     {z-index:6}
+  body.is-stacked .why     {z-index:7}
+  body.is-stacked .blog    {z-index:8}
+  body.is-stacked .contact {z-index:9}
+  body.is-stacked .ft      {z-index:10}
+
+  /* The members that hold still. Two sections are deliberately absent:
+
+     .services runs its own three-viewport sticky sequence inside
+     .services__runway, and a second pin on the section itself would freeze the
+     frame that sequence scrolls through. It still carries the lip and rides
+     over .problems — it just does not hold once it gets there.
+
+     .contact is the last section, and pinning is what makes the NEXT block
+     slide over you. Pinned, it would be overlaid by the footer; unpinned, the
+     footer simply follows it down the page. It keeps its lip either way, since
+     it is still the thing that rides up over .blog.
+
+     .cta is held out by choice, not by mechanism — it reads better scrolling
+     past at its own compact height than held for a full screen, which is what
+     the stack's min-height was doing to a panel half that tall. It keeps its
+     lip so the page's edges stay consistent; it just does not stop.
+     The min-height is what makes the chain uniform: a section shorter than a
+     screen cannot fill one, so it would pin with the previous section still
+     showing above it. Centring keeps the content in the middle of the extra
+     room rather than leaving it top-heavy on a tall display. */
+  body.is-stacked .serve,
+  body.is-stacked .problems,
+  body.is-stacked .why,
+  body.is-stacked .blog{
+    position:sticky;top:var(--pin-top,0px);
+    min-height:calc(100svh + var(--curve));
+    display:flex;flex-direction:column;justify-content:center}
+
+  /* The lip, and the rule for who gets one: a section is lifted over the one
+     before it ONLY IF that one is pinned. A lip over a section that is itself
+     scrolling is not a reveal — the two move together, so all it does is park a
+     rounded edge and a shadow permanently on top of the previous section, which
+     reads as an overlay rather than as a handoff.
+
+     So the three sections that follow a static neighbour join flat instead:
+     .cta after .services, .why after .cta, and .ft after .contact. .serve is
+     absent from the margin/radius rule only because it already carries its own
+     — it was the original lip. */
+  body.is-stacked .problems,
+  body.is-stacked .services,
+  body.is-stacked .blog,
+  body.is-stacked .contact{
+    margin-top:calc(var(--curve) * -1);
+    border-radius:var(--curve) var(--curve) 0 0}
+  body.is-stacked .serve,
+  body.is-stacked .problems,
+  body.is-stacked .services,
+  body.is-stacked .blog,
+  body.is-stacked .contact{
+    box-shadow:0 -26px 54px -20px rgba(8,12,36,.4)}
+
+  /* Half the curve back as padding, so the lip does not eat into the first line
+     of each section the way it would if it were laid over unchanged spacing. */
+  body.is-stacked .problems,
+  body.is-stacked .services,
+  body.is-stacked .contact{padding-top:calc(var(--section-y) + var(--curve) * .5)}
+  body.is-stacked .blog{padding-top:calc(clamp(60px,7vw,100px) + var(--curve) * .5)}
+
+  /* The scrub. Every pinned section moves its own .container out at the lip's
+     speed while fading and shrinking, so the section empties before it is
+     covered rather than being sliced. The two unpinned sections are absent for
+     the same reason in both cases — nothing holds them, so their content is
+     already leaving at scroll speed, and scrubbing it too would move it at
+     double rate and fade out content still on screen.
+     The reveal system animates [data-reveal] elements DEEPER than .container,
+     so the two never write the same property on the same element. */
+  body.is-stacked .serve > .container,
+  body.is-stacked .problems > .container,
+  body.is-stacked .why > .container,
+  body.is-stacked .blog > .container{
+    transform-origin:50% 100%;
+    transform:translate3d(0,calc(var(--sp,0) * -100svh),0) scale(calc(1 - var(--sp,0) * .06));
+    opacity:calc(1 - var(--sp,0) * 2)}
+  /* Promoted only while a section is mid-handoff. Holding a compositor layer
+     for all eight at once costs more memory than it buys back in paint. */
+  body.is-stacked .is-scrubbing > .container{will-change:transform,opacity}
+
+  /* The outgoing panel recedes into shadow as the new one slides over it. This
+     is the part that sells the depth on sections whose background is a flat
+     colour and would otherwise show no sign of being pinned at all.
+
+     The list is exactly the pinned set, for the same reason the lip list is
+     exactly the sections that follow it: a section that is scrolling away under
+     its own steam is not being covered, so darkening it just makes the page go
+     muddy on the way past. That takes .services out — it scrolls off as .cta
+     arrives — along with .cta and .contact. */
+  body.is-stacked .hero::after,
+  body.is-stacked .serve::after,
+  body.is-stacked .problems::after,
+  body.is-stacked .why::after,
+  body.is-stacked .blog::after{
+    content:"";position:absolute;inset:0;z-index:9;pointer-events:none;
+    border-radius:inherit;background:#080C24;
+    opacity:calc(var(--sp,0) * .45)}
+}
+
+/* StackScroll never adds `is-stacked` when reduced motion is set, so the block
+   above simply never applies. This only cleans up after a mid-session change to
+   the setting, where the class is removed but inline --sp values may remain. */
+@media (prefers-reduced-motion:reduce){
+  body .serve > .container,body .problems > .container,
+  body .why > .container,body .blog > .container{
+    transform:none;opacity:1}
+}

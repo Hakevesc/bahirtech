@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>3D Server & Cloud Icon Preview</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    min-height:100vh;
+    background:#0b0f24;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    font-family:'Ubuntu',sans-serif;
+    color:#fff;
+    padding:20px;
+  }
+  .preview-card{
+    background:#141a38;
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:24px;
+    padding:30px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.5);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .canvas-container{
+    width:420px;
+    height:420px;
+    position:relative;
+  }
+  canvas{
+    width:100% !important;
+    height:100% !important;
+    display:block;
+  }
+  h2{
+    margin-top:20px;
+    font-size:20px;
+    font-weight:500;
+    color:#AAC638;
+  }
+  p{
+    color:#8892b0;
+    font-size:14px;
+    margin-top:6px;
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+<div class="preview-card">
+  <div class="canvas-container" id="srvCanvas"></div>
+  <h2>IT Infrastructure & Cloud Service</h2>
+  <p>Glass 3D Server + Cloud — Auto-Rotating 360°</p>
+</div>
+
+<script>
+(function(){
+  var container = document.getElementById('srvCanvas');
+  var W = container.clientWidth || 420;
+  var H = container.clientHeight || 420;
+
+  // Colors - Bahir Tech Brand Tokens
+  var GREEN   = 0xAAC638;
+  var LEMON   = 0xCFDE5D;
+  var INK     = 0x232A60;
+  var INK_DK  = 0x181F48;
+  var NIGHT   = 0x0E1436;
+  var BASE    = 0x141A3E;
+  var LED_DIM = 0x202852;
+  var FRAME   = 0x101633;
+
+  var scene = new THREE.Scene();
+
+  var camera = new THREE.PerspectiveCamera(35, W / H, 0.1, 100);
+  camera.position.set(5.8, 5.0, 7.4);
+  camera.lookAt(0.05, 0.35, 0);
+
+  var renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+  renderer.setSize(W, H);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.sortObjects = true;
+  container.appendChild(renderer.domElement);
+
+  /* =========================================================
+     GLASS MATERIALS — MeshPhysicalMaterial with transparency,
+     clearcoat, low roughness for that premium glass/acrylic look
+     ========================================================= */
+
+  // Green glass (cloud, ring, conduits)
+  var matGreenGlass = new THREE.MeshPhysicalMaterial({
+    color: GREEN,
+    transparent: true,
+    opacity: 0.72,
+    roughness: 0.08,
+    metalness: 0.12,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.05,
+    side: THREE.DoubleSide,
+    depthWrite: false
+  });
+
+  // Lemon glass (data packets, some LEDs)
+  var matLemonGlass = new THREE.MeshPhysicalMaterial({
+    color: LEMON,
+    transparent: true,
+    opacity: 0.8,
+    roughness: 0.06,
+    metalness: 0.1,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.04,
+    depthWrite: false
+  });
+
+  // Dark navy glass (server blade trays)
+  var matInkGlass = new THREE.MeshPhysicalMaterial({
+    color: INK,
+    transparent: true,
+    opacity: 0.82,
+    roughness: 0.12,
+    metalness: 0.18,
+    clearcoat: 0.9,
+    clearcoatRoughness: 0.08
+  });
+
+  // Darker navy glass (walls, dividers)
+  var matInkDkGlass = new THREE.MeshPhysicalMaterial({
+    color: INK_DK,
+    transparent: true,
+    opacity: 0.85,
+    roughness: 0.15,
+    metalness: 0.15,
+    clearcoat: 0.8,
+    clearcoatRoughness: 0.1
+  });
+
+  // Base platform glass (dark tinted)
+  var matBaseGlass = new THREE.MeshPhysicalMaterial({
+    color: BASE,
+    transparent: true,
+    opacity: 0.88,
+    roughness: 0.18,
+    metalness: 0.12,
+    clearcoat: 0.7,
+    clearcoatRoughness: 0.12
+  });
+
+  // LED dim state
+  var matLedDim = new THREE.MeshPhysicalMaterial({
+    color: LED_DIM,
+    transparent: true,
+    opacity: 0.6,
+    roughness: 0.2,
+    metalness: 0.1,
+    clearcoat: 0.5,
+    clearcoatRoughness: 0.15
+  });
+
+  // Cloud glass (slightly more translucent, very glossy)
+  var matCloudGlass = new THREE.MeshPhysicalMaterial({
+    color: GREEN,
+    transparent: true,
+    opacity: 0.55,
+    roughness: 0.05,
+    metalness: 0.08,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.02,
+    side: THREE.DoubleSide,
+    depthWrite: false
+  });
+
+  /* =========================================================
+     LIGHTING — enhanced for glass reflections
+     ========================================================= */
+  var hemi = new THREE.HemisphereLight(0xffffff, 0x48547a, 0.85);
+  scene.add(hemi);
+
+  // Main key light — strong for glass highlights
+  var dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+  dirLight.position.set(7, 12, 9);
+  scene.add(dirLight);
+
+  // Fill light — softer, from opposite side
+  var fillLight = new THREE.DirectionalLight(0x8899bb, 0.5);
+  fillLight.position.set(-6, 3, -5);
+  scene.add(fillLight);
+
+  // Back rim light — adds glass edge highlights
+  var rimLight = new THREE.DirectionalLight(0xAAC638, 0.3);
+  rimLight.position.set(-3, 6, -8);
+  scene.add(rimLight);
+
+  // Subtle bottom bounce
+  var bounceLight = new THREE.DirectionalLight(0x4455aa, 0.2);
+  bounceLight.position.set(0, -5, 3);
+  scene.add(bounceLight);
+
+  var root = new THREE.Group();
+  scene.add(root);
+  root.position.set(-0.35, -0.15, 0);
+
+  /* =========================================================
+     1. BASE PEDESTAL
+     ========================================================= */
+  var baseGroup = new THREE.Group();
+  root.add(baseGroup);
+
+  var srvX = -0.9, srvZ = -0.1;
+
+  // Dark glass bottom pedestal
+  var baseMesh = new THREE.Mesh(
+    new THREE.BoxGeometry(3.5, 0.14, 3.5),
+    matBaseGlass
+  );
+  baseMesh.position.set(srvX, -1.35, srvZ);
+  baseGroup.add(baseMesh);
+
+  // Green glass perimeter runner frame
+  var ringShape = new THREE.Shape();
+  var rw = 1.58, rh = 1.58, rr = 0.16;
+  ringShape.moveTo(-rw + rr, -rh);
+  ringShape.lineTo(rw - rr, -rh);
+  ringShape.quadraticCurveTo(rw, -rh, rw, -rh + rr);
+  ringShape.lineTo(rw, rh - rr);
+  ringShape.quadraticCurveTo(rw, rh, rw - rr, rh);
+  ringShape.lineTo(-rw + rr, rh);
+  ringShape.quadraticCurveTo(-rw, rh, -rw, rh - rr);
+  ringShape.lineTo(-rw, -rh + rr);
+  ringShape.quadraticCurveTo(-rw, -rh, -rw + rr, -rh);
+
+  var ringHole = new THREE.Path();
+  var hw = 1.34, hh = 1.34, hr = 0.12;
+  ringHole.moveTo(-hw + hr, -hh);
+  ringHole.lineTo(hw - hr, -hh);
+  ringHole.quadraticCurveTo(hw, -hh, hw, -hh + hr);
+  ringHole.lineTo(hw, hh - hr);
+  ringHole.quadraticCurveTo(hw, hh, hw - hr, hh);
+  ringHole.lineTo(-hw + hr, hh);
+  ringHole.quadraticCurveTo(-hw, hh, -hw, hh - hr);
+  ringHole.lineTo(-hw, -hh + hr);
+  ringHole.quadraticCurveTo(-hw, -hh, -hw + hr, -hh);
+  ringShape.holes.push(ringHole);
+
+  var ringMesh = new THREE.Mesh(
+    new THREE.ExtrudeGeometry(ringShape, { depth: 0.06, bevelEnabled: false }),
+    matGreenGlass
+  );
+  ringMesh.rotation.x = Math.PI / 2;
+  ringMesh.position.set(srvX, -1.25, srvZ);
+  baseGroup.add(ringMesh);
+
+  // Inner pedestal surface
+  var innerTopMesh = new THREE.Mesh(
+    new THREE.BoxGeometry(2.65, 0.08, 2.65),
+    matInkDkGlass
+  );
+  innerTopMesh.position.set(srvX, -1.24, srvZ);
+  baseGroup.add(innerTopMesh);
+
+  /* =========================================================
+     2. SERVER RACK TOWER
+     ========================================================= */
+  var serverGroup = new THREE.Group();
+  serverGroup.position.set(srvX, -1.2, srvZ);
+  root.add(serverGroup);
+
+  var sW = 1.9, sD = 1.9, sH = 2.85;
+  var NUM_SLOTS = 7;
+  var slotH = 0.31;
+  var gap = 0.06;
+
+  // Back and left interior walls (dark glass)
+  var backWall = new THREE.Mesh(
+    new THREE.BoxGeometry(sW * 0.94, sH, 0.08),
+    matBaseGlass
+  );
+  backWall.position.set(0, sH / 2, -sD * 0.44);
+  serverGroup.add(backWall);
+
+  var leftWall = new THREE.Mesh(
+    new THREE.BoxGeometry(0.08, sH, sD * 0.94),
+    matBaseGlass
+  );
+  leftWall.position.set(-sW * 0.44, sH / 2, 0);
+  serverGroup.add(leftWall);
+
+  // Top roof cap frame (glass)
+  var topCap = new THREE.Mesh(
+    new THREE.BoxGeometry(sW * 1.04, 0.08, sD * 1.04),
+    matInkGlass
+  );
+  topCap.position.y = sH + 0.04;
+  serverGroup.add(topCap);
+
+  var topInset = new THREE.Mesh(
+    new THREE.BoxGeometry(sW * 0.8, 0.03, sD * 0.8),
+    matBaseGlass
+  );
+  topInset.position.y = sH + 0.085;
+  serverGroup.add(topInset);
+
+  // Bottom pedestal base cap
+  var botCap = new THREE.Mesh(
+    new THREE.BoxGeometry(sW * 1.02, 0.06, sD * 1.02),
+    matInkGlass
+  );
+  botCap.position.y = 0.03;
+  serverGroup.add(botCap);
+
+  // Server blade slots with LED matrices
+  var leds = [];
+  var startY = 0.22;
+
+  var bladeGeo = new THREE.BoxGeometry(sW * 0.95, slotH, sD * 0.95);
+  var dividerGeo = new THREE.BoxGeometry(sW * 1.02, 0.035, sD * 1.02);
+  var frontLedGeo = new THREE.BoxGeometry(0.045, 0.045, 0.03);
+  var sideLedGeo = new THREE.BoxGeometry(0.03, 0.045, 0.045);
+  var frontVentGeo = new THREE.BoxGeometry(0.38, 0.035, 0.03);
+
+  for (var i = 0; i < NUM_SLOTS; i++) {
+    var slotY = startY + i * (slotH + gap);
+
+    // Blade tray body (dark glass)
+    var blade = new THREE.Mesh(bladeGeo, matInkGlass);
+    blade.position.set(0, slotY, 0);
+    serverGroup.add(blade);
+
+    // Horizontal shelf divider
+    var divider = new THREE.Mesh(dividerGeo, matBaseGlass);
+    divider.position.set(0, slotY - slotH / 2 - gap / 2, 0);
+    serverGroup.add(divider);
+
+    // Front ventilation slats
+    var fv1 = new THREE.Mesh(frontVentGeo, matBaseGlass);
+    fv1.position.set(-0.4, slotY + 0.05, sD * 0.475 + 0.02);
+    serverGroup.add(fv1);
+
+    var fv2 = new THREE.Mesh(frontVentGeo, matBaseGlass);
+    fv2.position.set(-0.4, slotY - 0.05, sD * 0.475 + 0.02);
+    serverGroup.add(fv2);
+
+    // Front LEDs (2 rows of 6)
+    for (var fCol = 0; fCol < 6; fCol++) {
+      for (var fRow = 0; fRow < 2; fRow++) {
+        var isLemonF = (i * 2 + fCol + fRow) % 3 === 0;
+        var fLed = new THREE.Mesh(frontLedGeo, isLemonF ? matLemonGlass : matGreenGlass);
+        fLed.position.set(
+          0.02 + fCol * 0.13,
+          slotY - 0.05 + fRow * 0.1,
+          sD * 0.475 + 0.02
+        );
+        serverGroup.add(fLed);
+        leds.push({
+          mesh: fLed,
+          baseMat: isLemonF ? matLemonGlass : matGreenGlass,
+          speed: 1.8 + (i * 0.35) + (fCol * 0.2),
+          offset: (i * 5 + fCol * 3 + fRow) * 0.7
+        });
+      }
+    }
+
+    // Right Face LEDs (2 rows of 7)
+    for (var rCol = 0; rCol < 7; rCol++) {
+      for (var rRow = 0; rRow < 2; rRow++) {
+        var isLemonR = (i + rCol * 2 + rRow) % 4 === 0;
+        var rLed = new THREE.Mesh(sideLedGeo, isLemonR ? matLemonGlass : matGreenGlass);
+        rLed.position.set(
+          sW * 0.475 + 0.02,
+          slotY - 0.05 + rRow * 0.1,
+          -sD * 0.34 + rCol * 0.115
+        );
+        serverGroup.add(rLed);
+        leds.push({
+          mesh: rLed,
+          baseMat: isLemonR ? matLemonGlass : matGreenGlass,
+          speed: 2.0 + (i * 0.3) + (rCol * 0.25),
+          offset: (i * 7 + rCol * 2 + rRow) * 0.9
+        });
+      }
+    }
+  }
+
+  // Top shelf divider
+  var topDiv = new THREE.Mesh(dividerGeo, matBaseGlass);
+  topDiv.position.set(0, startY + NUM_SLOTS * (slotH + gap) - gap / 2, 0);
+  serverGroup.add(topDiv);
+
+  // Corner vertical chassis pillars
+  var pillarGeo = new THREE.BoxGeometry(0.09, sH + 0.02, 0.09);
+  [[-1, -1], [-1, 1], [1, -1], [1, 1]].forEach(function(pos){
+    var pillar = new THREE.Mesh(pillarGeo, matBaseGlass);
+    pillar.position.set(pos[0] * (sW * 0.49), sH / 2, pos[1] * (sD * 0.49));
+    serverGroup.add(pillar);
+  });
+
+  /* =========================================================
+     3. CIRCUIT / BUS DATA CONDUITS
+     ========================================================= */
+  var linesGroup = new THREE.Group();
+  root.add(linesGroup);
+
+  var NUM_LINES = 4;
+  var lineSpacing = 0.14;
+  var startX = srvX + sW * 0.49 + 0.06;
+  var startZ = srvZ - 0.22;
+  var turnX = 1.8;
+  var topY = 2.15;
+  var floorY = -1.24;
+
+  var dataPackets = [];
+
+  for (var l = 0; l < NUM_LINES; l++) {
+    var lz = startZ + l * lineSpacing;
+
+    // Horizontal floor bus track (green glass)
+    var hLen = turnX - startX;
+    var hMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(hLen, 0.038, 0.038),
+      matGreenGlass
+    );
+    hMesh.position.set(startX + hLen / 2, floorY, lz);
+    linesGroup.add(hMesh);
+
+    // Vertical riser (green glass)
+    var vLen = topY - floorY;
+    var vMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(0.038, vLen, 0.038),
+      matGreenGlass
+    );
+    vMesh.position.set(turnX, floorY + vLen / 2, lz);
+    linesGroup.add(vMesh);
+
+    // Animated data pulse packet (lemon glass)
+    var packet = new THREE.Mesh(
+      new THREE.BoxGeometry(0.075, 0.075, 0.075),
+      matLemonGlass
+    );
+    linesGroup.add(packet);
+    dataPackets.push({
+      mesh: packet,
+      hLen: hLen,
+      vLen: vLen,
+      totalLen: hLen + vLen,
+      startX: startX,
+      turnX: turnX,
+      floorY: floorY,
+      lz: lz,
+      topY: topY,
+      speed: 1.35 + l * 0.15,
+      offset: l * 0.25
+    });
+  }
+
+  /* =========================================================
+     4. FLOATING 3D CLOUD — built from merged spheres for
+     perfect puffy cloud silhouette
+     ========================================================= */
+  var cloudGroup = new THREE.Group();
+  var cloudZ = startZ + ((NUM_LINES - 1) * lineSpacing) / 2;
+  cloudGroup.position.set(turnX + 0.15, topY + 0.85, cloudZ);
+  root.add(cloudGroup);
+
+  // Cloud sphere positions and radii — arranged for a natural puffy shape
+  var cloudSpheres = [
+    // Main body
+    { r: 0.48, x:  0,     y: 0,     z: 0     },
+    // Right lobe
+    { r: 0.40, x:  0.52,  y:-0.02,  z: 0     },
+    { r: 0.28, x:  0.85,  y:-0.08,  z: 0     },
+    // Left lobe
+    { r: 0.38, x: -0.50,  y: 0.0,   z: 0     },
+    { r: 0.26, x: -0.80,  y:-0.06,  z: 0     },
+    // Top dome (tallest puff)
+    { r: 0.42, x:  0.15,  y: 0.38,  z: 0     },
+    { r: 0.32, x: -0.22,  y: 0.32,  z: 0     },
+    { r: 0.28, x:  0.45,  y: 0.28,  z: 0     },
+    // Front/back depth
+    { r: 0.30, x:  0.10,  y: 0.05,  z: 0.18  },
+    { r: 0.30, x:  0.10,  y: 0.05,  z:-0.18  },
+    { r: 0.22, x: -0.35,  y: 0.15,  z: 0.12  },
+    { r: 0.22, x:  0.40,  y: 0.10,  z:-0.12  },
+    // Fill gaps
+    { r: 0.24, x:  0.60,  y: 0.15,  z: 0.05  },
+    { r: 0.20, x: -0.60,  y: 0.18,  z:-0.05  },
+  ];
+
+  var cloudMeshGroup = new THREE.Group();
+  var sphereSegments = 16;
+
+  for (var si = 0; si < cloudSpheres.length; si++) {
+    var sd = cloudSpheres[si];
+    var sphereGeo = new THREE.SphereGeometry(sd.r, sphereSegments, sphereSegments);
+    var sphereMesh = new THREE.Mesh(sphereGeo, matCloudGlass);
+    sphereMesh.position.set(sd.x, sd.y, sd.z);
+    cloudMeshGroup.add(sphereMesh);
+  }
+
+  cloudMeshGroup.scale.set(0.82, 0.82, 0.82);
+  cloudGroup.add(cloudMeshGroup);
+
+  // Flat bottom plate to give the cloud a clean base
+  var cloudBaseGeo = new THREE.CylinderGeometry(0.85, 0.85, 0.04, 24);
+  var cloudBaseMesh = new THREE.Mesh(cloudBaseGeo, matCloudGlass);
+  cloudBaseMesh.position.set(0.05, -0.32, 0);
+  cloudBaseMesh.scale.set(0.82, 0.82, 0.65);
+  cloudGroup.add(cloudBaseMesh);
+
+  /* =========================================================
+     ANIMATION LOOP — auto 360° rotation + data flow + LEDs
+     ========================================================= */
+  var clock = new THREE.Clock();
+
+  function animate() {
+    requestAnimationFrame(animate);
+    var t = clock.getElapsedTime();
+
+    // 1. SLOW AUTO 360° ROTATION
+    root.rotation.y += 0.003;
+
+    // 2. Cloud levitation / floating
+    var cloudBob = Math.sin(t * 1.8) * 0.06;
+    cloudGroup.position.y = topY + 0.85 + cloudBob;
+
+    // 3. Data packet flow along conduits
+    for (var p = 0; p < dataPackets.length; p++) {
+      var dp = dataPackets[p];
+      var prog = ((t * dp.speed + dp.offset) % 1.0);
+      var dist = prog * dp.totalLen;
+
+      if (dist < dp.hLen) {
+        dp.mesh.position.set(dp.startX + dist, dp.floorY, dp.lz);
+      } else {
+        var vDist = dist - dp.hLen;
+        dp.mesh.position.set(dp.turnX, dp.floorY + vDist, dp.lz);
+      }
+    }
+
+    // 4. Server LED blinking activity
+    for (var j = 0; j < leds.length; j++) {
+      var item = leds[j];
+      var blink = Math.sin(t * item.speed * 4.2 + item.offset);
+      item.mesh.material = blink > 0.15 ? item.baseMat : matLedDim;
+    }
+
+    renderer.render(scene, camera);
+  }
+
+  animate();
+
+})();
+</script>
+</body>
+</html>

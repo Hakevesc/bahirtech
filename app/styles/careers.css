@@ -1,0 +1,117 @@
+/* ============ CAREERS HERO — cover photograph, matching the About/Services pages ============
+   The dark perks band sits directly below, so the hero's bottom fades into that dark
+   (#0A0E22) rather than a light page — same melt as the About/Services heroes. */
+.ca-hero .ab-hero__bg{
+  background:
+    /* melt into the dark careers-perks band below */
+    linear-gradient(0deg,var(--ab-dark,#0A0E22) 0%,rgba(10,14,34,0) 16%),
+    /* reading scrim, strongest under the copy (left) */
+    linear-gradient(90deg,rgba(6,9,26,.94) 0%,rgba(6,9,26,.89) 32%,
+      rgba(6,9,26,.68) 58%,rgba(6,9,26,.42) 80%,rgba(6,9,26,.30) 100%),
+    /* darken top and bottom: the nav sits over the top edge */
+    linear-gradient(180deg,rgba(6,9,26,.80) 0%,rgba(6,9,26,.46) 42%,rgba(6,9,26,.72) 100%),
+    url("/assets/Images/Why Bahir Tech Team.jpg") 55% center/cover no-repeat,
+    #070A1C}
+/* the brand wash stays, heavily reduced — over a photo with people the original
+   tints muddy skin tones and the glass partitions */
+.ca-hero::before{
+  background:
+    radial-gradient(58% 70% at 10% 6%, rgba(170,198,56,.07), transparent 60%),
+    radial-gradient(48% 58% at 92% 0%, rgba(74,104,224,.09), transparent 62%)}
+
+@media (max-width:900px){
+  /* less width means the scrim can no longer separate copy from subject side to
+     side, so it goes vertical instead */
+  .ca-hero .ab-hero__bg{
+    background:
+      linear-gradient(0deg,var(--ab-dark,#0A0E22) 0%,rgba(10,14,34,0) 14%),
+      linear-gradient(180deg,rgba(6,9,26,.74) 0%,rgba(6,9,26,.82) 40%,rgba(6,9,26,.90) 100%),
+      url("/assets/Images/Why Bahir Tech Team.jpg") 55% center/cover no-repeat,
+      #070A1C}
+}
+
+/* ---------- careers perks — the dark band's cards ---------- */
+.career-perks{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:44px}
+.career-perk{
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.11);
+  border-radius:var(--r-lg,16px);padding:34px 28px;
+  transition:transform .4s var(--ease),border-color .4s var(--ease),background .4s var(--ease)}
+.career-perk:hover{transform:translateY(-6px);border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.08)}
+.career-perk__ico{width:52px;height:52px;border-radius:14px;color:var(--lemon,#CFDE5D);
+  background:rgba(255,255,255,.07);display:grid;place-items:center;margin-bottom:20px}
+.career-perk__ico svg{width:24px;height:24px}
+.career-perk h3{color:#fff;font-size:21px;font-weight:500;margin-bottom:12px}
+.career-perk p{color:rgba(233,236,246,.70);font-size:15.5px;line-height:1.65}
+
+@media (max-width:900px){
+  .career-perks{grid-template-columns:1fr;gap:20px}
+}
+
+/* ============================================================================
+   CAREERS PAGE — styling layered on the shared base (app/styles/about.css).
+   Only the bits specific to the jobs listing + apply experience live here.
+   ============================================================================ */
+
+/* ---- jobs intro ---- */
+.careers-sub{max-width:640px}
+
+.jobs-head{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;
+  margin-bottom:22px}
+.jobs-head h2{font-size:clamp(24px,2.6vw,34px);color:var(--ink);line-height:1.15}
+.jobs-head p{color:var(--body);font-size:15px;max-width:52ch}
+.jobs-count{font-weight:700;color:var(--green-ink,#AAC638)}
+
+/* ---- job cards ---- */
+.jobs-list{display:flex;flex-direction:column;gap:14px}
+.job-card{
+  border:1px solid var(--line,#E4E6EE);border-radius:var(--r-lg,16px);
+  background:#fff;padding:clamp(18px,2.4vw,26px);
+  display:flex;gap:18px;align-items:flex-start;justify-content:space-between;
+  transition:border-color .25s var(--ease),box-shadow .25s var(--ease)}
+.job-card:hover{border-color:rgba(35,42,96,.28);box-shadow:0 14px 34px rgba(6,9,26,.08)}
+.job-card__main{min-width:0}
+.job-card__title{font-size:19px;color:var(--ink,#232A60);margin-bottom:6px;line-height:1.3}
+.job-card__tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.job-chip{
+  font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--ink,#232A60);
+  background:var(--green-soft,#F1F5DF);border-radius:99px;padding:4px 11px}
+.job-chip--loc{background:var(--line-2,#EFF1F6)}
+.job-card__summary{color:var(--body,#5A6076);font-size:14.5px;line-height:1.65}
+.job-card__apply{flex:none;align-self:center}
+
+/* ---- detail / apply panel ---- */
+.job-detail{
+  border:1px solid var(--line,#E4E6EE);border-radius:var(--r-lg,14px);
+  background:#fff;padding:clamp(22px,3vw,36px);margin-top:26px}
+.job-detail__head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.job-detail__head h3{font-size:clamp(20px,2.4vw,26px);color:var(--ink);line-height:1.25}
+.job-detail__desc{margin-top:14px;color:var(--body,#5A6076);font-size:15px;line-height:1.7;white-space:pre-wrap}
+
+/* ---- apply form ---- */
+.apply{margin-top:26px;border-top:1px solid var(--line-2,#EFF1F6)}
+.apply h3{font-size:19px;color:var(--ink);margin:22px 0 14px}
+.apply__grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.apply__field{display:flex;flex-direction:column;gap:6px}
+.apply__field--full{grid-column:1 / -1}
+.apply__field label{font-size:13px;font-weight:500;color:var(--ink)}
+.apply__field input,.apply__field textarea,.apply__field select{
+  width:100%;background:#fff;border:1px solid var(--line,#E4E6EE);border-radius:var(--r-sm,8px);
+  padding:12px 14px;font:inherit;font-size:14.5px;color:var(--ink);outline:none;
+  transition:border-color .2s,box-shadow .2s}
+.apply__field input:focus,.apply__field textarea:focus,.apply__field select:focus{
+  border-color:var(--green,#AAC638);box-shadow:0 0 0 3px rgba(170,198,56,.18)}
+.apply__field textarea{resize:vertical}
+.apply__field .hint{font-size:12px;color:var(--muted,#676D82)}
+.apply__note{font-size:13.5px;color:var(--muted,#676D82);margin-top:14px;line-height:1.6}
+.apply__error{color:#b00020;font-size:14px;margin-top:12px}
+
+/* ---- empty state ---- */
+.care-empty{text-align:center;padding:60px 0;color:var(--muted,#676D82)}
+.care-empty b{display:block;font-size:20px;color:var(--ink);margin-bottom:8px}
+
+@media (max-width:700px){
+  .apply__grid{grid-template-columns:1fr}
+  .job-card{flex-direction:column}
+  .job-card__apply{align-self:flex-start}
+}

@@ -1,0 +1,30 @@
+<!-- ============================================================================
+     HEADER 1 — OVERLAY. ARCHIVED REFERENCE COPY.
+
+     Nothing loads this file any more. The header markup was inlined into every
+     page (index.html, about.html, service.html, cybersecurity.html) so the chrome
+     renders with the document and works from file://. This file is kept only as
+     a template to copy when building a new page — it is NOT what the site renders.
+
+     The matching markup lives inside each page itself, so if you change the nav
+     here you must change it there too (and vice versa). The only differences
+     between pages are the link marked class="active" + aria-current="page" and
+     the Industries href (#problems on the homepage, index.html#problems elsewhere).
+
+     The <img> carries the WHITE logo, header 1's state at rest; site-chrome.js
+     swaps it for the colour mark once the bar turns frosted.
+     ============================================================================ -->
+<header class="nav" id="navbar">
+  <div class="container">
+    <a href="index.html" class="nav__logo" aria-label="Bahir Tech home">
+      <img src="public/assets/logo/Bahir Tech Logo.svg" alt="BAHIR TECH">
+    </a>
+    <nav class="nav__menu" aria-label="Primary">
+      <a href="index.html" data-nav-key="home">Home</a>
+      <a href="service.html" data-nav-key="services">Services</a>
+      <a href="index.html#problems" data-nav-key="industries" data-nav-hash="problems">Industries</a>
+      <a href="about.html" data-nav-key="about">About</a>
+      <a href="#" data-nav-key="careers">Careers</a>
+    </nav>
+  </div>
+</header>

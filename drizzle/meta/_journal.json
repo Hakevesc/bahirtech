@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1787408965547,
+      "tag": "0000_first_proteus",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1787438482878,
+      "tag": "0001_purple_grey_gargoyle",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1787478874263,
+      "tag": "0002_slippery_eddie_brock",
+      "breakpoints": true
+    }
+  ]
+}
